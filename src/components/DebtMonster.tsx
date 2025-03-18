@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Shield, ZapOff, Sword } from 'lucide-react';
+import { Shield, ZapOff, Sword, Flame, Target } from 'lucide-react';
 import ProgressBar from './ProgressBar';
 import { useGameContext, Debt } from '../context/GameContext';
 
@@ -11,15 +11,16 @@ interface DebtMonsterProps {
 const DebtMonster: React.FC<DebtMonsterProps> = ({ debt }) => {
   const { damageMonster, useSpecialMove, specialMoves } = useGameContext();
   const [isAttacking, setIsAttacking] = useState(false);
+  const [specialAttack, setSpecialAttack] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(100);
 
   // Monster colors based on type
   const monsterColors = {
-    red: 'bg-monster-red text-white',
-    blue: 'bg-monster-blue text-white',
-    green: 'bg-monster-green text-white',
-    purple: 'bg-monster-purple text-white',
-    yellow: 'bg-monster-yellow text-black'
+    red: 'bg-gradient-to-br from-monster-red to-red-600 text-white',
+    blue: 'bg-gradient-to-br from-monster-blue to-blue-600 text-white',
+    green: 'bg-gradient-to-br from-monster-green to-green-600 text-white',
+    purple: 'bg-gradient-to-br from-monster-purple to-purple-600 text-white',
+    yellow: 'bg-gradient-to-br from-monster-yellow to-yellow-500 text-black'
   };
 
   // Monster icons based on type
@@ -36,21 +37,34 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt }) => {
 
   const handleAttack = () => {
     setIsAttacking(true);
+    setSpecialAttack(false);
     damageMonster(debt.id, paymentAmount);
     setTimeout(() => setIsAttacking(false), 500);
   };
 
   const handleSpecialMove = () => {
     setIsAttacking(true);
+    setSpecialAttack(true);
     useSpecialMove(debt.id);
-    setTimeout(() => setIsAttacking(false), 500);
+    setTimeout(() => setIsAttacking(false), 800);
   };
 
   return (
-    <div className={`monster ${monsterColors[debt.monsterType]} ${isAttacking ? 'monster-damaged' : ''} transition-all duration-300`}>
-      <div className="flex items-center justify-between mb-3">
+    <div 
+      className={`monster ${monsterColors[debt.monsterType]} ${isAttacking ? 'monster-damaged' : ''} 
+      transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg relative overflow-hidden`}
+    >
+      {/* Special attack effect */}
+      {specialAttack && (
+        <div className="absolute inset-0 bg-white/40 animate-pulse z-10"></div>
+      )}
+      
+      {/* Background decoration */}
+      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full"></div>
+      
+      <div className="flex items-center justify-between mb-3 relative z-20">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-white/20 rounded-lg">
+          <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
             <MonsterIcon />
           </div>
           <div>
@@ -60,18 +74,20 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt }) => {
             </div>
           </div>
         </div>
-        <div className="text-xs px-2 py-1 bg-white/20 rounded-full">
+        <div className="text-xs px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full">
           Min: ${debt.minimumPayment}/mo
         </div>
       </div>
       
-      <ProgressBar 
-        progress={100 - debt.health} 
-        color={`bg-white`} 
-        label="Damage" 
-      />
+      <div className="relative z-20">
+        <ProgressBar 
+          progress={100 - debt.health} 
+          color={`bg-gradient-to-r from-white/80 to-white/60`} 
+          label="Damage" 
+        />
+      </div>
       
-      <div className="mt-4 flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+      <div className="mt-4 flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 relative z-20">
         <div className="flex-1 flex items-center space-x-2">
           <input
             type="range"
@@ -82,25 +98,27 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt }) => {
             onChange={(e) => setPaymentAmount(Number(e.target.value))}
             className="w-full h-2 bg-white/30 rounded-lg appearance-none cursor-pointer"
           />
-          <span className="text-sm font-medium w-20">${paymentAmount}</span>
+          <span className="text-sm font-medium w-20 bg-white/20 backdrop-blur-sm rounded-md px-2 py-0.5">${paymentAmount}</span>
         </div>
         
         <button
           onClick={handleAttack}
-          className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+          className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-1"
         >
+          <Sword className="h-4 w-4" />
           Attack
         </button>
         
         <button
           onClick={handleSpecialMove}
           disabled={specialMoves <= 0}
-          className={`px-4 py-2 rounded-lg transition-colors ${
+          className={`px-4 py-2 rounded-lg transition-all backdrop-blur-sm flex items-center justify-center gap-1 ${
             specialMoves > 0 
-              ? 'bg-white/20 hover:bg-white/30' 
+              ? 'bg-white/20 hover:bg-white/30 hover:shadow-md' 
               : 'bg-white/10 cursor-not-allowed'
           }`}
         >
+          <Flame className="h-4 w-4" />
           Special ({specialMoves})
         </button>
       </div>
