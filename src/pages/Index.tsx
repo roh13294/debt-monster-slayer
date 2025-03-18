@@ -8,6 +8,9 @@ import MonsterBattle from '../components/MonsterBattle';
 import LifeEvent from '../components/LifeEvent';
 import Challenge from '../components/Challenge';
 import { useGameContext } from '../context/GameContext';
+import { useAuth } from '../context/AuthContext';
+import { Button } from '@/components/ui/button';
+import { LogOut, User } from 'lucide-react';
 
 // Main game component wrapped with provider
 const Index = () => {
@@ -21,6 +24,7 @@ const Index = () => {
 // Game interface component with access to context
 const GameInterface = () => {
   const { challenges, gameStarted, initializeGame, playerName, setPlayerName } = useGameContext();
+  const { user, signOut } = useAuth();
   
   if (!gameStarted) {
     return <StartScreen onStart={initializeGame} playerName={playerName} setPlayerName={setPlayerName} />;
@@ -32,10 +36,23 @@ const GameInterface = () => {
       <LifeEvent />
       
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
-        <header className="text-center mb-12">
-          <div className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium mb-2">Debt Monster Slayer</div>
-          <h1 className="text-4xl font-bold">Your Financial Journey</h1>
-          <p className="text-gray-600 mt-2">Fight your debt monsters and achieve financial freedom</p>
+        <header className="flex justify-between items-center mb-12">
+          <div className="text-center flex-grow">
+            <div className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium mb-2">Debt Monster Slayer</div>
+            <h1 className="text-4xl font-bold">Your Financial Journey</h1>
+            <p className="text-gray-600 mt-2">Fight your debt monsters and achieve financial freedom</p>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <User size={16} />
+              <span className="text-sm font-medium">{user?.email}</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={signOut}>
+              <LogOut size={16} className="mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </header>
         
         <section className="mb-12 animate-fade-in">
@@ -93,6 +110,17 @@ const StartScreen = ({
   playerName: string, 
   setPlayerName: (name: string) => void 
 }) => {
+  const { user } = useAuth();
+  
+  // Set player name from user email if available
+  React.useEffect(() => {
+    if (user && user.email && playerName === 'Player') {
+      // Extract name from email (before @)
+      const emailName = user.email.split('@')[0];
+      setPlayerName(emailName);
+    }
+  }, [user, playerName, setPlayerName]);
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 animate-scale-in">
