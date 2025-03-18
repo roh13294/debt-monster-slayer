@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { GameProvider } from '../context/GameContext';
 import Dashboard from '../components/Dashboard';
@@ -11,8 +10,8 @@ import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { LogOut, User, Sparkles } from 'lucide-react';
+import { Trophy, Sword } from '@/components/ui/icons';
 
-// Main game component wrapped with provider
 const Index = () => {
   return (
     <GameProvider>
@@ -21,7 +20,6 @@ const Index = () => {
   );
 };
 
-// Game interface component with access to context
 const GameInterface = () => {
   const { challenges, gameStarted, initializeGame, playerName, setPlayerName } = useGameContext();
   const { user, signOut } = useAuth();
@@ -32,10 +30,8 @@ const GameInterface = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 via-indigo-50 to-white pb-20 overflow-x-hidden">
-      {/* Life event modal (shown conditionally) */}
       <LifeEvent />
       
-      {/* Background decorative elements */}
       <div className="absolute top-20 right-10 w-32 h-32 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
       <div className="absolute top-40 left-10 w-36 h-36 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '1s' }}></div>
       <div className="absolute bottom-40 right-20 w-40 h-40 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
@@ -114,7 +110,6 @@ const GameInterface = () => {
   );
 };
 
-// Start screen component with enhanced animation
 const StartScreen = ({ 
   onStart, 
   playerName, 
@@ -127,22 +122,18 @@ const StartScreen = ({
   const { user } = useAuth();
   const [animationComplete, setAnimationComplete] = useState(false);
   
-  // Set player name from user email if available
   useEffect(() => {
     if (user && user.email && playerName === 'Player') {
-      // Extract name from email (before @)
       const emailName = user.email.split('@')[0];
       setPlayerName(emailName);
     }
     
-    // Start animation sequence
     const timer = setTimeout(() => setAnimationComplete(true), 500);
     return () => clearTimeout(timer);
   }, [user, playerName, setPlayerName]);
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-indigo-50 to-purple-50 flex items-center justify-center p-4 overflow-hidden">
-      {/* Animated background elements */}
       <div className="absolute top-20 right-20 w-60 h-60 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
       <div className="absolute bottom-20 left-20 w-60 h-60 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2.5s' }}></div>
       <div className="absolute top-40 left-40 w-60 h-60 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '1.2s' }}></div>

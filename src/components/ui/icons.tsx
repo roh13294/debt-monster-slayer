@@ -1,5 +1,6 @@
 
-import { Trophy, Sword } from 'lucide-react';
+import { Trophy as TrophyIcon, Sword as SwordIcon } from 'lucide-react';
 
 // Re-export the icons to use in our components
-export { Trophy, Sword };
+export const Trophy = TrophyIcon;
+export const Sword = SwordIcon;
