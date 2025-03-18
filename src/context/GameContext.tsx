@@ -1,5 +1,5 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getLifeEvent } from '../utils/lifeEventGenerator';
 
 // Types
 export type Debt = {
@@ -32,6 +32,7 @@ export type LifeEvent = {
     effect: {
       cash?: number;
       debt?: number;
+      income?: number;
       description: string;
     };
   }[];
@@ -166,72 +167,6 @@ const initialChallenges: Challenge[] = [
   }
 ];
 
-const lifeEvents: LifeEvent[] = [
-  {
-    id: '1',
-    title: 'Car Trouble',
-    description: 'Your car needs urgent repairs. What will you do?',
-    options: [
-      {
-        text: 'Pay $500 for repairs',
-        effect: {
-          cash: -500,
-          description: 'You paid $500 for car repairs.'
-        }
-      },
-      {
-        text: 'Take a loan for repairs',
-        effect: {
-          debt: 500,
-          description: 'You took a $500 loan for repairs, added to your credit card debt.'
-        }
-      }
-    ]
-  },
-  {
-    id: '2',
-    title: 'Unexpected Bonus',
-    description: 'You received a surprise bonus at work!',
-    options: [
-      {
-        text: 'Save the entire $1000',
-        effect: {
-          cash: 1000,
-          description: 'You saved the entire $1000 bonus.'
-        }
-      },
-      {
-        text: 'Pay off some debt with $1000',
-        effect: {
-          cash: 1000,
-          description: 'You got $1000 to pay toward your debt.'
-        }
-      }
-    ]
-  },
-  {
-    id: '3',
-    title: 'Medical Expense',
-    description: 'You have an unexpected medical bill.',
-    options: [
-      {
-        text: 'Pay $800 from savings',
-        effect: {
-          cash: -800,
-          description: 'You paid $800 for medical expenses.'
-        }
-      },
-      {
-        text: 'Pay with credit card',
-        effect: {
-          debt: 800,
-          description: 'You added $800 to your credit card debt.'
-        }
-      }
-    ]
-  }
-];
-
 // Create context
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -334,10 +269,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
   
-  // Generate a random life event
+  // Generate a random life event using our new system
   const generateLifeEvent = () => {
-    const randomIndex = Math.floor(Math.random() * lifeEvents.length);
-    setCurrentLifeEvent(lifeEvents[randomIndex]);
+    setCurrentLifeEvent(getLifeEvent());
   };
   
   // Resolve current life event
@@ -369,6 +303,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           monsterType: 'red'
         });
       }
+    }
+    
+    // Apply income effect (new)
+    if (option.effect.income) {
+      updateBudget({
+        income: budget.income + option.effect.income
+      });
     }
     
     // Clear current life event
@@ -457,8 +398,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Increment months
     setMonthsPassed(prev => prev + 1);
     
-    // Random chance for life event (25%)
-    if (Math.random() < 0.25) {
+    // Increased chance for life event (50% instead of 25%)
+    if (Math.random() < 0.5) {
       generateLifeEvent();
     }
   };
