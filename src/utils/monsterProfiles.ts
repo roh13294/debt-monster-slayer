@@ -63,6 +63,24 @@ export const monsterProfiles: Record<string, MonsterProfile> = {
     weakness: 'Disciplined budgeting',
     story: 'Personus appeared as a friend in your time of need, offering quick cash. Now he expects regular payments, regardless of your situation.',
     abilities: ['Term Shortener', 'Rate Hike', 'Prepayment Penalty']
+  },
+  'Payday Loan': {
+    type: 'red',
+    name: 'Paydus the Predator',
+    personality: 'Aggressive and tricky',
+    catchphrase: "Need cash now? I'll cost you later!",
+    weakness: 'Alternative financing',
+    story: 'Paydus preys on the desperate, offering quick relief that turns into a vicious cycle. His small loans carry enormous interest rates.',
+    abilities: ['Rollover Trap', 'Hidden Fee Attack', 'Salary Intercept']
+  },
+  'Business Loan': {
+    type: 'purple',
+    name: 'Bizloan the Gambler',
+    personality: 'Risk-taking and opportunistic',
+    catchphrase: "Big dreams require big money!",
+    weakness: 'Revenue growth',
+    story: 'Bizloan tempts entrepreneurs with capital for their dreams, but demands regular tribute regardless of business performance.',
+    abilities: ['Collateral Claim', 'Personal Guarantee', 'Cash Flow Drain']
   }
 };
 
