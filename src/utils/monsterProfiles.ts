@@ -43,7 +43,7 @@ export const monsterProfiles: Record<string, MonsterProfile> = {
     personality: 'Slow and steady',
     catchphrase: "I'll be with you for 30 years!",
     weakness: 'Refinancing',
-    story: 'Mortgagus gave you shelter, but at a steep price. He's the largest of the debt monsters, with the longest lifespan, collecting interest for decades.',
+    story: "Mortgagus gave you shelter, but at a steep price. He's the largest of the debt monsters, with the longest lifespan, collecting interest for decades.",
     abilities: ['Equity Absorption', 'Term Extension', 'Property Tax Pass-through']
   },
   'Medical Debt': {
@@ -52,7 +52,7 @@ export const monsterProfiles: Record<string, MonsterProfile> = {
     personality: 'Surprising and stressful',
     catchphrase: "Surprise! I appeared when you least expected!",
     weakness: 'Payment plans',
-    story: 'Medicalus strikes when you're already down, adding financial stress to health problems. He sneaks up with confusing bills and unexpected costs.',
+    story: "Medicalus strikes when you're already down, adding financial stress to health problems. He sneaks up with confusing bills and unexpected costs.",
     abilities: ['Insurance Denial', 'Code Confusion', 'Billing Surprise']
   },
   'Personal Loan': {
