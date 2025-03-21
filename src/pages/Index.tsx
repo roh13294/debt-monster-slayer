@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { GameProvider } from '../context/GameContext';
 import Dashboard from '../components/Dashboard';
@@ -6,10 +7,11 @@ import BudgetAllocator from '../components/BudgetAllocator';
 import MonsterBattle from '../components/MonsterBattle';
 import LifeEvent from '../components/LifeEvent';
 import Challenge from '../components/Challenge';
+import StatsDashboard from '../components/StatsDashboard';
 import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Sparkles } from 'lucide-react';
+import { LogOut, User, Sparkles, BarChart4 } from 'lucide-react';
 import { Trophy, Sword } from '@/components/ui/icons';
 
 const Index = () => {
@@ -23,6 +25,7 @@ const Index = () => {
 const GameInterface = () => {
   const { challenges, gameStarted, initializeGame, playerName, setPlayerName } = useGameContext();
   const { user, signOut } = useAuth();
+  const [showStats, setShowStats] = useState(false);
   
   if (!gameStarted) {
     return <StartScreen onStart={initializeGame} playerName={playerName} setPlayerName={setPlayerName} />;
@@ -60,8 +63,19 @@ const GameInterface = () => {
           </div>
         </header>
         
+        <div className="flex justify-center mb-6">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowStats(!showStats)}
+            className="animate-bounce-subtle rounded-full flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all"
+          >
+            <BarChart4 size={16} />
+            {showStats ? 'Show Dashboard' : 'Show Analytics'}
+          </Button>
+        </div>
+        
         <section className="mb-12 animate-fade-in transform hover:scale-[1.01] transition-transform duration-300">
-          <Dashboard />
+          {showStats ? <StatsDashboard /> : <Dashboard />}
         </section>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
