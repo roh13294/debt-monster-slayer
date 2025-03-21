@@ -11,7 +11,7 @@ import StatsDashboard from '../components/StatsDashboard';
 import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Sparkles, BarChart4 } from 'lucide-react';
+import { LogOut, User, Sparkles, BarChart4, Brain, Bookmark, Coins, Briefcase, PiggyBank, Zap } from 'lucide-react';
 import { Trophy, Sword } from '@/components/ui/icons';
 
 const Index = () => {
@@ -23,9 +23,10 @@ const Index = () => {
 };
 
 const GameInterface = () => {
-  const { challenges, gameStarted, initializeGame, playerName, setPlayerName } = useGameContext();
+  const { challenges, gameStarted, initializeGame, playerName, setPlayerName, playerTraits } = useGameContext();
   const { user, signOut } = useAuth();
   const [showStats, setShowStats] = useState(false);
+  const [showTraits, setShowTraits] = useState(false);
   
   if (!gameStarted) {
     return <StartScreen onStart={initializeGame} playerName={playerName} setPlayerName={setPlayerName} />;
@@ -63,7 +64,7 @@ const GameInterface = () => {
           </div>
         </header>
         
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-6 space-x-4">
           <Button 
             variant="outline" 
             onClick={() => setShowStats(!showStats)}
@@ -72,7 +73,94 @@ const GameInterface = () => {
             <BarChart4 size={16} />
             {showStats ? 'Show Dashboard' : 'Show Analytics'}
           </Button>
+          
+          <Button 
+            variant="outline" 
+            onClick={() => setShowTraits(!showTraits)}
+            className="rounded-full flex items-center gap-2 hover:bg-purple-50 hover:text-purple-600 transition-all"
+          >
+            <Brain size={16} />
+            {showTraits ? 'Hide Player Profile' : 'Show Player Profile'}
+          </Button>
         </div>
+        
+        {showTraits && (
+          <section className="mb-8 animate-fade-in">
+            <div className="card-elegant">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <span className="bg-purple-100 text-purple-700 p-1 rounded-md mr-2">
+                  <Bookmark size={18} />
+                </span>
+                Your Unique Player Profile
+              </h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Your gameplay choices shape your financial character. These traits influence the events you encounter and options available to you.
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Brain size={16} className="text-blue-600" />
+                    <span className="font-medium text-sm">Financial Knowledge</span>
+                  </div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full">
+                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${playerTraits.financialKnowledge * 10}%` }}></div>
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-red-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Zap size={16} className="text-red-600" />
+                    <span className="font-medium text-sm">Risk Tolerance</span>
+                  </div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full">
+                    <div className="h-full bg-red-500 rounded-full" style={{ width: `${playerTraits.riskTolerance * 10}%` }}></div>
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Coins size={16} className="text-green-600" />
+                    <span className="font-medium text-sm">Spending Habits</span>
+                  </div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full">
+                    <div className="h-full bg-green-500 rounded-full" style={{ width: `${playerTraits.spendingHabits * 10}%` }}></div>
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-yellow-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Briefcase size={16} className="text-yellow-600" />
+                    <span className="font-medium text-sm">Career Focus</span>
+                  </div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full">
+                    <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${playerTraits.careerFocus * 10}%` }}></div>
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-purple-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <PiggyBank size={16} className="text-purple-600" />
+                    <span className="font-medium text-sm">Saving Ability</span>
+                  </div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full">
+                    <div className="h-full bg-purple-500 rounded-full" style={{ width: `${playerTraits.savingAbility * 10}%` }}></div>
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-orange-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sparkles size={16} className="text-orange-600" />
+                    <span className="font-medium text-sm">Lucky Streak</span>
+                  </div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full">
+                    <div className="h-full bg-orange-500 rounded-full" style={{ width: `${playerTraits.luckyStreak * 10}%` }}></div>
+                  </div>
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-gray-500 italic">Your profile evolves as you make financial decisions.</p>
+            </div>
+          </section>
+        )}
         
         <section className="mb-12 animate-fade-in transform hover:scale-[1.01] transition-transform duration-300">
           {showStats ? <StatsDashboard /> : <Dashboard />}
@@ -179,6 +267,9 @@ const StartScreen = ({
           <p className="text-sm text-blue-800">
             Ready to fight your debt monsters? Your financial adventure awaits.
             Make strategic decisions, overcome life events, and slay your debt to achieve financial freedom.
+          </p>
+          <p className="text-sm text-blue-800 mt-2">
+            <strong>Every journey is unique!</strong> Your choices will shape your experience and determine your path to financial success.
           </p>
         </div>
         

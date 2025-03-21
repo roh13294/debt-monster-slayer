@@ -50,6 +50,15 @@ export type Challenge = {
   completed: boolean;
 };
 
+export type PlayerTraits = {
+  riskTolerance: number;      // 1-10 scale: affects event probabilities
+  financialKnowledge: number; // 1-10 scale: affects advice and options
+  spendingHabits: number;     // 1-10 scale: affects spending events
+  careerFocus: number;        // 1-10 scale: affects career events
+  savingAbility: number;      // 1-10 scale: affects saving events
+  luckyStreak: number;        // 1-10 scale: affects random outcomes
+};
+
 export type GameContextType = {
   // Player data
   playerName: string;
@@ -58,6 +67,13 @@ export type GameContextType = {
   setAvatar: (avatar: string) => void;
   cash: number;
   setCash: (cash: number) => void;
+  
+  // Player traits for personalization
+  playerTraits: PlayerTraits;
+  updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
+  
+  // Game events tracking
+  eventHistory: string[];
   
   // Debt data
   debts: Debt[];
@@ -190,8 +206,125 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [paymentStreak, setPaymentStreak] = useState<number>(0);
   const [lastLevelSeen, setLastLevelSeen] = useState<number>(0);
+  const [eventHistory, setEventHistory] = useState<string[]>([]);
+  
+  // Player traits for personalized experience
+  const [playerTraits, setPlayerTraits] = useState<PlayerTraits>({
+    riskTolerance: 5,
+    financialKnowledge: 5,
+    spendingHabits: 5,
+    careerFocus: 5,
+    savingAbility: 5, 
+    luckyStreak: 5
+  });
   
   const totalDebt = debts.reduce((sum, debt) => sum + debt.amount, 0);
+  
+  // Update a player trait
+  const updatePlayerTrait = (trait: keyof PlayerTraits, value: number) => {
+    setPlayerTraits(prev => ({
+      ...prev,
+      [trait]: Math.max(1, Math.min(10, value)) // Ensure value is between 1-10
+    }));
+  };
+  
+  // Update player traits based on choices
+  const updateTraitsBasedOnChoice = (option: typeof currentLifeEvent?.options[0]) => {
+    if (!option) return;
+    
+    const text = option.text.toLowerCase();
+    const effect = option.effect;
+    
+    // Example trait modifications based on choices
+    const traitUpdates: Partial<PlayerTraits> = {};
+    
+    // Risk tolerance
+    if (text.includes('risk')) {
+      traitUpdates.riskTolerance = playerTraits.riskTolerance + 1;
+    } else if (text.includes('safe') || text.includes('secure')) {
+      traitUpdates.riskTolerance = playerTraits.riskTolerance - 1;
+    }
+    
+    // Financial knowledge
+    if (text.includes('invest') || text.includes('research')) {
+      traitUpdates.financialKnowledge = playerTraits.financialKnowledge + 1;
+    }
+    
+    // Spending habits
+    if (effect.cash && effect.cash < 0 && text.includes('buy')) {
+      traitUpdates.spendingHabits = playerTraits.spendingHabits + 1;
+    } else if (text.includes('save') || text.includes('budget')) {
+      traitUpdates.spendingHabits = Math.max(1, playerTraits.spendingHabits - 1);
+    }
+    
+    // Career focus
+    if (text.includes('career') || text.includes('job') || text.includes('professional')) {
+      traitUpdates.careerFocus = playerTraits.careerFocus + 1;
+    }
+    
+    // Saving ability
+    if (text.includes('save') || (effect.cash && effect.cash > 0)) {
+      traitUpdates.savingAbility = playerTraits.savingAbility + 1;
+    }
+    
+    // Apply trait updates
+    setPlayerTraits(prev => {
+      const updated = { ...prev };
+      
+      // Apply each update, ensuring values stay within 1-10 range
+      Object.entries(traitUpdates).forEach(([trait, value]) => {
+        if (value !== undefined) {
+          updated[trait as keyof PlayerTraits] = Math.max(1, Math.min(10, value));
+        }
+      });
+      
+      return updated;
+    });
+  };
+  
+  // Create personalized challenges based on player traits
+  const generatePersonalizedChallenges = () => {
+    const personalizedChallenges: Challenge[] = [...initialChallenges];
+    
+    // Add trait-specific challenges
+    if (playerTraits.savingAbility > 6) {
+      personalizedChallenges.push({
+        id: 'save-expert',
+        title: 'Savings Expert',
+        description: 'Save $1000 total',
+        reward: 300,
+        progress: 0,
+        target: 1000,
+        completed: false
+      });
+    }
+    
+    if (playerTraits.riskTolerance > 7) {
+      personalizedChallenges.push({
+        id: 'risk-taker',
+        title: 'Risk Taker',
+        description: 'Make 5 risky financial decisions',
+        reward: 250,
+        progress: 0,
+        target: 5,
+        completed: false
+      });
+    }
+    
+    if (playerTraits.careerFocus > 6) {
+      personalizedChallenges.push({
+        id: 'career-focused',
+        title: 'Career Climber',
+        description: 'Increase monthly income by $500',
+        reward: 200,
+        progress: 0,
+        target: 500,
+        completed: false
+      });
+    }
+    
+    return personalizedChallenges;
+  };
   
   // Check for level-up and award special moves
   useEffect(() => {
@@ -208,11 +341,40 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: `You reached level ${currentLevel}! +1 Special Move unlocked!`,
         variant: "default",
       });
+      
+      // Every 3 levels, update challenges based on player traits
+      if (currentLevel % 3 === 0) {
+        const newChallenges = generatePersonalizedChallenges();
+        // Only add challenges that don't already exist
+        const existingIds = challenges.map(c => c.id);
+        const challengesToAdd = newChallenges.filter(c => !existingIds.includes(c.id));
+        
+        if (challengesToAdd.length > 0) {
+          setChallenges([...challenges, ...challengesToAdd]);
+          
+          toast({
+            title: "New Challenges!",
+            description: `New personalized challenges available based on your play style!`,
+            variant: "default",
+          });
+        }
+      }
     }
-  }, [monthsPassed, lastLevelSeen, gameStarted]);
+  }, [monthsPassed, lastLevelSeen, gameStarted, challenges, playerTraits]);
   
   // Initialize game
   const initializeGame = () => {
+    // Generate initial player traits with some randomness
+    const initialTraits: PlayerTraits = {
+      riskTolerance: Math.floor(Math.random() * 4) + 3, // 3-6
+      financialKnowledge: Math.floor(Math.random() * 4) + 3, // 3-6
+      spendingHabits: Math.floor(Math.random() * 4) + 3, // 3-6
+      careerFocus: Math.floor(Math.random() * 4) + 3, // 3-6
+      savingAbility: Math.floor(Math.random() * 4) + 3, // 3-6
+      luckyStreak: Math.floor(Math.random() * 10) + 1 // 1-10
+    };
+    
+    setPlayerTraits(initialTraits);
     setDebts(initialDebts);
     setBudget(initialBudget);
     setChallenges(initialChallenges);
@@ -221,7 +383,30 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSpecialMoves(1); // Start with one special move
     setPaymentStreak(0);
     setLastLevelSeen(1);
+    setEventHistory([]);
     setGameStarted(true);
+    
+    // Set initial debt amount based on traits
+    if (initialTraits.financialKnowledge < 4) {
+      // Less financially knowledgeable players start with more debt
+      setDebts(initialDebts.map(debt => ({
+        ...debt,
+        amount: Math.round(debt.amount * 1.2) // 20% more debt
+      })));
+    } else if (initialTraits.financialKnowledge > 7) {
+      // More financially knowledgeable players start with less debt
+      setDebts(initialDebts.map(debt => ({
+        ...debt,
+        amount: Math.round(debt.amount * 0.9) // 10% less debt
+      })));
+    }
+    
+    // Adjust initial cash based on traits
+    if (initialTraits.savingAbility > 6) {
+      setCash(2500); // Better savers start with more cash
+    } else if (initialTraits.savingAbility < 4) {
+      setCash(1500); // Poorer savers start with less cash
+    }
     
     toast({
       title: "Game Started!",
@@ -240,6 +425,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSpecialMoves(0);
     setPaymentStreak(0);
     setGameStarted(false);
+    setEventHistory([]);
+    setPlayerTraits({
+      riskTolerance: 5,
+      financialKnowledge: 5,
+      spendingHabits: 5,
+      careerFocus: 5,
+      savingAbility: 5,
+      luckyStreak: 5
+    });
   };
   
   // Add new debt
@@ -273,6 +467,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Award a bonus special move for defeating a monster
           setSpecialMoves(prev => prev + 1);
           
+          // Update player traits when defeating a monster
+          setPlayerTraits(prev => ({
+            ...prev,
+            financialKnowledge: Math.min(10, prev.financialKnowledge + 0.5),
+            savingAbility: Math.min(10, prev.savingAbility + 0.5)
+          }));
+          
           return { ...debt, ...updates, amount: 0, health: 0 };
         }
         return { ...debt, ...updates };
@@ -303,6 +504,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           debt: income * 0.4,
           savings: income * 0.1,
         });
+        
+        // Update player traits based on budget choice
+        setPlayerTraits(prev => ({
+          ...prev,
+          spendingHabits: Math.max(1, prev.spendingHabits - 1),
+          savingAbility: Math.min(10, prev.savingAbility + 1)
+        }));
         break;
       case 'balanced':
         setBudget({
@@ -319,15 +527,27 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           debt: income * 0.45,
           savings: income * 0.05,
         });
+        
+        // Update player traits based on budget choice
+        setPlayerTraits(prev => ({
+          ...prev,
+          riskTolerance: Math.min(10, prev.riskTolerance + 1)
+        }));
         break;
       default:
         break;
     }
   };
   
-  // Generate a random life event using our new system
+  // Generate a random life event using our enhanced system
   const generateLifeEvent = () => {
-    setCurrentLifeEvent(getLifeEvent());
+    // Generate personalized event with impact from player traits
+    const event = getLifeEvent();
+    
+    // Track in history
+    setEventHistory(prev => [...prev, event.id]);
+    
+    setCurrentLifeEvent(event);
   };
   
   // Resolve current life event
@@ -335,6 +555,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!currentLifeEvent) return;
     
     const option = currentLifeEvent.options[optionIndex];
+    
+    // Update player traits based on choice
+    updateTraitsBasedOnChoice(option);
     
     // Apply cash effect
     if (option.effect.cash) {
@@ -474,8 +697,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     }
     
-    // Increased chance for life event (50% instead of 25%)
-    if (Math.random() < 0.5) {
+    // Life event chance affected by player traits
+    let eventChance = 0.5; // Base 50% chance
+    
+    // Risk-tolerant players get more events
+    if (playerTraits.riskTolerance > 7) {
+      eventChance += 0.2;
+    } else if (playerTraits.riskTolerance < 4) {
+      eventChance -= 0.1;
+    }
+    
+    // Lucky players get more positive events (handled in the event generator)
+    
+    // Generate life event based on chance
+    if (Math.random() < eventChance) {
       generateLifeEvent();
     }
   };
@@ -510,6 +745,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Update challenge progress
     updateChallenge('1', 1); // Extra payment challenge
+    
+    // Update traits based on payment behavior
+    setPlayerTraits(prev => ({
+      ...prev,
+      financialKnowledge: Math.min(10, prev.financialKnowledge + 0.1),
+      savingAbility: Math.min(10, prev.savingAbility + 0.1)
+    }));
   };
   
   // Use special move (50% damage to monster)
@@ -549,6 +791,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAvatar,
     cash,
     setCash,
+    playerTraits,
+    updatePlayerTrait,
+    eventHistory,
     debts,
     addDebt,
     updateDebt,

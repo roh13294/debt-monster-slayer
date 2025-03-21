@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertCircle, CreditCard, DollarSign, Lightbulb } from 'lucide-react';
+import { AlertCircle, CreditCard, DollarSign, Lightbulb, Home, Car, Heart, BookOpen, Users, TrendingUp } from 'lucide-react';
 import { useGameContext } from '../context/GameContext';
 
 const LifeEvent: React.FC = () => {
@@ -8,19 +8,49 @@ const LifeEvent: React.FC = () => {
 
   if (!currentLifeEvent) return null;
 
-  // Determine the icon based on event title
+  // Determine the icon based on event title and description
   const getEventIcon = () => {
     const title = currentLifeEvent.title.toLowerCase();
+    const description = currentLifeEvent.description.toLowerCase();
     
-    if (title.includes('bonus') || title.includes('money') || title.includes('cash') || title.includes('refund') || title.includes('inheritance')) {
+    if (title.includes('investment') || description.includes('invest')) {
+      return <TrendingUp className="h-6 w-6 text-green-600" />;
+    } else if (title.includes('medical') || title.includes('health') || description.includes('medical') || description.includes('health')) {
+      return <Heart className="h-6 w-6 text-red-600" />;
+    } else if (title.includes('home') || title.includes('housing') || description.includes('home') || description.includes('roof') || description.includes('house')) {
+      return <Home className="h-6 w-6 text-blue-600" />;
+    } else if (title.includes('car') || title.includes('transport') || description.includes('car') || description.includes('vehicle')) {
+      return <Car className="h-6 w-6 text-indigo-600" />;
+    } else if (title.includes('education') || title.includes('course') || description.includes('education') || description.includes('learn')) {
+      return <BookOpen className="h-6 w-6 text-purple-600" />;
+    } else if (title.includes('social') || title.includes('friend') || description.includes('friend') || description.includes('social')) {
+      return <Users className="h-6 w-6 text-orange-600" />;
+    } else if (title.includes('career') || title.includes('job') || description.includes('career') || description.includes('job')) {
+      return <Lightbulb className="h-6 w-6 text-yellow-600" />;
+    } else if (title.includes('bonus') || title.includes('money') || title.includes('cash') || title.includes('refund') || title.includes('windfall')) {
       return <DollarSign className="h-6 w-6 text-green-600" />;
     } else if (title.includes('debt') || title.includes('loan') || title.includes('credit')) {
       return <CreditCard className="h-6 w-6 text-red-600" />;
-    } else if (title.includes('opportunity') || title.includes('job') || title.includes('career')) {
-      return <Lightbulb className="h-6 w-6 text-yellow-600" />;
     } else {
       return <AlertCircle className="h-6 w-6 text-yellow-600" />;
     }
+  };
+
+  // Get background color based on event type
+  const getEventBackgroundColor = () => {
+    const title = currentLifeEvent.title.toLowerCase();
+    
+    if (title.includes('investment')) return 'bg-green-100';
+    if (title.includes('medical') || title.includes('health')) return 'bg-red-100';
+    if (title.includes('home') || title.includes('housing')) return 'bg-blue-100';
+    if (title.includes('car') || title.includes('transport')) return 'bg-indigo-100';
+    if (title.includes('education')) return 'bg-purple-100';
+    if (title.includes('social') || title.includes('friend')) return 'bg-orange-100';
+    if (title.includes('career') || title.includes('job')) return 'bg-yellow-100';
+    if (title.includes('windfall')) return 'bg-green-100';
+    if (title.includes('debt') || title.includes('loan')) return 'bg-red-100';
+    
+    return 'bg-yellow-100';
   };
 
   // Determine option style based on effect
@@ -33,6 +63,8 @@ const LifeEvent: React.FC = () => {
       return "border-purple-200 hover:border-purple-300 hover:bg-purple-50";
     } else if (option.effect.income && option.effect.income > 0) {
       return "border-blue-200 hover:border-blue-300 hover:bg-blue-50";
+    } else if (option.effect.income && option.effect.income < 0) {
+      return "border-orange-200 hover:border-orange-300 hover:bg-orange-50";
     } else {
       return "border-gray-200 hover:border-gray-300 hover:bg-gray-50";
     }
@@ -42,7 +74,7 @@ const LifeEvent: React.FC = () => {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
       <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl animate-scale-in">
         <div className="flex items-center mb-4">
-          <div className="p-3 bg-yellow-100 rounded-full mr-3">
+          <div className={`p-3 ${getEventBackgroundColor()} rounded-full mr-3`}>
             {getEventIcon()}
           </div>
           <h2 className="text-xl font-bold">{currentLifeEvent.title}</h2>
@@ -62,7 +94,7 @@ const LifeEvent: React.FC = () => {
               <div className="font-medium">{option.text}</div>
               <div className="text-sm text-gray-600 mt-1">{option.effect.description}</div>
               <div className="flex flex-wrap gap-2 mt-2">
-                {option.effect.cash && (
+                {option.effect.cash && option.effect.cash !== 0 && (
                   <span className={`text-xs px-2 py-1 rounded-full ${
                     option.effect.cash > 0 
                       ? 'bg-green-100 text-green-700' 
@@ -71,13 +103,17 @@ const LifeEvent: React.FC = () => {
                     {option.effect.cash > 0 ? '+' : ''}{option.effect.cash} Cash
                   </span>
                 )}
-                {option.effect.debt && (
+                {option.effect.debt && option.effect.debt !== 0 && (
                   <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">
                     +{option.effect.debt} Debt
                   </span>
                 )}
-                {option.effect.income && (
-                  <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                {option.effect.income && option.effect.income !== 0 && (
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    option.effect.income > 0 
+                      ? 'bg-blue-100 text-blue-700' 
+                      : 'bg-orange-100 text-orange-700'
+                  }`}>
                     {option.effect.income > 0 ? '+' : ''}{option.effect.income}/mo Income
                   </span>
                 )}
