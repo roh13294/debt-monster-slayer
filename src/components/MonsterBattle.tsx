@@ -1,11 +1,27 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
-import { Sword, ShieldAlert } from 'lucide-react';
+import { Sword, ShieldAlert, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Button } from './ui/button';
 
 const MonsterBattle: React.FC = () => {
   const { debts } = useGameContext();
+  const [currentMonsterIndex, setCurrentMonsterIndex] = useState(0);
+  const [battleMode, setBattleMode] = useState(false);
+
+  // Handle navigation between monsters
+  const nextMonster = () => {
+    setCurrentMonsterIndex((prev) => (prev + 1) % debts.length);
+  };
+
+  const prevMonster = () => {
+    setCurrentMonsterIndex((prev) => (prev - 1 + debts.length) % debts.length);
+  };
+
+  const toggleBattleMode = () => {
+    setBattleMode(!battleMode);
+  };
 
   return (
     <div className="card-elegant relative overflow-hidden group">
@@ -31,9 +47,48 @@ const MonsterBattle: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {debts.map((debt) => (
-              <DebtMonster key={debt.id} debt={debt} />
-            ))}
+            <div className="flex justify-between mb-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleBattleMode}
+                className="transition-all hover:bg-primary/10"
+              >
+                {battleMode ? "Exit Battle" : "Enter Battle Mode"}
+              </Button>
+
+              {battleMode && (
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" onClick={prevMonster} disabled={debts.length <= 1}>
+                    <ArrowLeft size={16} />
+                  </Button>
+                  <span className="text-sm font-medium py-2">
+                    {currentMonsterIndex + 1} / {debts.length}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={nextMonster} disabled={debts.length <= 1}>
+                    <ArrowRight size={16} />
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {battleMode ? (
+              debts.length > 0 && (
+                <div className="battle-arena bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-xl transition-all duration-500 transform hover:scale-[1.01]">
+                  <DebtMonster 
+                    key={debts[currentMonsterIndex].id} 
+                    debt={debts[currentMonsterIndex]} 
+                    isInBattle={true} 
+                  />
+                </div>
+              )
+            ) : (
+              <div className="space-y-4">
+                {debts.map((debt) => (
+                  <DebtMonster key={debt.id} debt={debt} isInBattle={false} />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
