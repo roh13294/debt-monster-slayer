@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Shield, ZapOff, Sword, Flame, ChevronDown, ChevronUp, Target } from 'lucide-react';
+import { Shield, ZapOff, Sword, Flame, ChevronDown, ChevronUp, Target, Sparkles, Zap } from 'lucide-react';
 import ProgressBar from './ProgressBar';
 import { useGameContext, Debt } from '../context/GameContext';
 import { getMonsterProfile } from '../utils/monsterProfiles';
@@ -21,6 +21,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
   const [monsterState, setMonsterState] = useState<'idle' | 'attacking' | 'damaged'>('idle');
   const [attackCombo, setAttackCombo] = useState(0);
   const [lastAttackTime, setLastAttackTime] = useState(0);
+  const [sparkleEffect, setSparkleEffect] = useState(false);
   
   // Get the monster profile
   const monsterProfile = getMonsterProfile(debt.name);
@@ -36,7 +37,19 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     return () => clearTimeout(comboTimer);
   }, [attackCombo, lastAttackTime]);
 
-  // Monster colors based on type
+  // Occasionally show sparkle effects
+  useEffect(() => {
+    if (isInBattle) {
+      const sparkleTimer = setInterval(() => {
+        setSparkleEffect(true);
+        setTimeout(() => setSparkleEffect(false), 1000);
+      }, Math.random() * 10000 + 5000);
+      
+      return () => clearInterval(sparkleTimer);
+    }
+  }, [isInBattle]);
+
+  // Monster colors based on type with enhanced gradients
   const monsterColors = {
     red: 'bg-gradient-to-br from-monster-red to-red-600 text-white',
     blue: 'bg-gradient-to-br from-monster-blue to-blue-600 text-white',
@@ -120,7 +133,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     toast({
       title: `${monsterProfile.name} attacks!`,
       description: `The monster used ${monsterProfile.abilities[Math.floor(Math.random() * monsterProfile.abilities.length)]}!`,
-      variant: "warning",
+      variant: "default", // Fixed the warning variant to default
     });
     
     setTimeout(() => {
@@ -163,13 +176,22 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
         <div className="absolute inset-0 bg-red-500/20 animate-pulse z-10"></div>
       )}
       
+      {/* Sparkle effect */}
+      {sparkleEffect && (
+        <div className="absolute inset-0 z-20 pointer-events-none">
+          <Sparkles className="absolute text-yellow-300 animate-sparkle" style={{ top: '10%', left: '80%', width: 20, height: 20 }} />
+          <Sparkles className="absolute text-blue-300 animate-sparkle" style={{ top: '70%', left: '20%', width: 16, height: 16 }} />
+          <Sparkles className="absolute text-purple-300 animate-sparkle" style={{ top: '40%', left: '60%', width: 24, height: 24 }} />
+        </div>
+      )}
+      
       {/* Background decoration */}
       <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full"></div>
       
       <div className="flex items-center justify-between mb-3 relative z-20">
         <div className="flex items-center space-x-3">
-          <div className={`p-2 ${isInBattle ? 'p-3' : ''} bg-white/20 backdrop-blur-sm rounded-lg
-            ${monsterState === 'attacking' ? 'animate-bounce' : ''}`}>
+          <div className={`p-2 ${isInBattle ? 'p-3' : ''} bg-white/20 backdrop-blur-sm rounded-lg 
+            ${monsterState === 'attacking' ? 'animate-bounce' : 'animate-pulse-subtle'}`}>
             <MonsterIcon />
           </div>
           <div>
@@ -204,9 +226,10 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
           </p>
           
           {attackCombo > 0 && (
-            <div className="mb-3 bg-white/20 backdrop-blur-sm rounded-md p-2 text-center">
+            <div className="mb-3 bg-white/20 backdrop-blur-sm rounded-md p-2 text-center animate-pulse">
               <span className="font-bold text-lg">{attackCombo}x</span> 
               <span className="ml-1 text-sm">combo!</span>
+              {attackCombo > 2 && <Zap className="inline-block ml-1 h-4 w-4 animate-pulse" />}
             </div>
           )}
         </div>
@@ -229,7 +252,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
         <Button
           onClick={handleAttack}
           variant="default"
-          className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-1"
+          className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-1 animate-pulse-subtle"
         >
           <Sword className="h-4 w-4" />
           Attack
@@ -239,7 +262,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
           onClick={handleSpecialMove}
           disabled={specialMoves <= 0}
           variant={specialMoves > 0 ? "default" : "outline"}
-          className={`px-4 py-2 rounded-lg transition-all backdrop-blur-sm flex items-center justify-center gap-1 ${
+          className={`px-4 py-2 rounded-lg transition-all backdrop-blur-sm flex items-center justify-center gap-1 animate-pulse-subtle ${
             specialMoves > 0 
               ? 'bg-white/20 hover:bg-white/30 hover:shadow-md' 
               : 'bg-white/10 cursor-not-allowed'

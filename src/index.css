@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -46,6 +47,47 @@
   animation: pulse 3s ease-in-out infinite;
 }
 
+/* New fun animations */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.8; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.2); }
+}
+
+@keyframes tada {
+  0% { transform: scale(1) rotate(0deg); }
+  10%, 20% { transform: scale(0.9) rotate(-3deg); }
+  30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+  40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-bounce-fun {
+  animation: bounce 3s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 3s ease-in-out infinite;
+}
+
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.animate-tada {
+  animation: tada 1s ease-in-out;
+}
+
 /* Monster type colors */
 .from-monster-red {
   --tw-gradient-from: #ff4f5e;
@@ -82,19 +124,33 @@
   @apply bg-white rounded-xl shadow-md p-6 border border-gray-100 transition-all duration-300;
 }
 
+/* Fun new card styles */
+.card-fun {
+  @apply bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg p-6 border border-blue-100 transition-all duration-300 hover:shadow-xl relative overflow-hidden;
+}
+
 .glass-panel {
   @apply bg-white/80 backdrop-blur-sm border border-gray-100;
 }
 
-.btn-elegant {
-  @apply bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all;
+/* Fun button style */
+.btn-fun {
+  @apply relative overflow-hidden bg-gradient-to-r from-fun-purple to-fun-magenta text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1;
 }
 
-/* Progress bar customization */
+.btn-fun::before {
+  @apply content-[''] absolute top-0 left-0 w-full h-full bg-white/20 transform -translate-x-full hover:translate-x-0 transition-transform duration-300;
+}
+
 .progress-container {
   @apply h-2 bg-gray-200/30 rounded-full overflow-hidden;
 }
 
 .progress-bar {
   @apply h-full rounded-full transition-all duration-500;
+}
+
+/* Fun progress bar styles */
+.progress-fun {
+  @apply h-3 bg-gradient-to-r from-fun-purple via-fun-magenta to-fun-blue rounded-full shadow-inner overflow-hidden transition-all duration-500;
 }

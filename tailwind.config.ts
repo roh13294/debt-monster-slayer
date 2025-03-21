@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -69,6 +68,14 @@ export default {
 					green: '#6BCB77',
 					purple: '#9B5DE5',
 					yellow: '#F9C74F'
+				},
+				fun: {
+					purple: '#9b87f5',
+					magenta: '#D946EF',
+					orange: '#F97316',
+					blue: '#0EA5E9',
+					green: '#4ade80',
+					yellow: '#facc15'
 				}
 			},
 			borderRadius: {
@@ -155,3 +162,4 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
