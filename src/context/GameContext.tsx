@@ -1,5 +1,7 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getLifeEvent } from '../utils/lifeEventGenerator';
+import { toast } from "@/hooks/use-toast";
 
 // Types
 export type Debt = {
@@ -93,6 +95,9 @@ export type GameContextType = {
   specialMoves: number;
   useSpecialMove: (debtId: string) => void;
   
+  // Streaks
+  paymentStreak: number;
+  
   // Game initialization
   initializeGame: () => void;
   resetGame: () => void;
@@ -183,8 +188,28 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [monthsPassed, setMonthsPassed] = useState<number>(0);
   const [specialMoves, setSpecialMoves] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [paymentStreak, setPaymentStreak] = useState<number>(0);
+  const [lastLevelSeen, setLastLevelSeen] = useState<number>(0);
   
   const totalDebt = debts.reduce((sum, debt) => sum + debt.amount, 0);
+  
+  // Check for level-up and award special moves
+  useEffect(() => {
+    if (!gameStarted) return;
+    
+    const currentLevel = Math.max(1, Math.floor(monthsPassed / 3) + 1);
+    if (currentLevel > lastLevelSeen) {
+      // Player leveled up
+      setSpecialMoves(prev => prev + 1);
+      setLastLevelSeen(currentLevel);
+      
+      toast({
+        title: "Level Up!",
+        description: `You reached level ${currentLevel}! +1 Special Move unlocked!`,
+        variant: "default",
+      });
+    }
+  }, [monthsPassed, lastLevelSeen, gameStarted]);
   
   // Initialize game
   const initializeGame = () => {
@@ -194,7 +219,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCash(2000);
     setMonthsPassed(0);
     setSpecialMoves(1); // Start with one special move
+    setPaymentStreak(0);
+    setLastLevelSeen(1);
     setGameStarted(true);
+    
+    toast({
+      title: "Game Started!",
+      description: "Welcome to Debt Monster Slayer! Make payments to defeat your debt monsters.",
+      variant: "default",
+    });
   };
   
   // Reset game
@@ -205,6 +238,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCash(0);
     setMonthsPassed(0);
     setSpecialMoves(0);
+    setPaymentStreak(0);
     setGameStarted(false);
   };
   
@@ -216,13 +250,35 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       health: 100,
     };
     setDebts([...debts, newDebt]);
+    
+    toast({
+      title: "New Debt Monster Appeared!",
+      description: `A ${debt.name} monster has appeared with $${debt.amount} in debt!`,
+      variant: "destructive",
+    });
   };
   
   // Update existing debt
   const updateDebt = (id: string, updates: Partial<Debt>) => {
-    setDebts(debts.map(debt => 
-      debt.id === id ? { ...debt, ...updates } : debt
-    ));
+    setDebts(debts.map(debt => {
+      if (debt.id === id) {
+        // Check if debt is fully paid
+        if (updates.amount === 0 || updates.health === 0) {
+          toast({
+            title: "Debt Monster Defeated!",
+            description: `You've completely paid off your ${debt.name}! Monster defeated!`,
+            variant: "default",
+          });
+          
+          // Award a bonus special move for defeating a monster
+          setSpecialMoves(prev => prev + 1);
+          
+          return { ...debt, ...updates, amount: 0, health: 0 };
+        }
+        return { ...debt, ...updates };
+      }
+      return debt;
+    }));
   };
   
   // Remove debt
@@ -305,7 +361,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
     
-    // Apply income effect (new)
+    // Apply income effect
     if (option.effect.income) {
       updateBudget({
         income: budget.income + option.effect.income
@@ -327,6 +383,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (completed && !challenge.completed) {
           setCash(prev => prev + challenge.reward);
           setSpecialMoves(prev => prev + 1);
+          
+          toast({
+            title: "Challenge Completed!",
+            description: `${challenge.title}: +$${challenge.reward} cash and +1 Special Move!`,
+            variant: "default",
+          });
         }
         
         return {
@@ -398,6 +460,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Increment months
     setMonthsPassed(prev => prev + 1);
     
+    // Increment payment streak
+    setPaymentStreak(prev => prev + 1);
+    
+    // If payment streak reaches certain milestones, award special moves
+    if (paymentStreak > 0 && paymentStreak % 3 === 0) {
+      setSpecialMoves(prev => prev + 1);
+      
+      toast({
+        title: "Payment Streak!",
+        description: `${paymentStreak} months of consistent payments! +1 Special Move!`,
+        variant: "default",
+      });
+    }
+    
     // Increased chance for life event (50% instead of 25%)
     if (Math.random() < 0.5) {
       generateLifeEvent();
@@ -406,7 +482,14 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Damage monster (pay extra toward debt)
   const damageMonster = (debtId: string, amount: number) => {
-    if (cash < amount) return; // Not enough cash
+    if (cash < amount) {
+      toast({
+        title: "Not Enough Cash!",
+        description: "You don't have enough money to make this payment.",
+        variant: "destructive",
+      });
+      return; // Not enough cash
+    }
     
     // Find the debt
     const debt = debts.find(d => d.id === debtId);
@@ -431,7 +514,14 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Use special move (50% damage to monster)
   const useSpecialMove = (debtId: string) => {
-    if (specialMoves <= 0) return; // No special moves available
+    if (specialMoves <= 0) {
+      toast({
+        title: "No Special Moves!",
+        description: "You don't have any special moves available.",
+        variant: "destructive",
+      });
+      return; // No special moves available
+    }
     
     // Find the debt
     const debt = debts.find(d => d.id === debtId);
@@ -479,6 +569,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     damageMonster,
     specialMoves,
     useSpecialMove,
+    paymentStreak,
     initializeGame,
     resetGame,
     gameStarted

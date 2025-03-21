@@ -22,6 +22,8 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
   const [attackCombo, setAttackCombo] = useState(0);
   const [lastAttackTime, setLastAttackTime] = useState(0);
   const [sparkleEffect, setSparkleEffect] = useState(false);
+  const [shakeEffect, setShakeEffect] = useState(false);
+  const [flashEffect, setFlashEffect] = useState(false);
   
   // Get the monster profile
   const monsterProfile = getMonsterProfile(debt.name);
@@ -74,6 +76,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     setIsAttacking(true);
     setSpecialAttack(false);
     setMonsterState('damaged');
+    setShakeEffect(true);
     
     // Update combo counter for consecutive attacks
     const now = Date.now();
@@ -100,6 +103,11 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     
     setLastAttackTime(now);
     
+    // Reset shake effect
+    setTimeout(() => {
+      setShakeEffect(false);
+    }, 500);
+    
     setTimeout(() => {
       setIsAttacking(false);
       setMonsterState('idle');
@@ -110,6 +118,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     setIsAttacking(true);
     setSpecialAttack(true);
     setMonsterState('damaged');
+    setFlashEffect(true);
     
     useSpecialMove(debt.id);
     
@@ -118,6 +127,11 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
       description: "You used a powerful special attack!",
       variant: "destructive",
     });
+    
+    // Reset flash effect
+    setTimeout(() => {
+      setFlashEffect(false);
+    }, 800);
     
     setTimeout(() => {
       setIsAttacking(false);
@@ -133,7 +147,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     toast({
       title: `${monsterProfile.name} attacks!`,
       description: `The monster used ${monsterProfile.abilities[Math.floor(Math.random() * monsterProfile.abilities.length)]}!`,
-      variant: "default", // Fixed the warning variant to default
+      variant: "default", 
     });
     
     setTimeout(() => {
@@ -159,10 +173,19 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     }
   }, [isInBattle, monsterState]);
 
+  // Calculate monster health color based on remaining health
+  const getHealthColor = () => {
+    if (debt.health < 30) return "from-green-500 to-green-300";
+    if (debt.health < 70) return "from-yellow-500 to-yellow-300";
+    return "from-red-500 to-red-300";
+  };
+
   return (
     <div 
-      className={`monster ${monsterColors[debt.monsterType]} ${isAttacking ? 'monster-damaged' : ''} 
+      className={`monster ${monsterColors[debt.monsterType]} 
+      ${shakeEffect ? 'monster-damaged' : ''} 
       ${monsterState === 'attacking' ? 'monster-attacking' : ''} 
+      ${flashEffect ? 'animate-flash' : ''}
       transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg relative overflow-hidden
       ${isInBattle ? 'p-6 rounded-xl' : ''}`}
     >
@@ -208,11 +231,21 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
       </div>
       
       <div className="relative z-20">
-        <ProgressBar 
-          progress={100 - debt.health} 
-          color={`bg-gradient-to-r from-white/80 to-white/60`} 
-          label="Damage" 
-        />
+        <div className="flex justify-between mb-1">
+          <span className="text-sm font-medium text-white/90">Monster Health</span>
+          <span className="text-sm font-medium text-white/80">{debt.health.toFixed(0)}%</span>
+        </div>
+        
+        <div className="h-4 bg-gray-700/40 rounded-full overflow-hidden">
+          <div 
+            className={`h-full rounded-full transition-all duration-500 bg-gradient-to-r ${getHealthColor()} shadow-inner`}
+            style={{ width: `${debt.health}%` }}
+          >
+            {debt.health > 15 && (
+              <div className="h-1/2 bg-white/20 rounded-full mx-1 mt-0.5"></div>
+            )}
+          </div>
+        </div>
       </div>
       
       {isInBattle && (

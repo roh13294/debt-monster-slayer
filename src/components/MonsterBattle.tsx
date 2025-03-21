@@ -2,18 +2,35 @@
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
-import { Sword, ShieldAlert, ArrowLeft, ArrowRight, Sparkles, Zap, Target } from 'lucide-react';
+import { Sword, ShieldAlert, ArrowLeft, ArrowRight, Sparkles, Zap, Target, Trophy, Crown } from 'lucide-react';
 import { Button } from './ui/button';
+import { toast } from "@/hooks/use-toast";
 
 const MonsterBattle: React.FC = () => {
-  const { debts } = useGameContext();
+  const { debts, specialMoves, monthsPassed } = useGameContext();
   const [currentMonsterIndex, setCurrentMonsterIndex] = useState(0);
   const [battleMode, setBattleMode] = useState(false);
   const [animateTitle, setAnimateTitle] = useState(false);
+  const [showBattleTips, setShowBattleTips] = useState(false);
+  const [battleStreak, setBattleStreak] = useState(0);
 
+  // Check for player level based on months passed
+  const playerLevel = Math.max(1, Math.floor(monthsPassed / 3) + 1);
+  
   // Handle navigation between monsters
   const nextMonster = () => {
     setCurrentMonsterIndex((prev) => (prev + 1) % debts.length);
+    // Add battle streak if in battle mode
+    if (battleMode) {
+      setBattleStreak(prev => prev + 1);
+      if (battleStreak + 1 >= 3) {
+        toast({
+          title: "Battle Streak!",
+          description: "You've battled 3 monsters in a row! +1 Special Move unlocked!",
+          variant: "default",
+        });
+      }
+    }
   };
 
   const prevMonster = () => {
@@ -21,7 +38,18 @@ const MonsterBattle: React.FC = () => {
   };
 
   const toggleBattleMode = () => {
-    setBattleMode(!battleMode);
+    if (!battleMode) {
+      setBattleMode(true);
+      toast({
+        title: "Battle Mode Activated!",
+        description: "Target a debt monster and attack it directly to reduce your debt faster!",
+        variant: "default",
+      });
+    } else {
+      setBattleMode(false);
+      // Reset battle streak when exiting
+      setBattleStreak(0);
+    }
   };
 
   // Randomly animate the title for fun
@@ -34,6 +62,14 @@ const MonsterBattle: React.FC = () => {
     return () => clearInterval(animationInterval);
   }, []);
 
+  // Check if first time in battle mode
+  useEffect(() => {
+    if (battleMode && localStorage.getItem('firstBattle') !== 'completed') {
+      setShowBattleTips(true);
+      localStorage.setItem('firstBattle', 'completed');
+    }
+  }, [battleMode]);
+
   return (
     <div className="card-fun relative overflow-hidden group">
       {/* Fun animated background elements */}
@@ -42,20 +78,43 @@ const MonsterBattle: React.FC = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-gradient-to-br from-fun-yellow/5 to-fun-orange/5 rounded-full animate-pulse-subtle"></div>
       
       <div className="relative">
-        <h2 className={`text-xl font-bold mb-4 flex items-center ${animateTitle ? 'animate-tada' : ''}`}>
-          <span className="p-1.5 bg-gradient-to-br from-fun-purple to-fun-magenta text-white rounded-md mr-2 transform group-hover:rotate-12 transition-transform animate-wiggle">
-            <Sword size={18} className="animate-sparkle" />
-          </span>
-          <span className="bg-gradient-to-r from-fun-purple to-fun-magenta bg-clip-text text-transparent">
-            Debt Monster Battle
-          </span>
-          <Sparkles size={16} className="ml-2 text-fun-yellow animate-sparkle" />
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className={`text-xl font-bold flex items-center ${animateTitle ? 'animate-tada' : ''}`}>
+            <span className="p-1.5 bg-gradient-to-br from-fun-purple to-fun-magenta text-white rounded-md mr-2 transform group-hover:rotate-12 transition-transform animate-wiggle">
+              <Sword size={18} className="animate-sparkle" />
+            </span>
+            <span className="bg-gradient-to-r from-fun-purple to-fun-magenta bg-clip-text text-transparent">
+              Debt Monster Battle
+            </span>
+            <Sparkles size={16} className="ml-2 text-fun-yellow animate-sparkle" />
+          </h2>
+          
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center bg-gradient-to-r from-purple-100 to-indigo-100 px-2 py-1 rounded-full text-xs">
+              <Crown size={14} className="mr-1 text-fun-purple" />
+              <span className="font-medium">Level {playerLevel}</span>
+            </div>
+            
+            {battleStreak > 0 && (
+              <div className="flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 px-2 py-1 rounded-full text-xs animate-pulse-subtle">
+                <Zap size={14} className="mr-1 text-fun-orange" />
+                <span className="font-medium">Streak: {battleStreak}</span>
+              </div>
+            )}
+            
+            {specialMoves > 0 && (
+              <div className="flex items-center bg-gradient-to-r from-red-100 to-pink-100 px-2 py-1 rounded-full text-xs">
+                <Target size={14} className="mr-1 text-fun-magenta" />
+                <span className="font-medium">Specials: {specialMoves}</span>
+              </div>
+            )}
+          </div>
+        </div>
         
         {debts.length === 0 ? (
           <div className="p-8 text-center bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100 animate-pulse-subtle">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-fun-green to-fun-blue text-white mb-4 animate-bounce-fun">
-              <ShieldAlert size={24} />
+              <Trophy size={24} />
             </div>
             <p className="text-lg font-medium mb-2 bg-gradient-to-r from-fun-green to-fun-blue bg-clip-text text-transparent">No Debt Monsters Found!</p>
             <p className="text-gray-600">You've defeated all your debt monsters. Congratulations!</p>
@@ -102,6 +161,30 @@ const MonsterBattle: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {/* Battle tips for first-time users */}
+            {showBattleTips && battleMode && (
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-100 mb-4 animate-fade-in relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
+                  onClick={() => setShowBattleTips(false)}
+                >
+                  ✕
+                </Button>
+                <h3 className="font-bold text-sm mb-2 flex items-center">
+                  <Target className="w-4 h-4 mr-1 text-fun-purple" />
+                  Battle Tips
+                </h3>
+                <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
+                  <li>Use the <strong>slider</strong> to set your payment amount</li>
+                  <li>Attack quickly in succession for <strong>bonus combo damage</strong></li>
+                  <li>Save <strong>Special Moves</strong> for large debts</li>
+                  <li>Battle all monsters in a row to earn <strong>streak bonuses</strong></li>
+                </ul>
+              </div>
+            )}
 
             {battleMode ? (
               debts.length > 0 && (
