@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext } from 'react';
 import { usePlayerState } from '../hooks/usePlayerState';
 import { useDebtState } from '../hooks/useDebtState';
@@ -62,7 +61,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const {
     currentLifeEvent,
     generateLifeEvent,
-    setCurrentLifeEvent
+    setCurrentLifeEvent,
+    resolveLifeEvent
   } = useLifeEventState(
     setEventHistory,
     setCash,
@@ -160,19 +160,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Wrapper for resolveLifeEvent that provides necessary dependencies
   const handleResolveLifeEvent = (optionIndex: number) => {
-    useLifeEventState(
-      setEventHistory,
-      setCash,
-      updateBudget,
-      addDebt,
-      updateDebt,
-      debts,
-      budget
-    ).resolveLifeEvent(
-      optionIndex,
-      updatePlayerTrait,
-      playerTraits
-    );
+    resolveLifeEvent(optionIndex, updatePlayerTrait, playerTraits);
   };
 
   // Context value

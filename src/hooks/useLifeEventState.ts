@@ -28,15 +28,17 @@ export const useLifeEventState = (
   // Resolve current life event
   const resolveLifeEvent = (
     optionIndex: number, 
-    updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void,
-    playerTraits: PlayerTraits
+    updatePlayerTrait?: (trait: keyof PlayerTraits, value: number) => void,
+    playerTraits?: PlayerTraits
   ) => {
     if (!currentLifeEvent) return;
     
     const option = currentLifeEvent.options[optionIndex];
     
-    // Update player traits based on choice
-    updateTraitsBasedOnChoice(option, updatePlayerTrait, playerTraits);
+    // Update player traits based on choice if they exist
+    if (updatePlayerTrait && playerTraits) {
+      updateTraitsBasedOnChoice(option, updatePlayerTrait, playerTraits);
+    }
     
     // Apply cash effect
     if (option.effect.cash) {

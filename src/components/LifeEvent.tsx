@@ -70,6 +70,12 @@ const LifeEvent: React.FC = () => {
     }
   };
 
+  const handleOptionClick = (index: number) => {
+    if (resolveLifeEvent) {
+      resolveLifeEvent(index);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
       <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl animate-scale-in">
@@ -88,7 +94,7 @@ const LifeEvent: React.FC = () => {
           {currentLifeEvent.options.map((option, index) => (
             <button
               key={index}
-              onClick={() => resolveLifeEvent(index)}
+              onClick={() => handleOptionClick(index)}
               className={`w-full text-left p-4 border rounded-xl transition-all duration-300 ${getOptionStyle(option)}`}
             >
               <div className="font-medium">{option.text}</div>
