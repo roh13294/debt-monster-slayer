@@ -73,7 +73,7 @@ export const useGameProgress = (
     }
     
     // Remove paid off debts
-    setDebts(updatedDebts.filter(debt => debt.amount > 0));
+    setDebts(prev => prev.filter(debt => debt.amount > 0));
     
     // Apply savings
     setCash(prev => prev + budget.savings);
@@ -130,7 +130,6 @@ export const useGameProgress = (
       // Every 3 levels, update challenges based on player traits
       if (currentLevel % 3 === 0) {
         const newChallenges = generatePersonalizedChallenges(playerTraits);
-        
         setChallenges(newChallenges);
         
         toast({

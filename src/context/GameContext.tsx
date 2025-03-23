@@ -30,6 +30,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Debt state
   const {
     debts,
+    setDebts,
     totalDebt,
     strategy, setStrategy,
     addDebt,
@@ -81,10 +82,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setMonthsPassed,
     setLastLevelSeen
   } = useGameProgress(
-    setDebts => {
-      const updatedDebts = setDebts(debts);
-      return updatedDebts;
-    },
+    setDebts,
     debts,
     budget,
     setCash,

@@ -1,5 +1,4 @@
-
-import { LifeEvent } from "../context/GameContext";
+import { LifeEvent } from "../types/gameTypes";
 
 // Base life events
 const baseLifeEvents: LifeEvent[] = [

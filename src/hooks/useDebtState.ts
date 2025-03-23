@@ -155,6 +155,7 @@ export const useDebtState = (setCash: (fn: (prev: number) => number) => void) =>
 
   return {
     debts,
+    setDebts,
     totalDebt,
     strategy, setStrategy,
     addDebt,

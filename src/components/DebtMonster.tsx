@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, ZapOff, Sword, Flame, ChevronDown, ChevronUp, Target, Sparkles, Zap } from 'lucide-react';
 import ProgressBar from './ProgressBar';
-import { useGameContext, Debt } from '../context/GameContext';
+import { useGameContext } from '../context/GameContext';
+import { Debt } from '../types/gameTypes';
 import { getMonsterProfile } from '../utils/monsterProfiles';
 import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
