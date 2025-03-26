@@ -1,4 +1,6 @@
 
+import { JobType, LifeStage, Circumstance } from '../hooks/useRandomCharacter';
+
 export type Debt = {
   id: string;
   name: string;
@@ -113,4 +115,10 @@ export type GameContextType = {
   initializeGame: () => void;
   resetGame: () => void;
   gameStarted: boolean;
+  
+  // Character properties
+  job: JobType | null;
+  lifeStage: LifeStage | null;
+  circumstances: Circumstance[];
+  characterBackground: string;
 };

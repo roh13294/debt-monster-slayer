@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext } from 'react';
 import { usePlayerState } from '../hooks/usePlayerState';
 import { useDebtState } from '../hooks/useDebtState';
@@ -5,6 +6,7 @@ import { useBudgetState } from '../hooks/useBudgetState';
 import { useChallengeState } from '../hooks/useChallengeState';
 import { useLifeEventState } from '../hooks/useLifeEventState';
 import { useGameProgress } from '../hooks/useGameProgress';
+import { useRandomCharacter } from '../hooks/useRandomCharacter';
 import { GameContextType } from '../types/gameTypes';
 import { toast } from "@/hooks/use-toast";
 
@@ -22,9 +24,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     specialMoves, setSpecialMoves,
     paymentStreak, setPaymentStreak,
     eventHistory, setEventHistory,
+    job, lifeStage, circumstances, characterBackground,
+    setCharacterDetails,
     initializePlayerState,
     resetPlayerState
   } = usePlayerState();
+
+  // Character generation
+  const {
+    generateRandomCharacter,
+    calculateAdjustedIncome,
+    calculateBaseExpenses,
+    calculateStartingCash,
+    generateCharacterBackground
+  } = useRandomCharacter();
 
   // Debt state
   const {
@@ -43,6 +56,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const {
     budget,
     updateBudget,
+    initializeBudget,
     applyBudgetPreset,
     resetBudgetState
   } = useBudgetState(updatePlayerTrait, playerTraits);
@@ -97,31 +111,42 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     generatePersonalizedChallenges
   );
 
-  // Initialize game
+  // Initialize game with random character
   const initializeGame = () => {
     // Reset all state first
     resetGame();
     
-    // Initialize player with random traits
-    const initialTraits = initializePlayerState();
+    // Generate random character details
+    const { job: randomJob, lifeStage: randomLifeStage, circumstances: randomCircumstances } = generateRandomCharacter();
     
-    // Initialize debts based on financial knowledge
-    initializeDebts(initialTraits.financialKnowledge);
+    // Initialize player with random traits and character details
+    const playerDetails = initializePlayerState(randomJob, randomLifeStage, randomCircumstances);
+    
+    // Initialize debts based on character circumstances
+    const generatedDebts = initializeDebts(
+      playerDetails.traits.financialKnowledge,
+      randomLifeStage,
+      randomCircumstances
+    );
+    
+    // Initialize budget based on job, life stage and circumstances
+    const initializedBudget = initializeBudget(randomJob, randomLifeStage, randomCircumstances);
     
     // Initialize challenges
-    initializeChallenges(initialTraits);
-    
-    // Reset budget to initial values
-    resetBudgetState();
+    initializeChallenges(playerDetails.traits);
     
     // Set initial game state
     setMonthsPassed(0);
     setLastLevelSeen(1);
     setGameStarted(true);
     
+    // Generate character background story
+    const background = generateCharacterBackground(randomJob, randomLifeStage, randomCircumstances);
+    
+    // Show welcome message with character details
     toast({
-      title: "Game Started!",
-      description: "Welcome to Debt Monster Slayer! Make payments to defeat your debt monsters.",
+      title: "Your Financial Journey Begins!",
+      description: `You're a ${randomLifeStage.name} ${randomJob.title} with ${randomCircumstances.length} life circumstances. Make payments to defeat your debt monsters!`,
       variant: "default",
     });
   };
@@ -163,7 +188,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     resolveLifeEvent(optionIndex, updatePlayerTrait, playerTraits);
   };
 
-  // Context value
+  // Context value with character details
   const value: GameContextType = {
     playerName,
     setPlayerName,
@@ -197,7 +222,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     paymentStreak,
     initializeGame,
     resetGame,
-    gameStarted
+    gameStarted,
+    // New character properties
+    job,
+    lifeStage,
+    circumstances,
+    characterBackground
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

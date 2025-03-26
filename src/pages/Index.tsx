@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { GameProvider } from '../context/GameContext';
 import Dashboard from '../components/Dashboard';
@@ -11,7 +10,7 @@ import StatsDashboard from '../components/StatsDashboard';
 import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Sparkles, BarChart4, Brain, Bookmark, Coins, Briefcase, PiggyBank, Zap } from 'lucide-react';
+import { LogOut, User, Sparkles, BarChart4, Brain, Bookmark, Coins, Briefcase, PiggyBank, Zap, Info } from 'lucide-react';
 import { Trophy, Sword } from '@/components/ui/icons';
 
 const Index = () => {
@@ -23,10 +22,14 @@ const Index = () => {
 };
 
 const GameInterface = () => {
-  const { challenges, gameStarted, initializeGame, playerName, setPlayerName, playerTraits } = useGameContext();
+  const { 
+    challenges, gameStarted, initializeGame, playerName, setPlayerName, 
+    playerTraits, job, lifeStage, circumstances, characterBackground 
+  } = useGameContext();
   const { user, signOut } = useAuth();
   const [showStats, setShowStats] = useState(false);
   const [showTraits, setShowTraits] = useState(false);
+  const [showCharacter, setShowCharacter] = useState(false);
   
   if (!gameStarted) {
     return <StartScreen onStart={initializeGame} playerName={playerName} setPlayerName={setPlayerName} />;
@@ -82,7 +85,89 @@ const GameInterface = () => {
             <Brain size={16} />
             {showTraits ? 'Hide Player Profile' : 'Show Player Profile'}
           </Button>
+          
+          <Button 
+            variant="outline" 
+            onClick={() => setShowCharacter(!showCharacter)}
+            className="rounded-full flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all"
+          >
+            <Info size={16} />
+            {showCharacter ? 'Hide Character Details' : 'Show Character Details'}
+          </Button>
         </div>
+        
+        {showCharacter && job && lifeStage && (
+          <section className="mb-8 animate-fade-in">
+            <div className="card-elegant">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <span className="bg-green-100 text-green-700 p-1 rounded-md mr-2">
+                  <Info size={18} />
+                </span>
+                Your Character
+              </h2>
+              <p className="text-sm text-gray-600 mb-4">
+                {characterBackground || `You are a ${lifeStage.name} working as a ${job.title}.`}
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                    <Briefcase size={16} />
+                    Career
+                  </h3>
+                  <p className="text-sm mb-1">{job.title}</p>
+                  <p className="text-xs text-gray-600">{job.description}</p>
+                  <p className="text-xs font-medium text-blue-700 mt-2">Base Income: ${job.baseIncome}/month</p>
+                </div>
+                
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-purple-700 mb-2 flex items-center gap-2">
+                    <User size={16} />
+                    Life Stage
+                  </h3>
+                  <p className="text-sm mb-1">{lifeStage.name}</p>
+                  <p className="text-xs text-gray-600">{lifeStage.description}</p>
+                  <p className="text-xs font-medium text-purple-700 mt-2">Age Bracket: {lifeStage.ageBracket}</p>
+                </div>
+                
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-green-700 mb-2 flex items-center gap-2">
+                    <Bookmark size={16} />
+                    Financial Information
+                  </h3>
+                  <div className="text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span>Monthly Income:</span>
+                      <span className="font-medium">${budget.income}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Essential Expenses:</span>
+                      <span className="font-medium">${budget.essentials}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Debt Payments:</span>
+                      <span className="font-medium">${budget.debt}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Savings:</span>
+                      <span className="font-medium">${budget.savings}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <h3 className="font-semibold text-gray-700 mb-2">Your Circumstances</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                {circumstances.map((circumstance, index) => (
+                  <div key={index} className="bg-yellow-50 rounded p-2 text-sm">
+                    <p className="font-medium text-yellow-700">{circumstance.name}</p>
+                    <p className="text-xs text-gray-600">{circumstance.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
         
         {showTraits && (
           <section className="mb-8 animate-fade-in">
