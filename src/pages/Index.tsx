@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { GameProvider } from '../context/GameContext';
 import Dashboard from '../components/Dashboard';
@@ -24,7 +25,8 @@ const Index = () => {
 const GameInterface = () => {
   const { 
     challenges, gameStarted, initializeGame, playerName, setPlayerName, 
-    playerTraits, job, lifeStage, circumstances, characterBackground 
+    playerTraits, job, lifeStage, circumstances, characterBackground,
+    budget // Added budget to the destructured values
   } = useGameContext();
   const { user, signOut } = useAuth();
   const [showStats, setShowStats] = useState(false);
