@@ -56,6 +56,19 @@ export type PlayerTraits = {
   luckyStreak: number;        // 1-10 scale: affects random outcomes
 };
 
+// Shop item interface
+export interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  effect: {
+    type: string;
+    value: number;
+    trait?: keyof PlayerTraits;
+  };
+}
+
 export type GameContextType = {
   // Player data
   playerName: string;
@@ -121,4 +134,7 @@ export type GameContextType = {
   lifeStage: LifeStage | null;
   circumstances: Circumstance[];
   characterBackground: string;
+  
+  // Shop functionality
+  purchaseItem: (item: ShopItem) => void;
 };

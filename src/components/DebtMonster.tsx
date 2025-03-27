@@ -14,10 +14,10 @@ interface DebtMonsterProps {
 }
 
 const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) => {
-  const { damageMonster, useSpecialMove, specialMoves } = useGameContext();
+  const { damageMonster, useSpecialMove, specialMoves, cash } = useGameContext();
   const [isAttacking, setIsAttacking] = useState(false);
   const [specialAttack, setSpecialAttack] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState(100);
+  const [paymentAmount, setPaymentAmount] = useState(Math.min(100, debt.amount / 10));
   const [showDetails, setShowDetails] = useState(false);
   const [monsterState, setMonsterState] = useState<'idle' | 'attacking' | 'damaged'>('idle');
   const [attackCombo, setAttackCombo] = useState(0);
@@ -74,6 +74,15 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
   };
 
   const handleAttack = () => {
+    if (cash < paymentAmount) {
+      toast({
+        title: "Not Enough Cash",
+        description: "You don't have enough cash to make this payment.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsAttacking(true);
     setSpecialAttack(false);
     setMonsterState('damaged');
@@ -116,6 +125,15 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
   };
 
   const handleSpecialMove = () => {
+    if (specialMoves <= 0) {
+      toast({
+        title: "No Special Moves",
+        description: "You don't have any special moves available.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsAttacking(true);
     setSpecialAttack(true);
     setMonsterState('damaged');
@@ -181,6 +199,11 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     return "from-red-500 to-red-300";
   };
 
+  // Update payment amount when debt changes
+  useEffect(() => {
+    setPaymentAmount(prev => Math.min(prev, debt.amount));
+  }, [debt.amount]);
+
   return (
     <div 
       className={`monster ${monsterColors[debt.monsterType]} 
@@ -188,7 +211,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
       ${monsterState === 'attacking' ? 'monster-attacking' : ''} 
       ${flashEffect ? 'animate-flash' : ''}
       transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg relative overflow-hidden
-      ${isInBattle ? 'p-6 rounded-xl' : ''}`}
+      ${isInBattle ? 'p-6 rounded-xl' : 'p-4 rounded-lg'}`}
     >
       {/* Special attack effect */}
       {specialAttack && (
@@ -286,7 +309,10 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
         <Button
           onClick={handleAttack}
           variant="default"
-          className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-1 animate-pulse-subtle"
+          disabled={cash < paymentAmount}
+          className={`px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-1 animate-pulse-subtle ${
+            cash < paymentAmount ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         >
           <Sword className="h-4 w-4" />
           Attack

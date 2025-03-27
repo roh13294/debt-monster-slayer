@@ -8,10 +8,11 @@ import MonsterBattle from '../components/MonsterBattle';
 import LifeEvent from '../components/LifeEvent';
 import Challenge from '../components/Challenge';
 import StatsDashboard from '../components/StatsDashboard';
+import Shop from '../components/Shop';
 import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Sparkles, BarChart4, Brain, Bookmark, Coins, Briefcase, PiggyBank, Zap, Info } from 'lucide-react';
+import { LogOut, User, Sparkles, BarChart4, Brain, Bookmark, Coins, Briefcase, PiggyBank, Zap, Info, ShoppingCart } from 'lucide-react';
 import { Trophy, Sword } from '@/components/ui/icons';
 
 const Index = () => {
@@ -32,6 +33,7 @@ const GameInterface = () => {
   const [showStats, setShowStats] = useState(false);
   const [showTraits, setShowTraits] = useState(false);
   const [showCharacter, setShowCharacter] = useState(false);
+  const [showShop, setShowShop] = useState(false);
   
   if (!gameStarted) {
     return <StartScreen onStart={initializeGame} playerName={playerName} setPlayerName={setPlayerName} />;
@@ -72,7 +74,10 @@ const GameInterface = () => {
         <div className="flex justify-center mb-6 space-x-4">
           <Button 
             variant="outline" 
-            onClick={() => setShowStats(!showStats)}
+            onClick={() => {
+              setShowStats(!showStats);
+              setShowShop(false);
+            }}
             className="animate-bounce-subtle rounded-full flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all"
           >
             <BarChart4 size={16} />
@@ -81,7 +86,10 @@ const GameInterface = () => {
           
           <Button 
             variant="outline" 
-            onClick={() => setShowTraits(!showTraits)}
+            onClick={() => {
+              setShowTraits(!showTraits);
+              setShowShop(false);
+            }}
             className="rounded-full flex items-center gap-2 hover:bg-purple-50 hover:text-purple-600 transition-all"
           >
             <Brain size={16} />
@@ -90,11 +98,26 @@ const GameInterface = () => {
           
           <Button 
             variant="outline" 
-            onClick={() => setShowCharacter(!showCharacter)}
+            onClick={() => {
+              setShowCharacter(!showCharacter);
+              setShowShop(false);
+            }}
             className="rounded-full flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all"
           >
             <Info size={16} />
             {showCharacter ? 'Hide Character Details' : 'Show Character Details'}
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              setShowShop(!showShop);
+              setShowStats(false);
+            }}
+            className="rounded-full flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all animate-pulse-subtle"
+          >
+            <ShoppingCart size={16} />
+            {showShop ? 'Hide Shop' : 'Visit Shop'}
           </Button>
         </div>
         
@@ -246,6 +269,12 @@ const GameInterface = () => {
               </div>
               <p className="mt-4 text-sm text-gray-500 italic">Your profile evolves as you make financial decisions.</p>
             </div>
+          </section>
+        )}
+        
+        {showShop && (
+          <section className="mb-8 animate-fade-in">
+            <Shop />
           </section>
         )}
         
