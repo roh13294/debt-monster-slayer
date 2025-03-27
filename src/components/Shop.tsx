@@ -1,23 +1,9 @@
-
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import { ShoppingCart, Coins, Tag, ShieldPlus, Sword, Zap, Shield, Battery, Briefcase, PiggyBank } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
-
-// Define shop item types
-interface ShopItem {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  effect: {
-    type: 'special_move' | 'interest_reduction' | 'cash_boost' | 'debt_reduction' | 'trait_boost';
-    value: number;
-    trait?: string;
-  };
-  icon: React.ReactNode;
-}
+import { ShopItem, PlayerTraits } from '../types/gameTypes';
 
 const shopItems: ShopItem[] = [
   {
@@ -72,7 +58,7 @@ const shopItems: ShopItem[] = [
     effect: {
       type: 'trait_boost',
       value: 1,
-      trait: 'financialKnowledge'
+      trait: 'financialKnowledge' as keyof PlayerTraits
     },
     icon: <Briefcase className="h-10 w-10 text-indigo-500" />
   },
@@ -84,7 +70,7 @@ const shopItems: ShopItem[] = [
     effect: {
       type: 'trait_boost',
       value: 1,
-      trait: 'savingAbility'
+      trait: 'savingAbility' as keyof PlayerTraits
     },
     icon: <PiggyBank className="h-10 w-10 text-pink-500" />
   }

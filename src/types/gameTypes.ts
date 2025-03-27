@@ -1,5 +1,5 @@
-
 import { JobType, LifeStage, Circumstance } from '../hooks/useRandomCharacter';
+import { ReactNode } from 'react';
 
 export type Debt = {
   id: string;
@@ -67,6 +67,7 @@ export interface ShopItem {
     value: number;
     trait?: keyof PlayerTraits;
   };
+  icon?: ReactNode;
 }
 
 export type GameContextType = {
