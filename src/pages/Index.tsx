@@ -1,19 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { GameProvider } from '../context/GameContext';
 import Dashboard from '../components/Dashboard';
-import StrategySelector from '../components/StrategySelector';
-import BudgetAllocator from '../components/BudgetAllocator';
-import MonsterBattle from '../components/MonsterBattle';
-import LifeEvent from '../components/LifeEvent';
-import Challenge from '../components/Challenge';
-import StatsDashboard from '../components/StatsDashboard';
-import Shop from '../components/Shop';
 import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Sparkles, BarChart4, Brain, Bookmark, Coins, Briefcase, PiggyBank, Zap, Info, ShoppingCart } from 'lucide-react';
-import { Trophy, Sword } from '@/components/ui/icons';
+import { LogOut, User, Sparkles, Info, ShoppingCart } from 'lucide-react';
+import { Sword } from '@/components/ui/icons';
+import Shop from '../components/Shop';
+import StatsDashboard from '../components/StatsDashboard';
 
 const Index = () => {
   return (
@@ -25,9 +19,9 @@ const Index = () => {
 
 const GameInterface = () => {
   const { 
-    challenges, gameStarted, initializeGame, playerName, setPlayerName, 
+    gameStarted, initializeGame, playerName, setPlayerName, 
     playerTraits, job, lifeStage, circumstances, characterBackground,
-    budget // Added budget to the destructured values
+    budget
   } = useGameContext();
   const { user, signOut } = useAuth();
   const [showStats, setShowStats] = useState(false);
@@ -41,8 +35,6 @@ const GameInterface = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 via-indigo-50 to-white pb-20 overflow-x-hidden">
-      <LifeEvent />
-      
       <div className="absolute top-20 right-10 w-32 h-32 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
       <div className="absolute top-40 left-10 w-36 h-36 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '1s' }}></div>
       <div className="absolute bottom-40 right-20 w-40 h-40 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
@@ -80,7 +72,7 @@ const GameInterface = () => {
             }}
             className="animate-bounce-subtle rounded-full flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all"
           >
-            <BarChart4 size={16} />
+            <StatsDashboard size={16} />
             {showStats ? 'Show Dashboard' : 'Show Analytics'}
           </Button>
           
@@ -92,7 +84,7 @@ const GameInterface = () => {
             }}
             className="rounded-full flex items-center gap-2 hover:bg-purple-50 hover:text-purple-600 transition-all"
           >
-            <Brain size={16} />
+            <Info size={16} />
             {showTraits ? 'Hide Player Profile' : 'Show Player Profile'}
           </Button>
           
@@ -281,48 +273,6 @@ const GameInterface = () => {
         <section className="mb-12 animate-fade-in transform hover:scale-[1.01] transition-transform duration-300">
           {showStats ? <StatsDashboard /> : <Dashboard />}
         </section>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-8">
-            <section className="animate-fade-in transform hover:translate-y-[-4px] transition-all duration-300" style={{ animationDelay: '100ms' }}>
-              <MonsterBattle />
-            </section>
-            
-            <section className="animate-fade-in transform hover:translate-y-[-4px] transition-all duration-300" style={{ animationDelay: '200ms' }}>
-              <StrategySelector />
-            </section>
-          </div>
-          
-          <div className="space-y-8">
-            <section className="animate-fade-in transform hover:translate-y-[-4px] transition-all duration-300" style={{ animationDelay: '300ms' }}>
-              <BudgetAllocator />
-            </section>
-            
-            <section className="animate-fade-in transform hover:translate-y-[-4px] transition-all duration-300" style={{ animationDelay: '400ms' }}>
-              <div className="card-elegant">
-                <h2 className="text-xl font-bold mb-4 flex items-center">
-                  <span className="bg-yellow-100 text-yellow-700 p-1 rounded-md mr-2">
-                    <Trophy size={18} />
-                  </span>
-                  Challenges
-                </h2>
-                <div className="space-y-3">
-                  {challenges.map((challenge) => (
-                    <Challenge
-                      key={challenge.id}
-                      title={challenge.title}
-                      description={challenge.description}
-                      progress={challenge.progress}
-                      target={challenge.target}
-                      reward={challenge.reward}
-                      completed={challenge.completed}
-                    />
-                  ))}
-                </div>
-              </div>
-            </section>
-          </div>
-        </div>
       </div>
     </div>
   );
