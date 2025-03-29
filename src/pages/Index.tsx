@@ -5,7 +5,7 @@ import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { LogOut, User, Sparkles, Info, ShoppingCart } from 'lucide-react';
-import { Sword } from '@/components/ui/icons';
+import { Sword, Briefcase, Bookmark, Brain, Zap, Coins, PiggyBank } from '@/components/ui/icons';
 import Shop from '../components/Shop';
 import StatsDashboard from '../components/StatsDashboard';
 
@@ -43,9 +43,9 @@ const GameInterface = () => {
         <header className="flex justify-between items-center mb-12">
           <div className="text-center flex-grow">
             <div className="inline-flex items-center gap-2 px-4 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium mb-2">
-              <Sparkles size={14} className="animate-pulse-subtle" />
+              <Sparkles className="w-3.5 h-3.5 animate-pulse-subtle" />
               Debt Monster Slayer
-              <Sparkles size={14} className="animate-pulse-subtle" />
+              <Sparkles className="w-3.5 h-3.5 animate-pulse-subtle" />
             </div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-primary to-indigo-600 text-transparent bg-clip-text">Your Financial Journey</h1>
             <p className="text-gray-600 mt-2">Fight your debt monsters and achieve financial freedom</p>
@@ -53,11 +53,11 @@ const GameInterface = () => {
           
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
-              <User size={16} className="text-primary" />
+              <User className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">{user?.email}</span>
             </div>
             <Button variant="outline" size="sm" onClick={signOut} className="rounded-full hover:bg-red-50 hover:text-red-600 transition-all">
-              <LogOut size={16} className="mr-2" />
+              <LogOut className="w-4 h-4 mr-2" />
               Sign Out
             </Button>
           </div>
@@ -72,7 +72,7 @@ const GameInterface = () => {
             }}
             className="animate-bounce-subtle rounded-full flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all"
           >
-            <StatsDashboard size={16} />
+            <Info className="w-4 h-4" />
             {showStats ? 'Show Dashboard' : 'Show Analytics'}
           </Button>
           
@@ -84,7 +84,7 @@ const GameInterface = () => {
             }}
             className="rounded-full flex items-center gap-2 hover:bg-purple-50 hover:text-purple-600 transition-all"
           >
-            <Info size={16} />
+            <Info className="w-4 h-4" />
             {showTraits ? 'Hide Player Profile' : 'Show Player Profile'}
           </Button>
           
@@ -96,7 +96,7 @@ const GameInterface = () => {
             }}
             className="rounded-full flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all"
           >
-            <Info size={16} />
+            <Info className="w-4 h-4" />
             {showCharacter ? 'Hide Character Details' : 'Show Character Details'}
           </Button>
           
@@ -108,7 +108,7 @@ const GameInterface = () => {
             }}
             className="rounded-full flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all animate-pulse-subtle"
           >
-            <ShoppingCart size={16} />
+            <ShoppingCart className="w-4 h-4" />
             {showShop ? 'Hide Shop' : 'Visit Shop'}
           </Button>
         </div>
@@ -118,7 +118,7 @@ const GameInterface = () => {
             <div className="card-elegant">
               <h2 className="text-xl font-bold mb-4 flex items-center">
                 <span className="bg-green-100 text-green-700 p-1 rounded-md mr-2">
-                  <Info size={18} />
+                  <Info className="w-4.5 h-4.5" />
                 </span>
                 Your Character
               </h2>
@@ -129,7 +129,7 @@ const GameInterface = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="bg-blue-50 rounded-lg p-4">
                   <h3 className="font-semibold text-blue-700 mb-2 flex items-center gap-2">
-                    <Briefcase size={16} />
+                    <Briefcase className="w-4 h-4" />
                     Career
                   </h3>
                   <p className="text-sm mb-1">{job.title}</p>
@@ -139,7 +139,7 @@ const GameInterface = () => {
                 
                 <div className="bg-purple-50 rounded-lg p-4">
                   <h3 className="font-semibold text-purple-700 mb-2 flex items-center gap-2">
-                    <User size={16} />
+                    <User className="w-4 h-4" />
                     Life Stage
                   </h3>
                   <p className="text-sm mb-1">{lifeStage.name}</p>
@@ -149,7 +149,7 @@ const GameInterface = () => {
                 
                 <div className="bg-green-50 rounded-lg p-4">
                   <h3 className="font-semibold text-green-700 mb-2 flex items-center gap-2">
-                    <Bookmark size={16} />
+                    <Bookmark className="w-4 h-4" />
                     Financial Information
                   </h3>
                   <div className="text-xs space-y-1">
@@ -191,7 +191,7 @@ const GameInterface = () => {
             <div className="card-elegant">
               <h2 className="text-xl font-bold mb-4 flex items-center">
                 <span className="bg-purple-100 text-purple-700 p-1 rounded-md mr-2">
-                  <Bookmark size={18} />
+                  <Bookmark className="w-4.5 h-4.5" />
                 </span>
                 Your Unique Player Profile
               </h2>
@@ -201,7 +201,7 @@ const GameInterface = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
-                    <Brain size={16} className="text-blue-600" />
+                    <Brain className="w-4 h-4 text-blue-600" />
                     <span className="font-medium text-sm">Financial Knowledge</span>
                   </div>
                   <div className="h-2 w-full bg-gray-200 rounded-full">
@@ -211,7 +211,7 @@ const GameInterface = () => {
                 
                 <div className="p-3 bg-red-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
-                    <Zap size={16} className="text-red-600" />
+                    <Zap className="w-4 h-4 text-red-600" />
                     <span className="font-medium text-sm">Risk Tolerance</span>
                   </div>
                   <div className="h-2 w-full bg-gray-200 rounded-full">
@@ -221,7 +221,7 @@ const GameInterface = () => {
                 
                 <div className="p-3 bg-green-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
-                    <Coins size={16} className="text-green-600" />
+                    <Coins className="w-4 h-4 text-green-600" />
                     <span className="font-medium text-sm">Spending Habits</span>
                   </div>
                   <div className="h-2 w-full bg-gray-200 rounded-full">
@@ -231,7 +231,7 @@ const GameInterface = () => {
                 
                 <div className="p-3 bg-yellow-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
-                    <Briefcase size={16} className="text-yellow-600" />
+                    <Briefcase className="w-4 h-4 text-yellow-600" />
                     <span className="font-medium text-sm">Career Focus</span>
                   </div>
                   <div className="h-2 w-full bg-gray-200 rounded-full">
@@ -241,7 +241,7 @@ const GameInterface = () => {
                 
                 <div className="p-3 bg-purple-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
-                    <PiggyBank size={16} className="text-purple-600" />
+                    <PiggyBank className="w-4 h-4 text-purple-600" />
                     <span className="font-medium text-sm">Saving Ability</span>
                   </div>
                   <div className="h-2 w-full bg-gray-200 rounded-full">
@@ -251,7 +251,7 @@ const GameInterface = () => {
                 
                 <div className="p-3 bg-orange-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
-                    <Sparkles size={16} className="text-orange-600" />
+                    <Sparkles className="w-4 h-4 text-orange-600" />
                     <span className="font-medium text-sm">Lucky Streak</span>
                   </div>
                   <div className="h-2 w-full bg-gray-200 rounded-full">
