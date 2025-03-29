@@ -12,6 +12,7 @@ import VictoryScreen from './VictoryScreen';
 interface DebtMonsterProps {
   debt: Debt;
   isInBattle?: boolean;
+  onClick?: () => void; // Add this prop to fix the TypeScript error
 }
 
 const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) => {

@@ -1,12 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../context/GameContext';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import DebtMonster from './DebtMonster';
-import { Sword, ShieldAlert, ArrowLeft, ArrowRight, Sparkles, Zap, Target, Trophy, Crown, Info, Volume2, VolumeX } from 'lucide-react';
-import { Button } from './ui/button';
-import { toast } from "@/hooks/use-toast";
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
-const MonsterBattle: React.FC = () => {
+interface MonsterBattleProps {
+  debtId: string;
+  onClose: () => void;
+}
+
+const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
   const { debts, specialMoves, monthsPassed } = useGameContext();
   const [currentMonsterIndex, setCurrentMonsterIndex] = useState(0);
   const [battleMode, setBattleMode] = useState(false);
@@ -16,13 +20,10 @@ const MonsterBattle: React.FC = () => {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
-  // Check for player level based on months passed
   const playerLevel = Math.max(1, Math.floor(monthsPassed / 3) + 1);
-  
-  // Handle navigation between monsters
+
   const nextMonster = () => {
     setCurrentMonsterIndex((prev) => (prev + 1) % debts.length);
-    // Add battle streak if in battle mode
     if (battleMode) {
       setBattleStreak(prev => prev + 1);
       if (battleStreak + 1 >= 3) {
@@ -49,7 +50,6 @@ const MonsterBattle: React.FC = () => {
       });
     } else {
       setBattleMode(false);
-      // Reset battle streak when exiting
       setBattleStreak(0);
     }
   };
@@ -71,7 +71,6 @@ const MonsterBattle: React.FC = () => {
     }
   };
 
-  // Randomly animate the title for fun
   useEffect(() => {
     const animationInterval = setInterval(() => {
       setAnimateTitle(true);
@@ -81,7 +80,6 @@ const MonsterBattle: React.FC = () => {
     return () => clearInterval(animationInterval);
   }, []);
 
-  // Check if first time in battle mode
   useEffect(() => {
     if (battleMode && localStorage.getItem('firstBattle') !== 'completed') {
       setShowBattleTips(true);
@@ -91,7 +89,6 @@ const MonsterBattle: React.FC = () => {
 
   return (
     <div className="card-fun relative overflow-hidden group">
-      {/* Audio elements for sound effects */}
       {soundEnabled && (
         <>
           <audio id="attack-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-swift-sword-strike-2166.mp3"></audio>
@@ -101,7 +98,6 @@ const MonsterBattle: React.FC = () => {
         </>
       )}
       
-      {/* Fun animated background elements */}
       <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-fun-purple/30 to-fun-magenta/30 rounded-full animate-pulse-subtle"></div>
       <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-br from-fun-blue/30 to-fun-green/30 rounded-full animate-pulse-subtle"></div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-gradient-to-br from-fun-yellow/5 to-fun-orange/5 rounded-full animate-pulse-subtle"></div>
@@ -160,54 +156,55 @@ const MonsterBattle: React.FC = () => {
           </div>
         </div>
         
-        {/* Tutorial Modal */}
         {showTutorial && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Sword size={20} className="text-fun-purple" />
-                Debt Monster Battle Guide
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <h4 className="font-medium mb-1">Battle Mode</h4>
-                  <p className="text-sm text-gray-700">Activate Battle Mode to directly target and attack your debt monsters one at a time.</p>
-                </div>
-                
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <h4 className="font-medium mb-1">Making Payments</h4>
-                  <p className="text-sm text-gray-700">Use the slider to adjust your payment amount, then click "Attack" to reduce your debt.</p>
-                </div>
-                
-                <div className="bg-yellow-50 p-3 rounded-lg">
-                  <h4 className="font-medium mb-1">Combo Attacks</h4>
-                  <p className="text-sm text-gray-700">Attack quickly in succession to build a combo that increases damage.</p>
-                </div>
-                
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <h4 className="font-medium mb-1">Special Moves</h4>
-                  <p className="text-sm text-gray-700">Use Special Moves to reduce a debt's interest rate, making it easier to pay off.</p>
-                </div>
-                
-                <div className="bg-red-50 p-3 rounded-lg">
-                  <h4 className="font-medium mb-1">Battle Streaks</h4>
-                  <p className="text-sm text-gray-700">Battle multiple monsters in a row to earn streak bonuses, including special moves.</p>
-                </div>
-                
-                <div className="bg-orange-50 p-3 rounded-lg">
-                  <h4 className="font-medium mb-1">Monster Reactions</h4>
-                  <p className="text-sm text-gray-700">Monsters will react to your attacks and occasionally taunt you or counter-attack.</p>
-                </div>
-              </div>
-              
-              <div className="mt-6 flex justify-end">
+          <Dialog open={showTutorial} onOpenChange={setShowTutorial}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  <Sword size={20} className="text-fun-purple" />
+                  Debt Monster Battle Guide
+                </DialogTitle>
+                <DialogDescription>
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <h4 className="font-medium mb-1">Battle Mode</h4>
+                      <p className="text-sm text-gray-700">Activate Battle Mode to directly target and attack your debt monsters one at a time.</p>
+                    </div>
+                    
+                    <div className="bg-green-50 p-3 rounded-lg">
+                      <h4 className="font-medium mb-1">Making Payments</h4>
+                      <p className="text-sm text-gray-700">Use the slider to adjust your payment amount, then click "Attack" to reduce your debt.</p>
+                    </div>
+                    
+                    <div className="bg-yellow-50 p-3 rounded-lg">
+                      <h4 className="font-medium mb-1">Combo Attacks</h4>
+                      <p className="text-sm text-gray-700">Attack quickly in succession to build a combo that increases damage.</p>
+                    </div>
+                    
+                    <div className="bg-purple-50 p-3 rounded-lg">
+                      <h4 className="font-medium mb-1">Special Moves</h4>
+                      <p className="text-sm text-gray-700">Use Special Moves to reduce a debt's interest rate, making it easier to pay off.</p>
+                    </div>
+                    
+                    <div className="bg-red-50 p-3 rounded-lg">
+                      <h4 className="font-medium mb-1">Battle Streaks</h4>
+                      <p className="text-sm text-gray-700">Battle multiple monsters in a row to earn streak bonuses, including special moves.</p>
+                    </div>
+                    
+                    <div className="bg-orange-50 p-3 rounded-lg">
+                      <h4 className="font-medium mb-1">Monster Reactions</h4>
+                      <p className="text-sm text-gray-700">Monsters will react to your attacks and occasionally taunt you or counter-attack.</p>
+                    </div>
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
                 <Button onClick={() => setShowTutorial(false)}>
                   Got it!
                 </Button>
-              </div>
-            </div>
-          </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
         
         {debts.length === 0 ? (
@@ -261,7 +258,6 @@ const MonsterBattle: React.FC = () => {
               )}
             </div>
 
-            {/* Battle tips for first-time users */}
             {showBattleTips && battleMode && (
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-100 mb-4 animate-fade-in relative">
                 <Button 
