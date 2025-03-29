@@ -1,65 +1,144 @@
 
-#root {
-  margin: 0 auto;
-  text-align: center;
+/* Game-specific CSS utility classes */
+
+.battle-arena {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
-/* Global Animation Settings */
-* {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+.battle-arena::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: linear-gradient(45deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+  z-index: -1;
+  filter: blur(15px);
+  pointer-events: none;
 }
 
-/* Custom animations */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+/* Financial weapon effects */
+.snowball-attack {
+  position: relative;
 }
 
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+.snowball-attack::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, white, transparent);
+  opacity: 0;
+  z-index: 10;
+  animation: snowball-pulse 0.5s ease-out;
+  pointer-events: none;
 }
 
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes snowball-pulse {
+  0% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(2); }
 }
 
-@keyframes bounce-subtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+.avalanche-attack {
+  position: relative;
 }
 
-/* Card hover effects */
-.card-elegant {
+.avalanche-attack::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.9), transparent);
+  opacity: 0;
+  z-index: 10;
+  animation: avalanche-pulse 0.8s ease-out;
+  pointer-events: none;
+}
+
+@keyframes avalanche-pulse {
+  0% { opacity: 0; transform: translateY(-100%); }
+  50% { opacity: 0.7; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(0); }
+}
+
+/* Enhanced visual effects */
+.knowledge-card {
+  border-radius: 0.75rem;
+  background: linear-gradient(to right, rgb(255, 255, 255), rgb(248, 250, 252));
+  border: 1px solid rgba(226, 232, 240, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
   transition: all 0.3s ease;
 }
 
-.card-elegant:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+.knowledge-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transform: translateY(-2px);
 }
 
-/* Button hover effects */
-.btn-elegant {
-  transition: all 0.3s ease;
+.knowledge-card__title {
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  color: rgb(79, 70, 229);
 }
 
-.btn-elegant:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+.knowledge-card__content {
+  font-size: 0.75rem;
+  color: rgb(71, 85, 105);
+  line-height: 1.25rem;
 }
 
-.btn-elegant:active {
-  transform: translateY(0);
+/* Game achievement styles */
+.achievement {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(to right, rgba(249, 250, 251, 0.8), rgba(248, 250, 252, 0.8));
+  border: 1px solid rgba(229, 231, 235, 1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
 }
 
-/* Custom Glass Panel Effect */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+.achievement:hover {
+  background: linear-gradient(to right, rgba(243, 244, 246, 0.9), rgba(249, 250, 251, 0.9));
+  transform: translateX(2px);
+}
+
+.achievement__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  margin-right: 0.75rem;
+  background: linear-gradient(to bottom right, rgb(139, 92, 246), rgb(124, 58, 237));
+  color: white;
+}
+
+.achievement__content {
+  flex: 1;
+}
+
+.achievement__title {
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: rgb(31, 41, 55);
+}
+
+.achievement__description {
+  font-size: 0.625rem;
+  color: rgb(107, 114, 128);
 }

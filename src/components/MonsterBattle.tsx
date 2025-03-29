@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
-import { Sword, ShieldAlert, ArrowLeft, ArrowRight, Sparkles, Zap, Target, Trophy, Crown } from 'lucide-react';
+import { Sword, ShieldAlert, ArrowLeft, ArrowRight, Sparkles, Zap, Target, Trophy, Crown, Info, Volume2, VolumeX } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from "@/hooks/use-toast";
 
@@ -13,6 +13,8 @@ const MonsterBattle: React.FC = () => {
   const [animateTitle, setAnimateTitle] = useState(false);
   const [showBattleTips, setShowBattleTips] = useState(false);
   const [battleStreak, setBattleStreak] = useState(0);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   // Check for player level based on months passed
   const playerLevel = Math.max(1, Math.floor(monthsPassed / 3) + 1);
@@ -52,6 +54,23 @@ const MonsterBattle: React.FC = () => {
     }
   };
 
+  const toggleSound = () => {
+    setSoundEnabled(!soundEnabled);
+    if (!soundEnabled) {
+      toast({
+        title: "Sound Effects Enabled",
+        description: "Battle sounds are now on! Attack with audio feedback.",
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: "Sound Effects Disabled",
+        description: "Battle sounds are now off.",
+        variant: "default",
+      });
+    }
+  };
+
   // Randomly animate the title for fun
   useEffect(() => {
     const animationInterval = setInterval(() => {
@@ -72,6 +91,16 @@ const MonsterBattle: React.FC = () => {
 
   return (
     <div className="card-fun relative overflow-hidden group">
+      {/* Audio elements for sound effects */}
+      {soundEnabled && (
+        <>
+          <audio id="attack-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-swift-sword-strike-2166.mp3"></audio>
+          <audio id="combo-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3"></audio>
+          <audio id="special-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sweep-game-trophy-257.mp3"></audio>
+          <audio id="monster-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-monster-growl-1993.mp3"></audio>
+        </>
+      )}
+      
       {/* Fun animated background elements */}
       <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-fun-purple/30 to-fun-magenta/30 rounded-full animate-pulse-subtle"></div>
       <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-br from-fun-blue/30 to-fun-green/30 rounded-full animate-pulse-subtle"></div>
@@ -90,6 +119,26 @@ const MonsterBattle: React.FC = () => {
           </h2>
           
           <div className="flex items-center space-x-2">
+            <button
+              onClick={toggleSound}
+              className="flex items-center justify-center p-1 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200 transition-all"
+              title={soundEnabled ? "Turn sound off" : "Turn sound on"}
+            >
+              {soundEnabled ? (
+                <Volume2 size={16} className="text-green-600" />
+              ) : (
+                <VolumeX size={16} className="text-gray-400" />
+              )}
+            </button>
+            
+            <button
+              onClick={() => setShowTutorial(true)}
+              className="flex items-center justify-center p-1 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200 transition-all"
+              title="Show tutorial"
+            >
+              <Info size={16} className="text-blue-600" />
+            </button>
+            
             <div className="flex items-center bg-gradient-to-r from-purple-100 to-indigo-100 px-2 py-1 rounded-full text-xs">
               <Crown size={14} className="mr-1 text-fun-purple" />
               <span className="font-medium">Level {playerLevel}</span>
@@ -110,6 +159,56 @@ const MonsterBattle: React.FC = () => {
             )}
           </div>
         </div>
+        
+        {/* Tutorial Modal */}
+        {showTutorial && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Sword size={20} className="text-fun-purple" />
+                Debt Monster Battle Guide
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <h4 className="font-medium mb-1">Battle Mode</h4>
+                  <p className="text-sm text-gray-700">Activate Battle Mode to directly target and attack your debt monsters one at a time.</p>
+                </div>
+                
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <h4 className="font-medium mb-1">Making Payments</h4>
+                  <p className="text-sm text-gray-700">Use the slider to adjust your payment amount, then click "Attack" to reduce your debt.</p>
+                </div>
+                
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <h4 className="font-medium mb-1">Combo Attacks</h4>
+                  <p className="text-sm text-gray-700">Attack quickly in succession to build a combo that increases damage.</p>
+                </div>
+                
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <h4 className="font-medium mb-1">Special Moves</h4>
+                  <p className="text-sm text-gray-700">Use Special Moves to reduce a debt's interest rate, making it easier to pay off.</p>
+                </div>
+                
+                <div className="bg-red-50 p-3 rounded-lg">
+                  <h4 className="font-medium mb-1">Battle Streaks</h4>
+                  <p className="text-sm text-gray-700">Battle multiple monsters in a row to earn streak bonuses, including special moves.</p>
+                </div>
+                
+                <div className="bg-orange-50 p-3 rounded-lg">
+                  <h4 className="font-medium mb-1">Monster Reactions</h4>
+                  <p className="text-sm text-gray-700">Monsters will react to your attacks and occasionally taunt you or counter-attack.</p>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex justify-end">
+                <Button onClick={() => setShowTutorial(false)}>
+                  Got it!
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {debts.length === 0 ? (
           <div className="p-8 text-center bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100 animate-pulse-subtle">

@@ -19,15 +19,38 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
   const [specialAttack, setSpecialAttack] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(Math.min(100, debt.amount / 10));
   const [showDetails, setShowDetails] = useState(false);
-  const [monsterState, setMonsterState] = useState<'idle' | 'attacking' | 'damaged'>('idle');
+  const [monsterState, setMonsterState] = useState<'idle' | 'attacking' | 'damaged' | 'taunting'>('idle');
   const [attackCombo, setAttackCombo] = useState(0);
   const [lastAttackTime, setLastAttackTime] = useState(0);
   const [sparkleEffect, setSparkleEffect] = useState(false);
   const [shakeEffect, setShakeEffect] = useState(false);
   const [flashEffect, setFlashEffect] = useState(false);
+  const [monsterQuote, setMonsterQuote] = useState<string | null>(null);
   
   // Get the monster profile
   const monsterProfile = getMonsterProfile(debt.name);
+
+  // Monster taunts and reactions
+  const monsterTaunts = [
+    "You'll never pay me off!",
+    "Your interest only makes me stronger!",
+    "Is that all you've got?",
+    "I'll be with you forever!",
+    "That payment was nothing to me!",
+    "Keep spending, I love it!",
+    "Your minimum payments just feed me!",
+    "I'm draining your finances!"
+  ];
+  
+  const monsterReactions = [
+    "Ouch! That actually hurt!",
+    "Stop attacking my interest rate!",
+    "No! My compounding power!",
+    "You're getting smarter about finances!",
+    "I'm weakening... but I'll be back!",
+    "Your strategy is working!",
+    "My power is diminishing!"
+  ];
 
   // Reset attack combo after inactivity
   useEffect(() => {
@@ -51,6 +74,27 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
       return () => clearInterval(sparkleTimer);
     }
   }, [isInBattle]);
+
+  // Occasionally have the monster taunt if not being attacked
+  useEffect(() => {
+    if (isInBattle && monsterState === 'idle') {
+      const tauntTimer = setTimeout(() => {
+        // 15% chance to taunt
+        if (Math.random() < 0.15) {
+          const taunt = monsterTaunts[Math.floor(Math.random() * monsterTaunts.length)];
+          setMonsterQuote(taunt);
+          setMonsterState('taunting');
+          
+          setTimeout(() => {
+            setMonsterState('idle');
+            setMonsterQuote(null);
+          }, 3000);
+        }
+      }, Math.random() * 15000 + 5000);
+      
+      return () => clearTimeout(tauntTimer);
+    }
+  }, [isInBattle, monsterState]);
 
   // Monster colors based on type with enhanced gradients
   const monsterColors = {
@@ -83,10 +127,22 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
       return;
     }
     
+    // Play attack sound if available
+    const attackSound = document.getElementById('attack-sound') as HTMLAudioElement;
+    if (attackSound) {
+      attackSound.volume = 0.2;
+      attackSound.currentTime = 0;
+      attackSound.play().catch(err => console.log('Audio play error:', err));
+    }
+    
     setIsAttacking(true);
     setSpecialAttack(false);
     setMonsterState('damaged');
     setShakeEffect(true);
+    
+    // Show a reaction from the monster
+    const reaction = monsterReactions[Math.floor(Math.random() * monsterReactions.length)];
+    setMonsterQuote(reaction);
     
     // Update combo counter for consecutive attacks
     const now = Date.now();
@@ -103,6 +159,14 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
           description: `${attackCombo + 1}x combo for ${Math.round((comboMultiplier - 1) * 100)}% bonus damage!`,
           variant: "default",
         });
+        
+        // Play combo sound if available
+        const comboSound = document.getElementById('combo-sound') as HTMLAudioElement;
+        if (comboSound && attackCombo > 1) {
+          comboSound.volume = 0.3;
+          comboSound.currentTime = 0;
+          comboSound.play().catch(err => console.log('Audio play error:', err));
+        }
       }
       
       damageMonster(debt.id, adjustedAmount);
@@ -121,7 +185,8 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     setTimeout(() => {
       setIsAttacking(false);
       setMonsterState('idle');
-    }, 500);
+      setMonsterQuote(null);
+    }, 2000);
   };
 
   const handleSpecialMove = () => {
@@ -134,12 +199,23 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
       return;
     }
     
+    // Play special attack sound if available
+    const specialSound = document.getElementById('special-sound') as HTMLAudioElement;
+    if (specialSound) {
+      specialSound.volume = 0.3;
+      specialSound.currentTime = 0;
+      specialSound.play().catch(err => console.log('Audio play error:', err));
+    }
+    
     setIsAttacking(true);
     setSpecialAttack(true);
     setMonsterState('damaged');
     setFlashEffect(true);
     
     useSpecialMove(debt.id);
+    
+    // Show a reaction from the monster
+    setMonsterQuote("NOOO! Not my interest rate!");
     
     toast({
       title: "Special Move!",
@@ -155,13 +231,22 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     setTimeout(() => {
       setIsAttacking(false);
       setMonsterState('idle');
-    }, 800);
+      setMonsterQuote(null);
+    }, 3000);
   };
 
   const monsterAttack = () => {
     if (!isInBattle) return;
     
     setMonsterState('attacking');
+    
+    // Play monster attack sound if available
+    const monsterSound = document.getElementById('monster-sound') as HTMLAudioElement;
+    if (monsterSound) {
+      monsterSound.volume = 0.2;
+      monsterSound.currentTime = 0;
+      monsterSound.play().catch(err => console.log('Audio play error:', err));
+    }
     
     toast({
       title: `${monsterProfile.name} attacks!`,
@@ -209,6 +294,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
       className={`monster ${monsterColors[debt.monsterType]} 
       ${shakeEffect ? 'monster-damaged' : ''} 
       ${monsterState === 'attacking' ? 'monster-attacking' : ''} 
+      ${monsterState === 'taunting' ? 'animate-bounce-subtle' : ''}
       ${flashEffect ? 'animate-flash' : ''}
       transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg relative overflow-hidden
       ${isInBattle ? 'p-6 rounded-xl' : 'p-4 rounded-lg'}`}
@@ -274,13 +360,21 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
       
       {isInBattle && (
         <div className="mt-4 bg-white/10 backdrop-blur-sm rounded-xl p-3">
-          <p className="text-sm italic mb-3">
-            {attackCombo > 3 
-              ? "The monster is staggering from your combo attacks!" 
-              : monsterState === 'attacking'
-                ? `${monsterProfile.name} is preparing an attack!`
-                : monsterProfile.story.split('.')[0] + '.'}
-          </p>
+          {monsterQuote ? (
+            <div className="text-sm italic mb-3 animate-fade-in font-semibold">
+              <span className="text-yellow-300">"</span>
+              {monsterQuote}
+              <span className="text-yellow-300">"</span>
+            </div>
+          ) : (
+            <p className="text-sm italic mb-3">
+              {attackCombo > 3 
+                ? "The monster is staggering from your combo attacks!" 
+                : monsterState === 'attacking'
+                  ? `${monsterProfile.name} is preparing an attack!`
+                  : monsterProfile.story.split('.')[0] + '.'}
+            </p>
+          )}
           
           {attackCombo > 0 && (
             <div className="mb-3 bg-white/20 backdrop-blur-sm rounded-md p-2 text-center animate-pulse">
