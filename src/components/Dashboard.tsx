@@ -7,7 +7,7 @@ import Challenge from './Challenge';
 import MultiChallenge from './MultiChallenge';
 import LifeEvent from './LifeEvent';
 import StreakDisplay from './StreakDisplay';
-import { Coins, CalendarDays, Sparkles, PiggyBank, Zap } from 'lucide-react';
+import { Coins, CalendarDays, Sparkles, PiggyBank, Zap, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
