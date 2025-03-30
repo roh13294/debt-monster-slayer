@@ -1,11 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { GameProvider } from '../context/GameContext';
 import Dashboard from '../components/Dashboard';
 import { useGameContext } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Sparkles, Info, ShoppingCart } from 'lucide-react';
-import { Sword, Briefcase, Bookmark, Brain, Zap, Coins, PiggyBank } from '@/components/ui/icons';
+import { LogOut, User, Sparkles, Info, ShoppingCart, Briefcase, Bookmark, Brain, Zap, Coins, PiggyBank, Sword } from 'lucide-react';
 import Shop from '../components/Shop';
 import StatsDashboard from '../components/StatsDashboard';
 
@@ -34,25 +34,26 @@ const GameInterface = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 via-indigo-50 to-white pb-20 overflow-x-hidden">
-      <div className="absolute top-20 right-10 w-32 h-32 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
-      <div className="absolute top-40 left-10 w-36 h-36 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '1s' }}></div>
-      <div className="absolute bottom-40 right-20 w-40 h-40 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-white pb-20 overflow-x-hidden">
+      {/* Background decorations */}
+      <div className="absolute top-20 right-10 w-32 h-32 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
+      <div className="absolute top-40 left-10 w-36 h-36 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute bottom-40 right-20 w-40 h-40 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
       
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 relative">
-        <header className="flex justify-between items-center mb-12">
-          <div className="text-center flex-grow">
-            <div className="inline-flex items-center gap-2 px-4 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium mb-2">
+        <header className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm p-4 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="text-center md:text-left flex-grow">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium mb-2">
               <Sparkles className="w-3.5 h-3.5 animate-pulse-subtle" />
               Debt Monster Slayer
               <Sparkles className="w-3.5 h-3.5 animate-pulse-subtle" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-primary to-indigo-600 text-transparent bg-clip-text">Your Financial Journey</h1>
-            <p className="text-gray-600 mt-2">Fight your debt monsters and achieve financial freedom</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-primary to-indigo-600 text-transparent bg-clip-text">Your Financial Journey</h1>
+            <p className="text-gray-600 mt-1 text-sm">Fight your debt monsters and achieve financial freedom</p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex items-center gap-2 bg-white shadow-sm px-3 py-1.5 rounded-full">
               <User className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">{user?.email}</span>
             </div>
@@ -63,14 +64,14 @@ const GameInterface = () => {
           </div>
         </header>
         
-        <div className="flex justify-center mb-6 space-x-4">
+        <div className="flex flex-wrap justify-center mb-6 gap-3">
           <Button 
             variant="outline" 
             onClick={() => {
               setShowStats(!showStats);
               setShowShop(false);
             }}
-            className="animate-bounce-subtle rounded-full flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all"
+            className="rounded-full flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm"
           >
             <Info className="w-4 h-4" />
             {showStats ? 'Show Dashboard' : 'Show Analytics'}
@@ -82,9 +83,9 @@ const GameInterface = () => {
               setShowTraits(!showTraits);
               setShowShop(false);
             }}
-            className="rounded-full flex items-center gap-2 hover:bg-purple-50 hover:text-purple-600 transition-all"
+            className="rounded-full flex items-center gap-2 hover:bg-purple-50 hover:text-purple-600 transition-all shadow-sm"
           >
-            <Info className="w-4 h-4" />
+            <User className="w-4 h-4" />
             {showTraits ? 'Hide Player Profile' : 'Show Player Profile'}
           </Button>
           
@@ -94,9 +95,9 @@ const GameInterface = () => {
               setShowCharacter(!showCharacter);
               setShowShop(false);
             }}
-            className="rounded-full flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all"
+            className="rounded-full flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all shadow-sm"
           >
-            <Info className="w-4 h-4" />
+            <Briefcase className="w-4 h-4" />
             {showCharacter ? 'Hide Character Details' : 'Show Character Details'}
           </Button>
           
@@ -106,7 +107,7 @@ const GameInterface = () => {
               setShowShop(!showShop);
               setShowStats(false);
             }}
-            className="rounded-full flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all animate-pulse-subtle"
+            className="rounded-full flex items-center gap-2 hover:bg-amber-50 hover:text-amber-600 transition-all shadow-sm animate-pulse-subtle"
           >
             <ShoppingCart className="w-4 h-4" />
             {showShop ? 'Hide Shop' : 'Visit Shop'}
@@ -115,44 +116,44 @@ const GameInterface = () => {
         
         {showCharacter && job && lifeStage && (
           <section className="mb-8 animate-fade-in">
-            <div className="card-elegant">
+            <div className="card-elegant shadow-md hover:shadow-lg transition-shadow">
               <h2 className="text-xl font-bold mb-4 flex items-center">
-                <span className="bg-green-100 text-green-700 p-1 rounded-md mr-2">
-                  <Info className="w-4.5 h-4.5" />
+                <span className="bg-green-100 text-green-700 p-1.5 rounded-md mr-2">
+                  <Briefcase className="w-4 h-4" />
                 </span>
                 Your Character
               </h2>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
                 {characterBackground || `You are a ${lifeStage.name} working as a ${job.title}.`}
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div className="bg-blue-50 rounded-lg p-4">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
                   <h3 className="font-semibold text-blue-700 mb-2 flex items-center gap-2">
                     <Briefcase className="w-4 h-4" />
                     Career
                   </h3>
                   <p className="text-sm mb-1">{job.title}</p>
                   <p className="text-xs text-gray-600">{job.description}</p>
-                  <p className="text-xs font-medium text-blue-700 mt-2">Base Income: ${job.baseIncome}/month</p>
+                  <p className="text-xs font-medium text-blue-700 mt-2 bg-blue-100 px-2 py-1 rounded inline-block">Base Income: ${job.baseIncome}/month</p>
                 </div>
                 
-                <div className="bg-purple-50 rounded-lg p-4">
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
                   <h3 className="font-semibold text-purple-700 mb-2 flex items-center gap-2">
                     <User className="w-4 h-4" />
                     Life Stage
                   </h3>
                   <p className="text-sm mb-1">{lifeStage.name}</p>
                   <p className="text-xs text-gray-600">{lifeStage.description}</p>
-                  <p className="text-xs font-medium text-purple-700 mt-2">Age Bracket: {lifeStage.ageBracket}</p>
+                  <p className="text-xs font-medium text-purple-700 mt-2 bg-purple-100 px-2 py-1 rounded inline-block">Age Bracket: {lifeStage.ageBracket}</p>
                 </div>
                 
-                <div className="bg-green-50 rounded-lg p-4">
+                <div className="bg-green-50 rounded-lg p-4 border border-green-100">
                   <h3 className="font-semibold text-green-700 mb-2 flex items-center gap-2">
                     <Bookmark className="w-4 h-4" />
                     Financial Information
                   </h3>
-                  <div className="text-xs space-y-1">
+                  <div className="text-xs space-y-1 bg-white/50 p-2 rounded-lg">
                     <div className="flex justify-between">
                       <span>Monthly Income:</span>
                       <span className="font-medium">${budget.income}</span>
@@ -176,7 +177,7 @@ const GameInterface = () => {
               <h3 className="font-semibold text-gray-700 mb-2">Your Circumstances</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {circumstances.map((circumstance, index) => (
-                  <div key={index} className="bg-yellow-50 rounded p-2 text-sm">
+                  <div key={index} className="bg-yellow-50 rounded p-2 text-sm border border-yellow-100">
                     <p className="font-medium text-yellow-700">{circumstance.name}</p>
                     <p className="text-xs text-gray-600">{circumstance.description}</p>
                   </div>
@@ -188,74 +189,74 @@ const GameInterface = () => {
         
         {showTraits && (
           <section className="mb-8 animate-fade-in">
-            <div className="card-elegant">
+            <div className="card-elegant shadow-md hover:shadow-lg transition-shadow">
               <h2 className="text-xl font-bold mb-4 flex items-center">
-                <span className="bg-purple-100 text-purple-700 p-1 rounded-md mr-2">
-                  <Bookmark className="w-4.5 h-4.5" />
+                <span className="bg-purple-100 text-purple-700 p-1.5 rounded-md mr-2">
+                  <Bookmark className="w-4 h-4" />
                 </span>
                 Your Unique Player Profile
               </h2>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 mb-4 bg-purple-50 p-3 rounded-lg border border-purple-100">
                 Your gameplay choices shape your financial character. These traits influence the events you encounter and options available to you.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="p-3 bg-blue-50 rounded-lg">
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
                   <div className="flex items-center gap-2 mb-1">
                     <Brain className="w-4 h-4 text-blue-600" />
                     <span className="font-medium text-sm">Financial Knowledge</span>
                   </div>
-                  <div className="h-2 w-full bg-gray-200 rounded-full">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${playerTraits.financialKnowledge * 10}%` }}></div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full transition-all duration-500" style={{ width: `${playerTraits.financialKnowledge * 10}%` }}></div>
                   </div>
                 </div>
                 
-                <div className="p-3 bg-red-50 rounded-lg">
+                <div className="p-3 bg-red-50 rounded-lg border border-red-100">
                   <div className="flex items-center gap-2 mb-1">
                     <Zap className="w-4 h-4 text-red-600" />
                     <span className="font-medium text-sm">Risk Tolerance</span>
                   </div>
-                  <div className="h-2 w-full bg-gray-200 rounded-full">
-                    <div className="h-full bg-red-500 rounded-full" style={{ width: `${playerTraits.riskTolerance * 10}%` }}></div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-red-500 rounded-full transition-all duration-500" style={{ width: `${playerTraits.riskTolerance * 10}%` }}></div>
                   </div>
                 </div>
                 
-                <div className="p-3 bg-green-50 rounded-lg">
+                <div className="p-3 bg-green-50 rounded-lg border border-green-100">
                   <div className="flex items-center gap-2 mb-1">
                     <Coins className="w-4 h-4 text-green-600" />
                     <span className="font-medium text-sm">Spending Habits</span>
                   </div>
-                  <div className="h-2 w-full bg-gray-200 rounded-full">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: `${playerTraits.spendingHabits * 10}%` }}></div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: `${playerTraits.spendingHabits * 10}%` }}></div>
                   </div>
                 </div>
                 
-                <div className="p-3 bg-yellow-50 rounded-lg">
+                <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-100">
                   <div className="flex items-center gap-2 mb-1">
                     <Briefcase className="w-4 h-4 text-yellow-600" />
                     <span className="font-medium text-sm">Career Focus</span>
                   </div>
-                  <div className="h-2 w-full bg-gray-200 rounded-full">
-                    <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${playerTraits.careerFocus * 10}%` }}></div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-yellow-500 rounded-full transition-all duration-500" style={{ width: `${playerTraits.careerFocus * 10}%` }}></div>
                   </div>
                 </div>
                 
-                <div className="p-3 bg-purple-50 rounded-lg">
+                <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
                   <div className="flex items-center gap-2 mb-1">
                     <PiggyBank className="w-4 h-4 text-purple-600" />
                     <span className="font-medium text-sm">Saving Ability</span>
                   </div>
-                  <div className="h-2 w-full bg-gray-200 rounded-full">
-                    <div className="h-full bg-purple-500 rounded-full" style={{ width: `${playerTraits.savingAbility * 10}%` }}></div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-purple-500 rounded-full transition-all duration-500" style={{ width: `${playerTraits.savingAbility * 10}%` }}></div>
                   </div>
                 </div>
                 
-                <div className="p-3 bg-orange-50 rounded-lg">
+                <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-orange-600" />
                     <span className="font-medium text-sm">Lucky Streak</span>
                   </div>
-                  <div className="h-2 w-full bg-gray-200 rounded-full">
-                    <div className="h-full bg-orange-500 rounded-full" style={{ width: `${playerTraits.luckyStreak * 10}%` }}></div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-orange-500 rounded-full transition-all duration-500" style={{ width: `${playerTraits.luckyStreak * 10}%` }}></div>
                   </div>
                 </div>
               </div>
@@ -270,7 +271,7 @@ const GameInterface = () => {
           </section>
         )}
         
-        <section className="mb-12 animate-fade-in transform hover:scale-[1.01] transition-transform duration-300">
+        <section className="mb-12 animate-fade-in">
           {showStats ? <StatsDashboard /> : <Dashboard />}
         </section>
       </div>
@@ -306,14 +307,14 @@ const StartScreen = ({
       <div className="absolute bottom-20 left-20 w-60 h-60 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2.5s' }}></div>
       <div className="absolute top-40 left-40 w-60 h-60 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '1.2s' }}></div>
       
-      <div className={`max-w-md w-full bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 transition-all duration-700 ${
+      <div className={`max-w-md w-full bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-8 transition-all duration-700 ${
         animationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
       }`}>
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center gap-2 mb-4">
-            <Sparkles size={22} className="text-yellow-500 animate-pulse-subtle" />
+            <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse-subtle" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-primary to-indigo-600 text-transparent bg-clip-text">Debt Monster Slayer</h1>
-            <Sparkles size={22} className="text-yellow-500 animate-pulse-subtle" />
+            <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse-subtle" />
           </div>
           <p className="text-gray-600">Your journey to financial freedom begins here</p>
         </div>
@@ -341,12 +342,12 @@ const StartScreen = ({
         
         <button
           onClick={onStart}
-          className="w-full btn-elegant group relative overflow-hidden rounded-full"
+          className="w-full btn-elegant group relative overflow-hidden rounded-full shadow-md hover:shadow-lg"
         >
           <span className="absolute top-0 left-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
           <span className="relative z-10 flex items-center justify-center gap-2">
             Start Your Journey 
-            <Sword size={18} className="inline-block animate-pulse-subtle" />
+            <Sword className="w-4.5 h-4.5 animate-pulse-subtle" />
           </span>
         </button>
       </div>

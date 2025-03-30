@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../context/GameContext';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import DebtMonster from './DebtMonster';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { X, Sword, Sparkles, Volume2, VolumeX, Info, Crown, Zap, Target, Trophy, ShieldAlert, ArrowLeft, ArrowRight } from 'lucide-react';
+import { toast } from "@/hooks/use-toast";
 
 interface MonsterBattleProps {
   debtId: string;
@@ -106,12 +108,12 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className={`text-xl font-bold flex items-center ${animateTitle ? 'animate-tada' : ''}`}>
             <span className="p-1.5 bg-gradient-to-br from-fun-purple to-fun-magenta text-white rounded-md mr-2 transform group-hover:rotate-12 transition-transform animate-wiggle">
-              <Sword size={18} className="animate-sparkle" />
+              <Sword className="w-4 h-4" />
             </span>
             <span className="bg-gradient-to-r from-fun-purple to-fun-magenta bg-clip-text text-transparent">
               Debt Monster Battle
             </span>
-            <Sparkles size={16} className="ml-2 text-fun-yellow animate-sparkle" />
+            <Sparkles className="w-4 h-4 ml-2 text-fun-yellow animate-sparkle" />
           </h2>
           
           <div className="flex items-center space-x-2">
@@ -121,9 +123,9 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
               title={soundEnabled ? "Turn sound off" : "Turn sound on"}
             >
               {soundEnabled ? (
-                <Volume2 size={16} className="text-green-600" />
+                <Volume2 className="w-4 h-4 text-green-600" />
               ) : (
-                <VolumeX size={16} className="text-gray-400" />
+                <VolumeX className="w-4 h-4 text-gray-400" />
               )}
             </button>
             
@@ -132,24 +134,24 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
               className="flex items-center justify-center p-1 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200 transition-all"
               title="Show tutorial"
             >
-              <Info size={16} className="text-blue-600" />
+              <Info className="w-4 h-4 text-blue-600" />
             </button>
             
             <div className="flex items-center bg-gradient-to-r from-purple-100 to-indigo-100 px-2 py-1 rounded-full text-xs">
-              <Crown size={14} className="mr-1 text-fun-purple" />
+              <Crown className="w-3.5 h-3.5 mr-1 text-fun-purple" />
               <span className="font-medium">Level {playerLevel}</span>
             </div>
             
             {battleStreak > 0 && (
               <div className="flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 px-2 py-1 rounded-full text-xs animate-pulse-subtle">
-                <Zap size={14} className="mr-1 text-fun-orange" />
+                <Zap className="w-3.5 h-3.5 mr-1 text-fun-orange" />
                 <span className="font-medium">Streak: {battleStreak}</span>
               </div>
             )}
             
             {specialMoves > 0 && (
               <div className="flex items-center bg-gradient-to-r from-red-100 to-pink-100 px-2 py-1 rounded-full text-xs">
-                <Target size={14} className="mr-1 text-fun-magenta" />
+                <Target className="w-3.5 h-3.5 mr-1 text-fun-magenta" />
                 <span className="font-medium">Specials: {specialMoves}</span>
               </div>
             )}
@@ -161,7 +163,7 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
-                  <Sword size={20} className="text-fun-purple" />
+                  <Sword className="w-5 h-5 inline-block text-fun-purple mr-2" />
                   Debt Monster Battle Guide
                 </DialogTitle>
                 <DialogDescription>
@@ -210,7 +212,7 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
         {debts.length === 0 ? (
           <div className="p-8 text-center bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100 animate-pulse-subtle">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-fun-green to-fun-blue text-white mb-4 animate-bounce-fun">
-              <Trophy size={24} />
+              <Trophy className="w-6 h-6" />
             </div>
             <p className="text-lg font-medium mb-2 bg-gradient-to-r from-fun-green to-fun-blue bg-clip-text text-transparent">No Debt Monsters Found!</p>
             <p className="text-gray-600">You've defeated all your debt monsters. Congratulations!</p>
@@ -226,8 +228,8 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
                 } text-white hover:shadow-lg`}
               >
                 {battleMode ? 
-                  <><ShieldAlert size={16} className="mr-1" /> Exit Battle</> : 
-                  <><Sword size={16} className="mr-1" /> Enter Battle Mode <Zap size={14} className="ml-1 animate-pulse" /></>
+                  <><ShieldAlert className="w-4 h-4 mr-1" /> Exit Battle</> : 
+                  <><Sword className="w-4 h-4 mr-1" /> Enter Battle Mode <Zap className="w-3.5 h-3.5 ml-1 animate-pulse" /></>
                 }
               </Button>
 
@@ -240,7 +242,7 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
                     disabled={debts.length <= 1}
                     className="hover:bg-fun-purple/20"
                   >
-                    <ArrowLeft size={16} />
+                    <ArrowLeft className="w-4 h-4" />
                   </Button>
                   <span className="text-sm font-medium py-2 px-2 bg-white/50 backdrop-blur-sm rounded-md">
                     {currentMonsterIndex + 1} / {debts.length}
@@ -252,7 +254,7 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
                     disabled={debts.length <= 1}
                     className="hover:bg-fun-purple/20"
                   >
-                    <ArrowRight size={16} />
+                    <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
               )}
