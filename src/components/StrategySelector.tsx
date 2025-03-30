@@ -7,13 +7,11 @@ const StrategySelector: React.FC = () => {
   const { strategy, setStrategy } = useGameContext();
 
   return (
-    <div className="card-elegant">
-      <h2 className="text-xl font-bold mb-4">Repayment Strategy</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-4">      
+      <div className="grid grid-cols-1 gap-3">
         <button
           onClick={() => setStrategy('snowball')}
-          className={`relative p-4 rounded-xl border transition-all duration-300 ${
+          className={`relative p-3 rounded-xl border transition-all duration-300 ${
             strategy === 'snowball'
               ? 'border-primary bg-primary/5 shadow-md'
               : 'border-gray-200 hover:border-primary/50'
@@ -23,9 +21,9 @@ const StrategySelector: React.FC = () => {
             <div className="mr-3 p-2 bg-blue-100 rounded-full">
               <ArrowDownToLine className="w-5 h-5 text-primary" />
             </div>
-            <div className="flex-1">
-              <h3 className="font-bold">Snowball Method</h3>
-              <p className="text-sm text-gray-600">Pay off smallest debts first for quick wins</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-sm truncate">Snowball Method</h3>
+              <p className="text-xs text-gray-600 truncate">Pay off smallest debts first</p>
             </div>
           </div>
           
@@ -36,7 +34,7 @@ const StrategySelector: React.FC = () => {
         
         <button
           onClick={() => setStrategy('avalanche')}
-          className={`relative p-4 rounded-xl border transition-all duration-300 ${
+          className={`relative p-3 rounded-xl border transition-all duration-300 ${
             strategy === 'avalanche'
               ? 'border-primary bg-primary/5 shadow-md'
               : 'border-gray-200 hover:border-primary/50'
@@ -46,9 +44,9 @@ const StrategySelector: React.FC = () => {
             <div className="mr-3 p-2 bg-blue-100 rounded-full">
               <TrendingDown className="w-5 h-5 text-primary" />
             </div>
-            <div className="flex-1">
-              <h3 className="font-bold">Avalanche Method</h3>
-              <p className="text-sm text-gray-600">Pay off highest interest debts first to save money</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-sm truncate">Avalanche Method</h3>
+              <p className="text-xs text-gray-600 truncate">Pay high interest first</p>
             </div>
           </div>
           
@@ -58,11 +56,11 @@ const StrategySelector: React.FC = () => {
         </button>
       </div>
       
-      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-        <p className="text-sm text-gray-600">
+      <div className="p-3 bg-gray-50 rounded-lg text-xs">
+        <p className="text-gray-600">
           {strategy === 'snowball'
-            ? 'The Snowball method helps you build momentum by completely paying off small debts first, giving you psychological wins.'
-            : 'The Avalanche method saves you the most money overall by tackling high-interest debt first, reducing the total interest paid.'
+            ? 'The Snowball method builds momentum by paying off small debts first, giving you psychological wins.'
+            : 'The Avalanche method saves you money by tackling high-interest debt first, reducing total interest paid.'
           }
         </p>
       </div>

@@ -1,9 +1,12 @@
+
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
 import MonsterBattle from './MonsterBattle';
 import Challenge from './Challenge';
+import MultiChallenge from './MultiChallenge';
 import LifeEvent from './LifeEvent';
+import StreakDisplay from './StreakDisplay';
 import { Coins, CalendarDays, Sparkles, PiggyBank, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StrategySelector from './StrategySelector';
@@ -20,7 +23,8 @@ const Dashboard = () => {
     currentLifeEvent, 
     advanceMonth, 
     monthsPassed,
-    specialMoves 
+    specialMoves,
+    paymentStreak
   } = useGameContext();
   
   const [selectedMonster, setSelectedMonster] = useState<string | null>(null);
@@ -69,7 +73,8 @@ const Dashboard = () => {
     <div className="relative space-y-6">
       {/* Header with financial summary and advance month button */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="card-elegant bg-gradient-to-br from-green-50 to-blue-50 flex flex-col justify-between shadow-md hover:shadow-lg transition-shadow">
+        {/* Current Cash card */}
+        <div className="card-elegant bg-gradient-to-br from-green-50 to-blue-50 flex flex-col justify-between shadow-md hover:shadow-lg transition-shadow rounded-xl">
           <div className="p-5">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Current Cash</h3>
             <div className="flex items-center">
@@ -89,7 +94,8 @@ const Dashboard = () => {
           </div>
         </div>
         
-        <div className="card-elegant bg-gradient-to-br from-indigo-50 to-purple-50 flex flex-col justify-between shadow-md hover:shadow-lg transition-shadow">
+        {/* Total Debt card */}
+        <div className="card-elegant bg-gradient-to-br from-indigo-50 to-purple-50 flex flex-col justify-between shadow-md hover:shadow-lg transition-shadow rounded-xl">
           <div className="p-5">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Total Debt</h3>
             <div className="flex items-center">
@@ -109,7 +115,8 @@ const Dashboard = () => {
           </div>
         </div>
         
-        <div className="card-elegant bg-gradient-to-br from-yellow-50 to-orange-50 flex flex-col justify-between shadow-md hover:shadow-lg transition-shadow">
+        {/* Game Progress card */}
+        <div className="card-elegant bg-gradient-to-br from-yellow-50 to-orange-50 flex flex-col justify-between shadow-md hover:shadow-lg transition-shadow rounded-xl">
           <div className="p-5">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Game Progress</h3>
             <div className="flex items-center">
@@ -143,7 +150,8 @@ const Dashboard = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
-          <div className="card-elegant shadow-md hover:shadow-lg transition-shadow">
+          {/* Debt Monsters section */}
+          <div className="card-elegant shadow-md hover:shadow-lg transition-shadow bg-white rounded-xl p-5">
             <h2 className="text-xl font-bold mb-4 flex items-center">
               <span className="p-1.5 bg-gradient-to-br from-fun-purple to-fun-magenta text-white rounded-md mr-2">
                 <Zap className="w-4 h-4" />
@@ -169,17 +177,21 @@ const Dashboard = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="card-elegant shadow-md hover:shadow-lg transition-shadow">
+            {/* Strategy section with fixed UI */}
+            <div className="card-elegant shadow-md hover:shadow-lg transition-shadow bg-white rounded-xl p-5">
               <h2 className="text-lg font-bold mb-3 flex items-center">
                 <span className="p-1 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-md mr-2">
                   <PiggyBank className="w-3.5 h-3.5" />
                 </span>
                 Strategy
               </h2>
-              <StrategySelector />
+              <div className="overflow-hidden">
+                <StrategySelector />
+              </div>
             </div>
             
-            <div className="card-elegant shadow-md hover:shadow-lg transition-shadow">
+            {/* Budget section */}
+            <div className="card-elegant shadow-md hover:shadow-lg transition-shadow bg-white rounded-xl p-5">
               <h2 className="text-lg font-bold mb-3 flex items-center">
                 <span className="p-1 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-md mr-2">
                   <Coins className="w-3.5 h-3.5" />
@@ -192,24 +204,35 @@ const Dashboard = () => {
         </div>
         
         <div className="space-y-6">
-          <div className="card-elegant shadow-md hover:shadow-lg transition-shadow">
+          {/* Multiple Challenges section */}
+          <div className="card-elegant shadow-md hover:shadow-lg transition-shadow bg-white rounded-xl p-5">
             <h2 className="text-lg font-bold mb-3 flex items-center">
               <span className="p-1 bg-gradient-to-br from-yellow-400 to-yellow-600 text-white rounded-md mr-2">
                 <Sparkles className="w-3.5 h-3.5" />
               </span>
-              Active Challenge
+              Daily Challenges
             </h2>
-            <Challenge 
-              title={sampleChallenge.title}
-              description={sampleChallenge.description}
-              progress={sampleChallenge.progress}
-              target={sampleChallenge.target}
-              reward={sampleChallenge.reward}
-              completed={sampleChallenge.completed}
+            <MultiChallenge challenges={challenges} maxDisplay={3} />
+          </div>
+          
+          {/* Payment Streak section */}
+          <div className="card-elegant shadow-md hover:shadow-lg transition-shadow bg-white rounded-xl p-5">
+            <h2 className="text-lg font-bold mb-3 flex items-center">
+              <span className="p-1 bg-gradient-to-br from-fun-purple to-fun-magenta text-white rounded-md mr-2">
+                <Calendar className="w-3.5 h-3.5" />
+              </span>
+              Your Streaks
+            </h2>
+            <StreakDisplay
+              streakCount={paymentStreak}
+              streakType="Payment"
+              nextReward={3}
+              rewardType="Special Move"
             />
           </div>
           
-          <div className="card-elegant shadow-md hover:shadow-lg transition-shadow">
+          {/* Tips section */}
+          <div className="card-elegant shadow-md hover:shadow-lg transition-shadow bg-white rounded-xl p-5">
             <h2 className="text-lg font-bold mb-3 flex items-center">
               <span className="p-1 bg-gradient-to-br from-fun-purple to-fun-magenta text-white rounded-md mr-2">
                 <Zap className="w-3.5 h-3.5" />
