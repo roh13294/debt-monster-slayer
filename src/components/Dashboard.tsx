@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
@@ -162,7 +161,7 @@ const Dashboard = () => {
                   <DebtMonster
                     key={debt.id}
                     debt={debt}
-                    onClick={handleMonsterClick}
+                    onClick={() => handleMonsterClick(debt.id)}
                   />
                 ))}
               </div>
