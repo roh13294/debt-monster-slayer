@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { getMonsterImage } from '../utils/monsterImages';
 import { getMonsterProfile } from '../utils/monsterProfiles';
 
@@ -18,6 +18,8 @@ const MonsterImage: React.FC<MonsterImageProps> = ({
   animateAttack = false,
   animateSpecial = false
 }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const imageSrc = getMonsterImage(debtName);
   const monsterProfile = getMonsterProfile(debtName);
   
@@ -35,6 +37,18 @@ const MonsterImage: React.FC<MonsterImageProps> = ({
           relative z-10
         `}
       >
+        {!imageLoaded && !imageError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse rounded-lg">
+            <span className="text-sm text-gray-500">Loading monster...</span>
+          </div>
+        )}
+        
+        {imageError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-red-50 rounded-lg border border-red-200">
+            <span className="text-sm text-red-500">Image not found</span>
+          </div>
+        )}
+        
         <img 
           src={imageSrc} 
           alt={`${monsterProfile.name} - ${debtName} Monster`} 
@@ -42,9 +56,13 @@ const MonsterImage: React.FC<MonsterImageProps> = ({
             max-h-full max-w-full object-contain 
             ${isInBattle ? 'h-60' : 'h-44'} 
             drop-shadow-2xl monster-image
+            ${imageLoaded ? 'opacity-100' : 'opacity-0'}
+            transition-opacity duration-300
           `}
+          onLoad={() => setImageLoaded(true)}
           onError={(e) => {
             console.error(`Error loading image: ${imageSrc}`);
+            setImageError(true);
             e.currentTarget.src = '/images/default-monster.png';
           }}
         />

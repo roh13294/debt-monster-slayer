@@ -5,55 +5,108 @@
 
 @layer base {
   :root {
-    /* ... keep existing code (color variables) */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    
+    /* Monster app colors */
+    --monster-red: 0 90% 60%;
+    --monster-blue: 220 90% 60%;
+    --monster-green: 140 70% 45%;
+    --monster-purple: 270 70% 60%;
+    --monster-yellow: 45 100% 60%;
+    
+    /* Fun colors */
+    --fun-purple: 270 70% 60%;
+    --fun-magenta: 330 90% 65%;
+    --fun-blue: 220 90% 60%;
+    --fun-green: 140 70% 45%;
+    --fun-yellow: 45 100% 60%;
+    --fun-orange: 30 100% 60%;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
   }
 }
 
-/* ... keep existing code (existing animations) */
-
-/* Monster animation classes */
-.monster-damaged {
-  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-.monster-attacking {
-  animation: attacking 0.5s cubic-bezier(.36,.07,.19,.97) both;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
-@keyframes attacking {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-}
-
-@keyframes bounce-subtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+/* Animation Keyframes */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
 @keyframes sparkle {
-  0%, 100% { opacity: 0; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
+  0% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.7; }
 }
 
-@keyframes flash {
-  0%, 50%, 100% { opacity: 1; }
-  25%, 75% { opacity: 0.5; filter: brightness(2); }
+@keyframes pulse-subtle {
+  0% { opacity: 0.9; }
+  50% { opacity: 1; }
+  100% { opacity: 0.9; }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bounce-fun {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
 }
 
 @keyframes tada {
@@ -64,195 +117,100 @@
   100% { transform: scale(1) rotate(0); }
 }
 
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0); }
-  25% { transform: rotate(10deg); }
-  75% { transform: rotate(-10deg); }
+@keyframes flash {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0.5; }
 }
 
-@keyframes ping-slow {
-  75%, 100% { 
-    transform: scale(1.5);
-    opacity: 0;
-  }
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
-/* Confetti animation */
-.confetti-piece {
-  position: absolute;
-  width: 10px;
-  height: 20px;
-  background: #ffd300;
-  top: 0;
-  opacity: 0;
+/* Monster Animation Classes */
+.monster-attacking {
+  animation: monster-attack 0.5s ease-in-out;
 }
 
-.confetti-piece:nth-child(1) {
-  left: 7%;
-  transform: rotate(-40deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 182ms;
-  animation-duration: 1116ms;
-  background: #00d8ff;
+.monster-damaged {
+  animation: monster-damage 0.5s ease-in-out;
 }
 
-.confetti-piece:nth-child(2) {
-  left: 14%;
-  transform: rotate(4deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 161ms;
-  animation-duration: 1076ms;
-  background: #9300ff;
+@keyframes monster-attack {
+  0% { transform: translateX(0); }
+  40% { transform: translateX(-10px); }
+  60% { transform: translateX(20px); }
+  80% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
 }
 
-.confetti-piece:nth-child(3) {
-  left: 21%;
-  transform: rotate(-51deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 481ms;
-  animation-duration: 1103ms;
-  background: #ff00b9;
+@keyframes monster-damage {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(15px); }
+  40% { transform: translateX(-10px); }
+  60% { transform: translateX(5px); }
+  80% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
 }
 
-.confetti-piece:nth-child(4) {
-  left: 28%;
-  transform: rotate(61deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 334ms;
-  animation-duration: 708ms;
-  background: #ff7c00;
-}
-
-.confetti-piece:nth-child(5) {
-  left: 35%;
-  transform: rotate(-52deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 302ms;
-  animation-duration: 776ms;
-  background: #00eaff;
-}
-
-.confetti-piece:nth-child(6) {
-  left: 42%;
-  transform: rotate(38deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 180ms;
-  animation-duration: 1168ms;
-  background: #ff006e;
-}
-
-.confetti-piece:nth-child(7) {
-  left: 49%;
-  transform: rotate(11deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 395ms;
-  animation-duration: 1200ms;
-  background: #ff4000;
-}
-
-.confetti-piece:nth-child(8) {
-  left: 56%;
-  transform: rotate(49deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 14ms;
-  animation-duration: 887ms;
-  background: #00ff91;
-}
-
-.confetti-piece:nth-child(9) {
-  left: 63%;
-  transform: rotate(-72deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 149ms;
-  animation-duration: 805ms;
-  background: #b700ff;
-}
-
-.confetti-piece:nth-child(10) {
-  left: 70%;
-  transform: rotate(10deg);
-  animation: makeItRain 1000ms infinite ease-out;
-  animation-delay: 351ms;
-  animation-duration: 1059ms;
-  background: #ffc400;
-}
-
-@keyframes makeItRain {
-  from {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  to {
-    transform: translateY(90vh);
-  }
-}
-
-/* Color variables for monsters */
-:root {
-  --monster-red: #ff5252;
-  --monster-blue: #4285f4;  
-  --monster-green: #0f9d58;
-  --monster-purple: #a142f4;
-  --monster-yellow: #ffc107;
-  
-  --fun-purple: #8a54ff;
-  --fun-magenta: #ff49db;
-  --fun-blue: #3b82f6;
-  --fun-green: #22c55e;
-  --fun-yellow: #facc15;
-  --fun-orange: #ff7849;
-  --fun-red: #ff4949;
-}
-
-/* Card styles */
-.card-elegant {
-  @apply bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow;
-}
-
-.card-fun {
-  @apply bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5;
-}
-
-/* Add animate utilities */
-.animate-pulse-subtle {
-  animation: pulse-subtle 3s infinite;
-}
-
-.animate-bounce-subtle {
-  animation: bounce-subtle 2s infinite;
+/* Animation Classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
 .animate-sparkle {
-  animation: sparkle 2s infinite;
+  animation: sparkle 2s ease-in-out infinite;
 }
 
-.animate-flash {
-  animation: flash 0.5s;
-}
-
-.animate-bounce-fun {
-  animation: bounce-fun 2s infinite;
-}
-
-.animate-tada {
-  animation: tada 1s;
-}
-
-.animate-wiggle {
-  animation: wiggle 2s cubic-bezier(.36,.07,.19,.97) infinite;
-}
-
-.animate-ping-slow {
-  animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
 }
 
 .animate-fade-in {
-  animation: fade-in 0.3s;
+  animation: fade-in 0.5s ease-out forwards;
 }
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.animate-bounce-fun {
+  animation: bounce-fun 2s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 4s ease-in-out infinite;
+}
+
+.animate-tada {
+  animation: tada 1s ease-in-out;
+}
+
+.animate-flash {
+  animation: flash 1s ease-in-out;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* Card Styles */
+.card-elegant {
+  @apply p-6 bg-white rounded-xl border border-gray-100 shadow-md hover:border-gray-200 transition-all;
+}
+
+.card-fun {
+  @apply p-6 bg-white rounded-xl border border-gray-100 shadow-md hover:border-purple-200 transition-all relative overflow-hidden;
+}
+
+.btn-elegant {
+  @apply px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg transition-all hover:from-purple-700 hover:to-indigo-700 shadow-md;
+}
+
+/* Other Custom Styles */
+.monster-image {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+/* Battle Scene */
+.battle-scene {
+  background-image: url('/images/battle-background.jpg');
+  background-size: cover;
+  background-position: center;
 }

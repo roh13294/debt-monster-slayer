@@ -18,16 +18,19 @@ export const monsterImages: MonsterImageMap = {
 export const getMonsterImage = (debtName: string): string => {
   // Check for direct matches first
   if (monsterImages[debtName]) {
+    console.log(`Direct match found for "${debtName}": ${monsterImages[debtName]}`);
     return monsterImages[debtName];
   }
   
   // If no direct match, check for partial matches
   for (const [key, imagePath] of Object.entries(monsterImages)) {
     if (debtName.toLowerCase().includes(key.toLowerCase()) && key !== 'default') {
+      console.log(`Partial match found for "${debtName}" with key "${key}": ${imagePath}`);
       return imagePath;
     }
   }
   
   // Return default if no match
+  console.log(`No match found for "${debtName}", using default: ${monsterImages['default']}`);
   return monsterImages['default'];
 };
