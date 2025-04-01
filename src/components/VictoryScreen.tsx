@@ -95,32 +95,35 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
         </DialogFooter>
       </DialogContent>
       
-      <style jsx>{`
-        .confetti-container {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          z-index: 0;
-        }
-        
-        .confetti {
-          position: absolute;
-          top: -10px;
-          animation: fall 5s linear infinite;
-        }
-        
-        @keyframes fall {
-          0% {
+      {/* Add CSS as a regular style tag without the jsx property */}
+      <style>
+        {`
+          .confetti-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+          }
+          
+          .confetti {
+            position: absolute;
             top: -10px;
-            transform: rotate(0deg) translateX(0);
+            animation: fall 5s linear infinite;
           }
-          100% {
-            top: 100%;
-            transform: rotate(360deg) translateX(20px);
+          
+          @keyframes fall {
+            0% {
+              top: -10px;
+              transform: rotate(0deg) translateX(0);
+            }
+            100% {
+              top: 100%;
+              transform: rotate(360deg) translateX(20px);
+            }
           }
-        }
-      `}</style>
+        `}
+      </style>
     </Dialog>
   );
 };
