@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Shield, ZapOff, Sword, Flame, ChevronDown, ChevronUp, Target, Sparkles, Zap } from 'lucide-react';
 import ProgressBar from './ProgressBar';
@@ -8,14 +7,15 @@ import { getMonsterProfile } from '../utils/monsterProfiles';
 import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
 import VictoryScreen from './VictoryScreen';
+import MonsterImage from './MonsterImage';
 
 interface DebtMonsterProps {
   debt: Debt;
   isInBattle?: boolean;
-  onClick?: () => void; // Add this prop to fix the TypeScript error
+  onClick?: () => void;
 }
 
-const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) => {
+const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false, onClick }) => {
   const { damageMonster, useSpecialMove, specialMoves, cash } = useGameContext();
   const [isAttacking, setIsAttacking] = useState(false);
   const [specialAttack, setSpecialAttack] = useState(false);
@@ -109,18 +109,6 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
     green: 'bg-gradient-to-br from-monster-green to-green-600 text-white',
     purple: 'bg-gradient-to-br from-monster-purple to-purple-600 text-white',
     yellow: 'bg-gradient-to-br from-monster-yellow to-yellow-500 text-black'
-  };
-
-  // Monster icons based on type
-  const MonsterIcon = () => {
-    switch (debt.monsterType) {
-      case 'red':
-        return <ZapOff className="w-10 h-10" />;
-      case 'blue':
-        return <Shield className="w-10 h-10" />;
-      default:
-        return <Sword className="w-10 h-10" />;
-    }
   };
 
   const handleAttack = () => {
@@ -333,6 +321,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
         ${flashEffect ? 'animate-flash' : ''}
         transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg relative overflow-hidden
         ${isInBattle ? 'p-6 rounded-xl' : 'p-4 rounded-lg'}`}
+        onClick={onClick}
       >
         {/* Special attack effect */}
         {specialAttack && (
@@ -356,23 +345,27 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, isInBattle = false }) =
         {/* Background decoration */}
         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full"></div>
         
-        <div className="flex items-center justify-between mb-3 relative z-20">
-          <div className="flex items-center space-x-3">
-            <div className={`p-2 ${isInBattle ? 'p-3' : ''} bg-white/20 backdrop-blur-sm rounded-lg 
-              ${monsterState === 'attacking' ? 'animate-bounce' : 'animate-pulse-subtle'}`}>
-              <MonsterIcon />
+        <div className="flex items-start justify-between mb-3 relative z-20">
+          <div className="flex-1">
+            <h3 className="font-bold">{monsterProfile.name}</h3>
+            <div className="text-sm opacity-90">
+              ${debt.amount.toFixed(2)} at {debt.interest}% APR
             </div>
-            <div>
-              <h3 className="font-bold">{monsterProfile.name}</h3>
-              <div className="text-sm opacity-90">
-                ${debt.amount.toFixed(2)} at {debt.interest}% APR
-              </div>
-              <div className="text-xs italic mt-1">"{monsterProfile.catchphrase}"</div>
-            </div>
+            <div className="text-xs italic mt-1">"{monsterProfile.catchphrase}"</div>
           </div>
           <div className="text-xs px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full">
             Min: ${debt.minimumPayment}/mo
           </div>
+        </div>
+        
+        {/* Monster image */}
+        <div className="relative overflow-hidden mb-3">
+          <MonsterImage 
+            debtName={debt.name}
+            isInBattle={isInBattle}
+            animateAttack={isAttacking && !specialAttack}
+            animateSpecial={specialAttack}
+          />
         </div>
         
         <div className="relative z-20">

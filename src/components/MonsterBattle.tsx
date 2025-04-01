@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../context/GameContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -71,6 +70,10 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
         variant: "default",
       });
     }
+  };
+
+  const handleMonsterClick = (debtId: string) => {
+    // Handle monster click logic here
   };
 
   useEffect(() => {
@@ -306,7 +309,11 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
                       index % 2 === 0 ? 'animate-pulse-subtle' : ''
                     }`}
                   >
-                    <DebtMonster debt={debt} isInBattle={false} />
+                    <DebtMonster
+                      debt={debt}
+                      isInBattle={false}
+                      onClick={() => handleMonsterClick(debt.id)}
+                    />
                   </div>
                 ))}
               </div>
