@@ -21,6 +21,9 @@ const MonsterImage: React.FC<MonsterImageProps> = ({
   const imageSrc = getMonsterImage(debtName);
   const monsterProfile = getMonsterProfile(debtName);
   
+  // For debugging - log the image path
+  console.log(`Monster image path for ${debtName}:`, imageSrc);
+  
   return (
     <div className={`relative ${isInBattle ? 'h-64' : 'h-48'} w-full overflow-hidden flex items-center justify-center ${className}`}>
       <div 
@@ -38,8 +41,12 @@ const MonsterImage: React.FC<MonsterImageProps> = ({
           className={`
             max-h-full max-w-full object-contain 
             ${isInBattle ? 'h-60' : 'h-44'} 
-            drop-shadow-2xl
+            drop-shadow-2xl monster-image
           `}
+          onError={(e) => {
+            console.error(`Error loading image: ${imageSrc}`);
+            e.currentTarget.src = '/images/default-monster.png';
+          }}
         />
       </div>
       
