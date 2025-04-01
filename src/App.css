@@ -1,4 +1,3 @@
-
 /* Game-specific CSS utility classes */
 
 .battle-arena {
@@ -141,4 +140,110 @@
 .achievement__description {
   font-size: 0.625rem;
   color: rgb(107, 114, 128);
+}
+
+/* Monster styling */
+.monster-image {
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  transition: all 0.3s ease;
+}
+
+.monster-image:hover {
+  transform: translateY(-5px);
+}
+
+/* Animation for monster damage */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(5px); }
+  50% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+.monster-damaged {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Animation for victory screen confetti */
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 30px;
+  background-color: #ffd700;
+  top: -10%;
+  animation: confetti 3s ease-in-out infinite;
+}
+
+.confetti-piece:nth-child(1) {
+  left: 10%;
+  background-color: #ff4136;
+  animation-delay: 0s;
+}
+
+.confetti-piece:nth-child(2) {
+  left: 20%;
+  background-color: #0074d9;
+  animation-delay: 0.2s;
+}
+
+.confetti-piece:nth-child(3) {
+  left: 30%;
+  background-color: #ffdc00;
+  animation-delay: 0.4s;
+}
+
+.confetti-piece:nth-child(4) {
+  left: 40%;
+  background-color: #2ecc40;
+  animation-delay: 0.6s;
+}
+
+.confetti-piece:nth-child(5) {
+  left: 50%;
+  background-color: #b10dc9;
+  animation-delay: 0.8s;
+}
+
+.confetti-piece:nth-child(6) {
+  left: 60%;
+  background-color: #f012be;
+  animation-delay: 1s;
+}
+
+.confetti-piece:nth-child(7) {
+  left: 70%;
+  background-color: #ff851b;
+  animation-delay: 1.2s;
+}
+
+.confetti-piece:nth-child(8) {
+  left: 80%;
+  background-color: #7fdbff;
+  animation-delay: 1.4s;
+}
+
+.confetti-piece:nth-child(9) {
+  left: 90%;
+  background-color: #01ff70;
+  animation-delay: 1.6s;
+}
+
+.confetti-piece:nth-child(10) {
+  left: 95%;
+  background-color: #39cccc;
+  animation-delay: 1.8s;
+}
+
+@keyframes confetti {
+  0% {
+    opacity: 1;
+    top: -10%;
+    transform: rotateZ(0deg);
+  }
+  100% {
+    opacity: 0;
+    top: 100%;
+    transform: rotateZ(720deg);
+  }
 }

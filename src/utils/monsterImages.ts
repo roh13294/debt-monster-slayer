@@ -5,13 +5,13 @@ type MonsterImageMap = {
 };
 
 export const monsterImages: MonsterImageMap = {
-  'Credit Card Debt': '/lovable-uploads/aac1901c-69b5-4be1-ab49-f4d376bd1caa.png', // Red monster with credit cards
-  'Student Loan': '/lovable-uploads/1ec47d45-e603-47dc-bdb4-655382af260c.png', // Green monster with documents
-  'Car Loan': '/lovable-uploads/576d43d4-0e69-4f26-86e4-a7c278ba1bbd.png', // Yellow/gold lion monster
-  'Mortgage': '/lovable-uploads/82795244-4974-4b99-acb2-d24ab6e532af.png', // Stone golem with hourglass
-  'Personal Loan': '/lovable-uploads/89f2cd89-81c4-4ac1-920c-5c23a8b1c8d6.png', // Purple snake in suit
+  'Credit Card Debt': '/images/credit-card-monster.png', // Red monster with credit cards
+  'Student Loan': '/images/student-loan-monster.png', // Green monster with documents
+  'Car Loan': '/images/car-loan-monster.png', // Yellow/gold lion monster
+  'Mortgage': '/images/mortgage-monster.png', // Stone golem with hourglass
+  'Personal Loan': '/images/personal-loan-monster.png', // Purple snake in suit
   // Default fallback image if no specific one is found
-  'default': '/lovable-uploads/aac1901c-69b5-4be1-ab49-f4d376bd1caa.png'
+  'default': '/images/default-monster.png'
 };
 
 // Helper function to get the right monster image based on debt name
