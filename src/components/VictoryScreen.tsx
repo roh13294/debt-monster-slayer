@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Trophy, Star, Sword, ArrowRight, XP, Sparkles, Shield, Flame } from 'lucide-react';
+import { Trophy, Star, Sword, ArrowRight, Sparkles, Shield, Flame } from 'lucide-react';
 import { Debt } from '../types/gameTypes';
 import { getMonsterProfile } from '../utils/monsterProfiles';
 
