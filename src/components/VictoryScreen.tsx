@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Trophy, Star, Sword, ArrowRight } from 'lucide-react';
+import { Trophy, Star, Sword, ArrowRight, XP, Sparkles, Shield, Flame } from 'lucide-react';
 import { Debt } from '../types/gameTypes';
 import { getMonsterProfile } from '../utils/monsterProfiles';
 
@@ -14,6 +14,39 @@ interface VictoryScreenProps {
 
 const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onClose }) => {
   const monsterProfile = getMonsterProfile(debt.name);
+  const [showXpAnimation, setShowXpAnimation] = useState(false);
+  const [xpGained, setXpGained] = useState(0);
+  const [unlockedReward, setUnlockedReward] = useState<string | null>(null);
+  
+  // Calculate XP based on payment amount and debt type
+  useEffect(() => {
+    // Base XP calculation
+    const baseXp = Math.floor(paymentAmount / 10);
+    // Bonus XP for higher interest debts
+    const interestMultiplier = debt.interest > 10 ? 1.5 : 1.2;
+    // Final XP calculation
+    const finalXp = Math.floor(baseXp * interestMultiplier);
+    
+    // Delay the XP animation for dramatic effect
+    setTimeout(() => {
+      setXpGained(finalXp);
+      setShowXpAnimation(true);
+    }, 1000);
+    
+    // Determine if a reward should be unlocked based on payment
+    if (paymentAmount >= debt.amount * 0.5) {
+      // Significant payment unlocks a reward
+      const rewards = [
+        "Frugality Boost",
+        "No-Spend Aura",
+        "Gig Hustle Surge",
+        "Budget Break",
+        "Refinance Burst",
+        "Auto-Pay Blade"
+      ];
+      setUnlockedReward(rewards[Math.floor(Math.random() * rewards.length)]);
+    }
+  }, [paymentAmount, debt]);
   
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -44,7 +77,7 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
             </div>
           </div>
           <DialogTitle className="text-center text-2xl font-bold mt-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-            MONSTER DEFEATED!
+            DEBT DEMON DEFEATED!
           </DialogTitle>
           <DialogDescription className="text-center text-lg font-medium text-purple-800">
             You've vanquished {monsterProfile.name}!
@@ -58,17 +91,44 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
           
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="bg-blue-50 p-3 rounded-lg text-center border border-blue-100">
-              <p className="text-sm text-gray-600">Final Payment</p>
+              <p className="text-sm text-gray-600">Damage Dealt</p>
               <p className="text-xl font-bold text-blue-700">${paymentAmount}</p>
             </div>
             
             <div className="bg-green-50 p-3 rounded-lg text-center border border-green-100">
-              <p className="text-sm text-gray-600">Total Conquered</p>
+              <p className="text-sm text-gray-600">Demon Slain</p>
               <p className="text-xl font-bold text-green-700">${debt.amount.toFixed(2)}</p>
             </div>
           </div>
           
-          <div className="flex items-center justify-center mt-2">
+          {/* XP reward section with animation */}
+          <div className={`bg-gradient-to-r from-violet-100 to-indigo-100 p-3 rounded-lg text-center mt-3 border border-indigo-200 
+            ${showXpAnimation ? 'animate-pulse' : ''}`}>
+            <p className="text-sm text-gray-600 flex items-center justify-center">
+              <Star className="h-4 w-4 text-yellow-500 mr-1" /> 
+              XP Gained
+            </p>
+            <p className="text-xl font-bold text-indigo-700 flex items-center justify-center">
+              +{xpGained} XP
+              {showXpAnimation && (
+                <Sparkles className="h-4 w-4 text-yellow-500 ml-2 animate-spin" />
+              )}
+            </p>
+          </div>
+          
+          {/* Unlocked reward section */}
+          {unlockedReward && (
+            <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-3 rounded-lg text-center mt-3 border border-amber-200 animate-fade-in">
+              <p className="text-sm text-gray-600 flex items-center justify-center">
+                <Flame className="h-4 w-4 text-orange-500 mr-1" /> 
+                New Ability Unlocked!
+              </p>
+              <p className="text-lg font-bold text-orange-700">{unlockedReward}</p>
+              <p className="text-xs text-gray-600 mt-1">Use this in your next battle!</p>
+            </div>
+          )}
+          
+          <div className="flex items-center justify-center mt-4">
             <div className="flex space-x-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star 
@@ -82,7 +142,7 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
         
         <DialogFooter className="relative z-10 flex flex-col gap-2">
           <p className="text-sm text-center text-gray-600 px-2">
-            You've defeated this debt monster! Continue your journey to slay them all!
+            Your financial power grows! Continue your journey to defeat all debt demons.
           </p>
           <Button 
             onClick={onClose}
