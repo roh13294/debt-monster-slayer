@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -89,12 +88,13 @@ export default {
 					black: 'hsl(var(--oni-black))',
 					white: 'hsl(var(--oni-white))'
 				},
-				// New anime-inspired theme colors
 				demon: {
 					red: '#FF2D55',
 					orange: '#FF9500',
 					indigo: '#5E17EB',
 					teal: '#00FFDD',
+					blue: '#00BBFF',
+					purple: '#9B5DE5',
 					black: '#121212',
 					ember: '#FF7700',
 					blood: '#CB0000',
@@ -166,7 +166,6 @@ export default {
 					'40%': { transform: 'translateX(100%) rotate(30deg)', opacity: '0' },
 					'100%': { transform: 'translateX(100%) rotate(30deg)', opacity: '0' }
 				},
-				// New anime-inspired animations
 				'breath-pulse': {
 					'0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
 					'50%': { transform: 'scale(1.1)', opacity: '1' }
@@ -222,7 +221,6 @@ export default {
 				'monster-damage': 'monster-damage 0.5s ease-in-out',
 				'sword-draw': 'sword-draw 0.7s ease-out forwards',
 				'sword-slash': 'sword-slash 0.7s ease-out forwards',
-				// New anime-inspired animation classes
 				'breath-pulse': 'breath-pulse 3s infinite ease-in-out',
 				'energy-flow': 'energy-flow 2s infinite linear',
 				'aura-glow': 'aura-glow 2s infinite ease-in-out',
@@ -237,7 +235,6 @@ export default {
 				'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
 				'neo': '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff',
 				'oni': '0 0 15px rgba(255, 0, 0, 0.3)',
-				// New anime-inspired shadows
 				'demon-aura': '0 0 20px rgba(255, 45, 85, 0.6)',
 				'water-breathing': '0 0 20px rgba(0, 255, 221, 0.6)',
 				'thunder-breathing': '0 0 20px rgba(94, 23, 235, 0.6)',
@@ -258,7 +255,6 @@ export default {
 			backgroundImage: {
 				'oni-gradient': 'linear-gradient(to right, hsl(var(--oni-red)), hsl(var(--oni-orange)))',
 				'dark-gradient': 'linear-gradient(to bottom right, rgba(0,0,0,0.8), rgba(20,20,30,0.8))',
-				// New anime-inspired gradients
 				'demon-gradient': 'linear-gradient(to right, #FF2D55, #FF9500)',
 				'water-gradient': 'linear-gradient(to right, #00FFDD, #0EA5E9)',
 				'thunder-gradient': 'linear-gradient(to right, #5E17EB, #9B5DE5)',
