@@ -1,3 +1,4 @@
+
 /* Game-specific CSS utility classes */
 
 .battle-arena {
@@ -5,6 +6,10 @@
   overflow: hidden;
   transform-style: preserve-3d;
   perspective: 1000px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+  border-radius: 1rem;
 }
 
 .battle-arena::before {
@@ -14,7 +19,7 @@
   left: -20px;
   right: -20px;
   bottom: -20px;
-  background: linear-gradient(45deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+  background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(59, 130, 246, 0.1));
   z-index: -1;
   filter: blur(15px);
   pointer-events: none;
@@ -72,28 +77,30 @@
 /* Enhanced visual effects */
 .knowledge-card {
   border-radius: 0.75rem;
-  background: linear-gradient(to right, rgb(255, 255, 255), rgb(248, 250, 252));
-  border: 1px solid rgba(226, 232, 240, 1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(20, 20, 30, 0.7));
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   padding: 1rem;
   transition: all 0.3s ease;
 }
 
 .knowledge-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(255, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
+  border-color: rgba(255, 0, 0, 0.4);
 }
 
 .knowledge-card__title {
   font-weight: 700;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
-  color: rgb(79, 70, 229);
+  color: rgb(255, 80, 80);
+  text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
 }
 
 .knowledge-card__content {
   font-size: 0.75rem;
-  color: rgb(71, 85, 105);
+  color: rgb(220, 220, 230);
   line-height: 1.25rem;
 }
 
@@ -103,16 +110,17 @@
   align-items: center;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  background: linear-gradient(to right, rgba(249, 250, 251, 0.8), rgba(248, 250, 252, 0.8));
-  border: 1px solid rgba(229, 231, 235, 1);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(20, 20, 30, 0.8));
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
   margin-bottom: 0.5rem;
   transition: all 0.2s ease;
 }
 
 .achievement:hover {
-  background: linear-gradient(to right, rgba(243, 244, 246, 0.9), rgba(249, 250, 251, 0.9));
+  background: linear-gradient(to right, rgba(10, 10, 15, 0.9), rgba(30, 30, 45, 0.9));
   transform: translateX(2px);
+  border-color: rgba(255, 0, 0, 0.4);
 }
 
 .achievement__icon {
@@ -123,7 +131,7 @@
   height: 2rem;
   border-radius: 9999px;
   margin-right: 0.75rem;
-  background: linear-gradient(to bottom right, rgb(139, 92, 246), rgb(124, 58, 237));
+  background: linear-gradient(to bottom right, rgb(255, 0, 0), rgb(255, 60, 0));
   color: white;
 }
 
@@ -134,22 +142,24 @@
 .achievement__title {
   font-weight: 500;
   font-size: 0.75rem;
-  color: rgb(31, 41, 55);
+  color: rgb(240, 240, 250);
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.2);
 }
 
 .achievement__description {
   font-size: 0.625rem;
-  color: rgb(107, 114, 128);
+  color: rgb(180, 180, 200);
 }
 
 /* Monster styling */
 .monster-image {
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.3));
   transition: all 0.3s ease;
 }
 
 .monster-image:hover {
-  transform: translateY(-5px);
+  filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
+  transform: translateY(-5px) scale(1.05);
 }
 
 /* Animation for monster damage */
@@ -246,4 +256,104 @@
     top: 100%;
     transform: rotateZ(720deg);
   }
+}
+
+/* Anime-themed UI elements */
+.katana-divider {
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(255, 0, 0, 0.7), transparent);
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.katana-divider::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(255, 0, 0, 0.8);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+}
+
+.breathing-circle {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.breathing-circle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(255, 0, 0, 0.7);
+  border-radius: 50%;
+  animation: breathing-pulse 3s infinite ease-in-out;
+}
+
+@keyframes breathing-pulse {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.ink-text {
+  display: inline-block;
+  position: relative;
+}
+
+.ink-text::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, rgba(255, 0, 0, 0.7), rgba(255, 150, 0, 0.7));
+  transition: width 0.3s ease;
+}
+
+.ink-text:hover::after {
+  width: 100%;
+}
+
+.kanji-bg {
+  position: relative;
+}
+
+.kanji-bg::before {
+  content: '刃';
+  position: absolute;
+  font-size: 8rem;
+  opacity: 0.05;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* Stylized scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(255, 0, 0, 0.6), rgba(255, 80, 0, 0.6));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, rgba(255, 0, 0, 0.8), rgba(255, 80, 0, 0.8));
 }

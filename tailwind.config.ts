@@ -76,6 +76,17 @@ export default {
 					blue: '#0EA5E9',
 					green: '#4ade80',
 					yellow: '#facc15'
+				},
+				oni: {
+					red: 'hsl(var(--oni-red))',
+					blue: 'hsl(var(--oni-blue))',
+					purple: 'hsl(var(--oni-purple))',
+					cyan: 'hsl(var(--oni-cyan))',
+					orange: 'hsl(var(--oni-orange))',
+					ember: 'hsl(var(--oni-ember))',
+					gold: 'hsl(var(--oni-gold))',
+					black: 'hsl(var(--oni-black))',
+					white: 'hsl(var(--oni-white))'
 				}
 			},
 			borderRadius: {
@@ -130,6 +141,17 @@ export default {
 					'50%': { transform: 'translateX(10px)' },
 					'75%': { transform: 'translateX(-5px)' },
 					'100%': { transform: 'translateX(0)' }
+				},
+				'sword-draw': {
+					'0%': { transform: 'translateX(-100%) rotate(-30deg)', filter: 'brightness(2)' },
+					'80%': { transform: 'translateX(10%) rotate(0deg)', filter: 'brightness(2)' },
+					'100%': { transform: 'translateX(0) rotate(0deg)', filter: 'brightness(1)' }
+				},
+				'sword-slash': {
+					'0%': { transform: 'translateX(-100%) rotate(-30deg)', opacity: '0' },
+					'10%': { transform: 'translateX(0) rotate(0deg)', opacity: '1' },
+					'40%': { transform: 'translateX(100%) rotate(30deg)', opacity: '0' },
+					'100%': { transform: 'translateX(100%) rotate(30deg)', opacity: '0' }
 				}
 			},
 			animation: {
@@ -141,11 +163,14 @@ export default {
 				'pulse-subtle': 'pulse-subtle 3s infinite ease-in-out',
 				'float': 'float 6s infinite ease-in-out',
 				'progress-fill': 'progress-fill 1s ease-out forwards',
-				'monster-damage': 'monster-damage 0.5s ease-in-out'
+				'monster-damage': 'monster-damage 0.5s ease-in-out',
+				'sword-draw': 'sword-draw 0.7s ease-out forwards',
+				'sword-slash': 'sword-slash 0.7s ease-out forwards'
 			},
 			boxShadow: {
 				'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
-				'neo': '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff'
+				'neo': '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff',
+				'oni': '0 0 15px rgba(255, 0, 0, 0.3)'
 			},
 			fontSize: {
 				'xs': ['0.75rem', { lineHeight: '1rem' }],
@@ -157,9 +182,12 @@ export default {
 				'3xl': ['1.875rem', { lineHeight: '2.25rem' }],
 				'4xl': ['2.25rem', { lineHeight: '2.5rem' }],
 				'5xl': ['3rem', { lineHeight: '1' }],
+			},
+			backgroundImage: {
+				'oni-gradient': 'linear-gradient(to right, hsl(var(--oni-red)), hsl(var(--oni-orange)))',
+				'dark-gradient': 'linear-gradient(to bottom right, rgba(0,0,0,0.8), rgba(20,20,30,0.8))'
 			}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-

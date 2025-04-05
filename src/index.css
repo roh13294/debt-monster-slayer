@@ -5,63 +5,48 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --background: 0 0% 10%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 90% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 40% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 20% 20%;
+    --muted-foreground: 0 0% 80%;
+    --accent: 180 80% 50%;
+    --accent-foreground: 0 0% 15%;
+    --destructive: 0 90% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 20% 30%;
+    --input: 240 20% 30%;
+    --ring: 0 90% 60%;
+    --radius: 0.75rem;
     
-    /* Monster app colors */
+    /* Anime theme colors */
     --monster-red: 0 90% 60%;
     --monster-blue: 220 90% 60%;
     --monster-green: 140 70% 45%;
     --monster-purple: 270 70% 60%;
     --monster-yellow: 45 100% 60%;
     
-    /* Fun colors */
-    --fun-purple: 270 70% 60%;
-    --fun-magenta: 330 90% 65%;
-    --fun-blue: 220 90% 60%;
-    --fun-green: 140 70% 45%;
-    --fun-yellow: 45 100% 60%;
-    --fun-orange: 30 100% 60%;
+    /* Anime Theme Colors */
+    --oni-red: 0 90% 60%;
+    --oni-blue: 220 90% 60%;
+    --oni-purple: 270 70% 60%;
+    --oni-cyan: 180 80% 50%;
+    --oni-orange: 30 100% 60%;
+    --oni-ember: 20 100% 50%;
+    --oni-gold: 45 100% 60%;
+    --oni-black: 0 0% 10%;
+    --oni-white: 0 0% 98%;
   }
  
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    /* ... keep existing code */
   }
 }
 
@@ -71,6 +56,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(255,255,255,0.05)' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-attachment: fixed;
   }
 }
 
@@ -125,6 +112,32 @@
 @keyframes bounce-subtle {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
+}
+
+/* Sword Animation Keyframes */
+@keyframes sword-draw {
+  0% { transform: translateX(-100%) rotate(-30deg); filter: brightness(2); }
+  80% { transform: translateX(10%) rotate(0deg); filter: brightness(2); }
+  100% { transform: translateX(0) rotate(0deg); filter: brightness(1); }
+}
+
+@keyframes sword-slice {
+  0% { transform: translateX(-100%) rotate(-30deg); opacity: 0; }
+  10% { transform: translateX(0) rotate(0deg); opacity: 1; }
+  40% { transform: translateX(100%) rotate(30deg); opacity: 0; }
+  100% { transform: translateX(100%) rotate(30deg); opacity: 0; }
+}
+
+@keyframes flame-pulse {
+  0% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 100, 50, 0.5)); }
+  50% { filter: brightness(1.5) drop-shadow(0 0 10px rgba(255, 100, 50, 0.8)); }
+  100% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 100, 50, 0.5)); }
+}
+
+@keyframes ink-spread {
+  0% { transform: scale(0); opacity: 1; }
+  80% { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
 /* Monster Animation Classes */
@@ -190,17 +203,75 @@
   animation: bounce-subtle 2s ease-in-out infinite;
 }
 
+.animate-sword-draw {
+  animation: sword-draw 0.7s ease-out forwards;
+}
+
+.animate-sword-slice {
+  animation: sword-slice 0.7s ease-out forwards;
+}
+
+.animate-flame-pulse {
+  animation: flame-pulse 2s infinite ease-in-out;
+}
+
+.animate-ink-spread {
+  animation: ink-spread 1s ease-out forwards;
+}
+
 /* Card Styles */
 .card-elegant {
-  @apply p-6 bg-white rounded-xl border border-gray-100 shadow-md hover:border-gray-200 transition-all;
+  @apply p-6 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-md rounded-xl border border-white/10 shadow-lg hover:shadow-xl hover:border-white/20 transition-all;
 }
 
 .card-fun {
-  @apply p-6 bg-white rounded-xl border border-gray-100 shadow-md hover:border-purple-200 transition-all relative overflow-hidden;
+  @apply p-6 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-md rounded-xl border border-white/10 shadow-lg hover:shadow-xl hover:border-purple-500/30 transition-all relative overflow-hidden;
 }
 
 .btn-elegant {
-  @apply px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg transition-all hover:from-purple-700 hover:to-indigo-700 shadow-md;
+  @apply px-4 py-2 bg-gradient-to-r from-red-600 to-amber-600 text-white rounded-lg transition-all hover:from-red-700 hover:to-amber-700 shadow-md;
+}
+
+/* Anime Theme UI classes */
+.oni-card {
+  @apply p-6 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-md rounded-xl border border-red-500/30 shadow-lg hover:shadow-xl hover:border-red-500/50 transition-all;
+}
+
+.oni-button {
+  @apply px-4 py-2 bg-gradient-to-r from-red-600 to-amber-600 text-white rounded-lg transition-all hover:from-red-700 hover:to-amber-700 shadow-md relative overflow-hidden;
+}
+
+.oni-button::before {
+  @apply content-[''] absolute inset-0 bg-white/20 transform -translate-x-full transition-transform duration-300;
+}
+
+.oni-button:hover::before {
+  @apply translate-x-0;
+}
+
+.oni-text-glow {
+  @apply text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)];
+}
+
+.oni-text-fire {
+  @apply bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 bg-clip-text text-transparent;
+}
+
+.oni-border {
+  @apply border-2 border-red-500/50 hover:border-red-500/80 transition-all;
+}
+
+.oni-bg-dark {
+  @apply bg-gradient-to-br from-black/80 to-gray-900/80 backdrop-blur-md;
+}
+
+.oni-input {
+  @apply bg-black/50 border border-white/20 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 outline-none;
+}
+
+/* Additional styles for responsive design */
+.responsive-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6;
 }
 
 /* Other Custom Styles */
@@ -213,4 +284,67 @@
   background-image: url('/images/battle-background.jpg');
   background-size: cover;
   background-position: center;
+}
+
+/* Ink splash effects */
+.ink-splash {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M30,50 Q40,20 50,30 Q60,40 70,35 Q80,30 75,50 Q70,70 50,75 Q30,80 30,50 Z" fill="rgba(255,0,0,0.2)"/></svg>');
+  filter: blur(2px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Flame effects */
+.flame-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.flame-element {
+  position: absolute;
+  width: 100px;
+  height: 200px;
+  bottom: -100px;
+  background: radial-gradient(ellipse at bottom, rgba(255,80,0,0.8) 0%, rgba(255,0,0,0.4) 40%, rgba(255,0,0,0) 70%);
+  border-radius: 50% 50% 20% 20%;
+  transform-origin: center bottom;
+  animation: flameAnimation 4s infinite ease-in-out;
+}
+
+@keyframes flameAnimation {
+  0% { transform: scale(1) rotate(-2deg); opacity: 0.7; }
+  50% { transform: scale(1.1) rotate(3deg); opacity: 0.9; }
+  100% { transform: scale(1) rotate(-2deg); opacity: 0.7; }
+}
+
+/* Sword slash animation */
+.sword-slash-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
+  transform: skewX(-20deg);
+  animation: swordSlash 1.8s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  pointer-events: none;
+  z-index: 50;
+}
+
+@keyframes swordSlash {
+  0% { transform: translateX(-100%) skewX(-20deg); }
+  20% { transform: translateX(100%) skewX(-20deg); }
+  20.1% { opacity: 1; }
+  20.2% { opacity: 0; }
+  40% { opacity: 0; }
+  40.1% { transform: translateX(-100%) skewX(20deg); opacity: 0; }
+  40.2% { opacity: 1; }
+  60% { transform: translateX(100%) skewX(20deg); opacity: 1; }
+  60.1% { opacity: 0; }
+  100% { opacity: 0; }
 }
