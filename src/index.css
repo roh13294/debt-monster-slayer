@@ -5,11 +5,11 @@
 
 @layer base {
   :root {
-    --background: 0 0% 10%;
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 15%;
+    --card: 240 10% 5%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 15%;
+    --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 90% 60%;
     --primary-foreground: 0 0% 98%;
@@ -26,7 +26,7 @@
     --ring: 0 90% 60%;
     --radius: 0.75rem;
     
-    /* Anime theme colors */
+    /* Demon Slayer theme colors */
     --monster-red: 0 90% 60%;
     --monster-blue: 220 90% 60%;
     --monster-green: 140 70% 45%;
@@ -34,14 +34,14 @@
     --monster-yellow: 45 100% 60%;
     
     /* Anime Theme Colors */
-    --oni-red: 0 90% 60%;
-    --oni-blue: 220 90% 60%;
-    --oni-purple: 270 70% 60%;
-    --oni-cyan: 180 80% 50%;
+    --oni-red: 350 100% 60%;
+    --oni-blue: 220 100% 65%;
+    --oni-purple: 270 100% 60%;
+    --oni-cyan: 180 100% 50%;
     --oni-orange: 30 100% 60%;
     --oni-ember: 20 100% 50%;
     --oni-gold: 45 100% 60%;
-    --oni-black: 0 0% 10%;
+    --oni-black: 0 0% 7%;
     --oni-white: 0 0% 98%;
   }
  
@@ -54,10 +54,19 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
     background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(255,255,255,0.05)' fill-rule='evenodd'/%3E%3C/svg%3E");
     background-attachment: fixed;
+  }
+  
+  @font-face {
+    font-family: 'Anime';
+    src: url('/fonts/anime.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
   }
 }
 
@@ -140,6 +149,53 @@
   100% { transform: scale(1.5); opacity: 0; }
 }
 
+/* Anime Theme Specific Animations */
+@keyframes breath-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes energy-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes aura-glow {
+  0% { box-shadow: 0 0 10px 2px rgba(255, 45, 85, 0.5); }
+  50% { box-shadow: 0 0 20px 5px rgba(255, 45, 85, 0.8); }
+  100% { box-shadow: 0 0 10px 2px rgba(255, 45, 85, 0.5); }
+}
+
+@keyframes slash-effect {
+  0% { transform: scaleX(0); transform-origin: left; opacity: 1; }
+  50% { transform: scaleX(1); transform-origin: left; opacity: 1; }
+  51% { transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; opacity: 0; }
+}
+
+@keyframes floating-card {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(1deg); }
+  75% { transform: translateY(5px) rotate(-1deg); }
+}
+
+@keyframes kanji-appear {
+  0% { transform: scale(2); opacity: 0; filter: blur(8px); }
+  100% { transform: scale(1); opacity: 1; filter: blur(0); }
+}
+
+@keyframes paper-unfold {
+  0% { transform: scaleY(0); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes flame-flicker {
+  0%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+  25% { opacity: 0.8; transform: translateY(-2px) scale(1.02); }
+  50% { opacity: 1; transform: translateY(-1px) scale(1.01); }
+  75% { opacity: 0.9; transform: translateY(-3px) scale(1.03); }
+}
+
 /* Monster Animation Classes */
 .monster-attacking {
   animation: monster-attack 0.5s ease-in-out;
@@ -219,54 +275,105 @@
   animation: ink-spread 1s ease-out forwards;
 }
 
+/* Anime Theme Specific Animation Classes */
+.animate-breath-pulse {
+  animation: breath-pulse 3s infinite ease-in-out;
+}
+
+.animate-energy-flow {
+  background-size: 200% 200%;
+  animation: energy-flow 2s infinite linear;
+}
+
+.animate-aura-glow {
+  animation: aura-glow 2s infinite ease-in-out;
+}
+
+.animate-slash {
+  animation: slash-effect 0.6s ease-in-out;
+}
+
+.animate-floating-card {
+  animation: floating-card 6s infinite ease-in-out;
+}
+
+.animate-kanji-appear {
+  animation: kanji-appear 0.8s forwards;
+}
+
+.animate-paper-unfold {
+  animation: paper-unfold 0.5s ease-out forwards;
+}
+
+.animate-flame-flicker {
+  animation: flame-flicker 3s infinite;
+}
+
 /* Card Styles */
 .card-elegant {
-  @apply p-6 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-md rounded-xl border border-white/10 shadow-lg hover:shadow-xl hover:border-white/20 transition-all;
+  @apply p-6 bg-gradient-to-br from-demon-black to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-red/30 shadow-demon-aura hover:shadow-xl hover:border-demon-red/50 transition-all;
 }
 
 .card-fun {
-  @apply p-6 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-md rounded-xl border border-white/10 shadow-lg hover:shadow-xl hover:border-purple-500/30 transition-all relative overflow-hidden;
+  @apply p-6 bg-gradient-to-br from-demon-black to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-purple/30 shadow-thunder-breathing hover:shadow-xl hover:border-demon-purple/50 transition-all relative overflow-hidden;
 }
 
 .btn-elegant {
-  @apply px-4 py-2 bg-gradient-to-r from-red-600 to-amber-600 text-white rounded-lg transition-all hover:from-red-700 hover:to-amber-700 shadow-md;
+  @apply px-4 py-2 bg-demon-gradient text-white rounded-lg transition-all hover:opacity-90 shadow-md relative overflow-hidden;
 }
 
 /* Anime Theme UI classes */
-.oni-card {
-  @apply p-6 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-md rounded-xl border border-red-500/30 shadow-lg hover:shadow-xl hover:border-red-500/50 transition-all;
+.demon-card {
+  @apply p-6 bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-red/30 shadow-demon-aura hover:shadow-xl hover:border-demon-red/50 transition-all;
 }
 
-.oni-button {
-  @apply px-4 py-2 bg-gradient-to-r from-red-600 to-amber-600 text-white rounded-lg transition-all hover:from-red-700 hover:to-amber-700 shadow-md relative overflow-hidden;
+.demon-button {
+  @apply px-4 py-2 bg-demon-gradient text-white rounded-lg transition-all hover:opacity-90 shadow-md relative overflow-hidden;
 }
 
-.oni-button::before {
+.demon-button::before {
   @apply content-[''] absolute inset-0 bg-white/20 transform -translate-x-full transition-transform duration-300;
 }
 
-.oni-button:hover::before {
+.demon-button:hover::before {
   @apply translate-x-0;
 }
 
-.oni-text-glow {
-  @apply text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)];
+.demon-text-glow {
+  @apply text-white drop-shadow-[0_0_5px_rgba(255,45,85,0.5)];
 }
 
-.oni-text-fire {
-  @apply bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 bg-clip-text text-transparent;
+.demon-text-fire {
+  @apply bg-flame-gradient bg-clip-text text-transparent;
 }
 
-.oni-border {
-  @apply border-2 border-red-500/50 hover:border-red-500/80 transition-all;
+.demon-border {
+  @apply border-2 border-demon-red/50 hover:border-demon-red/80 transition-all;
 }
 
-.oni-bg-dark {
-  @apply bg-gradient-to-br from-black/80 to-gray-900/80 backdrop-blur-md;
+.demon-bg-dark {
+  @apply bg-night-sky backdrop-blur-md;
 }
 
-.oni-input {
-  @apply bg-black/50 border border-white/20 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 outline-none;
+.demon-input {
+  @apply bg-demon-black/50 border border-demon-red/20 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-demon-red/50 focus:border-demon-red/50 outline-none;
+}
+
+/* Breathing Styles */
+.flame-breathing {
+  @apply bg-flame-gradient bg-clip-text text-transparent shadow-flame-breathing;
+}
+
+.water-breathing {
+  @apply bg-water-gradient bg-clip-text text-transparent shadow-water-breathing;
+}
+
+.thunder-breathing {
+  @apply bg-thunder-gradient bg-clip-text text-transparent shadow-thunder-breathing;
+}
+
+.wind-breathing {
+  @apply bg-wind-gradient bg-clip-text text-transparent;
 }
 
 /* Additional styles for responsive design */
@@ -281,9 +388,20 @@
 
 /* Battle Scene */
 .battle-scene {
-  background-image: url('/images/battle-background.jpg');
+  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/images/battle-background.jpg');
   background-size: cover;
   background-position: center;
+  @apply relative overflow-hidden;
+}
+
+.battle-scene::before {
+  content: '';
+  @apply absolute inset-0 bg-misty-mountains opacity-60;
+}
+
+.battle-scene::after {
+  content: '';
+  @apply absolute inset-0 bg-shrine-glow opacity-30;
 }
 
 /* Ink splash effects */
@@ -316,35 +434,106 @@
   animation: flameAnimation 4s infinite ease-in-out;
 }
 
-@keyframes flameAnimation {
-  0% { transform: scale(1) rotate(-2deg); opacity: 0.7; }
-  50% { transform: scale(1.1) rotate(3deg); opacity: 0.9; }
-  100% { transform: scale(1) rotate(-2deg); opacity: 0.7; }
+/* Kanji Background */
+.kanji-bg {
+  position: relative;
+  overflow: hidden;
 }
 
-/* Sword slash animation */
-.sword-slash-animation {
+.kanji-bg::before {
+  content: '炎';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
-  transform: skewX(-20deg);
-  animation: swordSlash 1.8s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  font-size: 8rem;
+  opacity: 0.08;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   pointer-events: none;
-  z-index: 50;
 }
 
-@keyframes swordSlash {
-  0% { transform: translateX(-100%) skewX(-20deg); }
-  20% { transform: translateX(100%) skewX(-20deg); }
-  20.1% { opacity: 1; }
-  20.2% { opacity: 0; }
-  40% { opacity: 0; }
-  40.1% { transform: translateX(-100%) skewX(20deg); opacity: 0; }
-  40.2% { opacity: 1; }
-  60% { transform: translateX(100%) skewX(20deg); opacity: 1; }
-  60.1% { opacity: 0; }
-  100% { opacity: 0; }
+.kanji-water::before {
+  content: '水';
+}
+
+.kanji-thunder::before {
+  content: '雷';
+}
+
+.kanji-wind::before {
+  content: '風';
+}
+
+/* Anime UI Elements */
+.demon-portal {
+  @apply relative rounded-xl overflow-hidden border border-demon-red/30 hover:border-demon-red/70 transition-all shadow-demon-aura hover:shadow-lg bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md;
+}
+
+.demon-portal::before {
+  content: '';
+  @apply absolute inset-0 bg-shrine-glow opacity-0 transition-opacity;
+}
+
+.demon-portal:hover::before {
+  @apply opacity-30;
+}
+
+.demon-divider {
+  @apply h-px bg-gradient-to-r from-transparent via-demon-red/50 to-transparent my-6 relative;
+}
+
+.demon-divider::after {
+  content: '';
+  @apply absolute w-2 h-2 bg-demon-red/80 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-demon-aura;
+}
+
+.breathing-ring {
+  @apply relative rounded-full border border-demon-red/50;
+}
+
+.breathing-ring::before {
+  content: '';
+  @apply absolute inset-0 rounded-full border-2 border-demon-red/70 animate-breath-pulse;
+}
+
+/* Scroll bars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-demon-black/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-demon-gradient rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-flame-gradient;
+}
+
+/* Battle arena */
+.battle-arena {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(31,31,58,0.8));
+  border: 1px solid rgba(255, 45, 85, 0.3);
+  box-shadow: 0 0 20px rgba(255, 45, 85, 0.2);
+  border-radius: 1rem;
+}
+
+.battle-arena::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: linear-gradient(45deg, rgba(255, 45, 85, 0.1), rgba(59, 130, 246, 0.1));
+  z-index: -1;
+  filter: blur(15px);
+  pointer-events: none;
 }

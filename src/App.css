@@ -6,9 +6,9 @@
   overflow: hidden;
   transform-style: preserve-3d;
   perspective: 1000px;
-  background-color: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 0, 0, 0.3);
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(31,31,58,0.8));
+  border: 1px solid rgba(255, 45, 85, 0.3);
+  box-shadow: 0 0 20px rgba(255, 45, 85, 0.2);
   border-radius: 1rem;
 }
 
@@ -19,7 +19,7 @@
   left: -20px;
   right: -20px;
   bottom: -20px;
-  background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(59, 130, 246, 0.1));
+  background: linear-gradient(45deg, rgba(255, 45, 85, 0.1), rgba(94, 23, 235, 0.1));
   z-index: -1;
   filter: blur(15px);
   pointer-events: none;
@@ -74,28 +74,49 @@
   100% { opacity: 0; transform: translateY(0); }
 }
 
-/* Enhanced visual effects */
+/* Enhanced visual effects for knowledge cards */
 .knowledge-card {
   border-radius: 0.75rem;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(20, 20, 30, 0.7));
-  border: 1px solid rgba(255, 0, 0, 0.2);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to right, rgba(18, 18, 18, 0.8), rgba(31, 31, 58, 0.8));
+  border: 1px solid rgba(255, 45, 85, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 45, 85, 0.2);
   padding: 1rem;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.knowledge-card::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(45deg, rgba(255, 45, 85, 0.05), rgba(94, 23, 235, 0.05));
+  z-index: -1;
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .knowledge-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(255, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px rgba(255, 45, 85, 0.2), 0 4px 6px rgba(0, 0, 0, 0.2);
   transform: translateY(-2px);
-  border-color: rgba(255, 0, 0, 0.4);
+  border-color: rgba(255, 45, 85, 0.5);
+}
+
+.knowledge-card:hover::after {
+  opacity: 1;
 }
 
 .knowledge-card__title {
   font-weight: 700;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
-  color: rgb(255, 80, 80);
-  text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+  color: #FF2D55;
+  text-shadow: 0 0 5px rgba(255, 45, 85, 0.3);
 }
 
 .knowledge-card__content {
@@ -110,17 +131,35 @@
   align-items: center;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(20, 20, 30, 0.8));
-  border: 1px solid rgba(255, 0, 0, 0.2);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to right, rgba(18, 18, 18, 0.8), rgba(31, 31, 58, 0.8));
+  border: 1px solid rgba(255, 45, 85, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 5px rgba(255, 45, 85, 0.1);
   margin-bottom: 0.5rem;
   transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.achievement::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 45, 85, 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .achievement:hover {
-  background: linear-gradient(to right, rgba(10, 10, 15, 0.9), rgba(30, 30, 45, 0.9));
+  background: linear-gradient(to right, rgba(31, 31, 58, 0.9), rgba(18, 18, 18, 0.9));
   transform: translateX(2px);
-  border-color: rgba(255, 0, 0, 0.4);
+  border-color: rgba(255, 45, 85, 0.4);
+}
+
+.achievement:hover::before {
+  opacity: 1;
 }
 
 .achievement__icon {
@@ -131,8 +170,27 @@
   height: 2rem;
   border-radius: 9999px;
   margin-right: 0.75rem;
-  background: linear-gradient(to bottom right, rgb(255, 0, 0), rgb(255, 60, 0));
+  background: linear-gradient(to bottom right, #FF2D55, #FF9500);
   color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(255, 45, 85, 0.4);
+}
+
+.achievement__icon::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.achievement:hover .achievement__icon::after {
+  opacity: 1;
 }
 
 .achievement__content {
@@ -153,13 +211,28 @@
 
 /* Monster styling */
 .monster-image {
-  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.3));
+  filter: drop-shadow(0 0 10px rgba(255, 45, 85, 0.3));
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.monster-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .monster-image:hover {
-  filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
+  filter: drop-shadow(0 0 15px rgba(255, 45, 85, 0.5));
   transform: translateY(-5px) scale(1.05);
+}
+
+.monster-image:hover::after {
+  opacity: 1;
 }
 
 /* Animation for monster damage */
@@ -261,7 +334,7 @@
 /* Anime-themed UI elements */
 .katana-divider {
   height: 2px;
-  background: linear-gradient(to right, transparent, rgba(255, 0, 0, 0.7), transparent);
+  background: linear-gradient(to right, transparent, rgba(255, 45, 85, 0.7), transparent);
   margin: 1.5rem 0;
   position: relative;
 }
@@ -271,12 +344,12 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  background-color: rgba(255, 0, 0, 0.8);
+  background-color: rgba(255, 45, 85, 0.8);
   border-radius: 50%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+  box-shadow: 0 0 8px rgba(255, 45, 85, 0.8);
 }
 
 .breathing-circle {
@@ -292,7 +365,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  border: 2px solid rgba(255, 0, 0, 0.7);
+  border: 2px solid rgba(255, 45, 85, 0.7);
   border-radius: 50%;
   animation: breathing-pulse 3s infinite ease-in-out;
 }
@@ -315,7 +388,7 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(to right, rgba(255, 0, 0, 0.7), rgba(255, 150, 0, 0.7));
+  background: linear-gradient(to right, rgba(255, 45, 85, 0.7), rgba(255, 150, 0, 0.7));
   transition: width 0.3s ease;
 }
 
@@ -323,37 +396,115 @@
   width: 100%;
 }
 
-.kanji-bg {
+/* Breathing Styles UI elements */
+.flame-breathing-text {
+  @apply bg-gradient-to-r from-demon-red via-demon-ember to-demon-orange bg-clip-text text-transparent;
+  text-shadow: 0 0 10px rgba(255, 119, 0, 0.2);
+}
+
+.water-breathing-text {
+  @apply bg-gradient-to-r from-demon-teal to-demon-blue bg-clip-text text-transparent;
+  text-shadow: 0 0 10px rgba(0, 255, 221, 0.2);
+}
+
+.thunder-breathing-text {
+  @apply bg-gradient-to-r from-demon-purple to-demon-indigo bg-clip-text text-transparent;
+  text-shadow: 0 0 10px rgba(94, 23, 235, 0.2);
+}
+
+.breathing-button {
+  @apply relative overflow-hidden rounded-lg px-4 py-2 text-white transition-all;
+}
+
+.breathing-button::before {
+  content: '';
+  @apply absolute inset-0 opacity-0 transition-opacity;
+}
+
+.breathing-button:hover::before {
+  @apply opacity-100;
+}
+
+.flame-breathing-button {
+  @apply bg-gradient-to-r from-demon-red to-demon-orange;
+}
+
+.flame-breathing-button::before {
+  background: linear-gradient(to right, rgba(255, 45, 85, 0.2), rgba(255, 149, 0, 0.2));
+}
+
+.water-breathing-button {
+  @apply bg-gradient-to-r from-demon-teal to-demon-blue;
+}
+
+.water-breathing-button::before {
+  background: linear-gradient(to right, rgba(0, 255, 221, 0.2), rgba(14, 165, 233, 0.2));
+}
+
+.thunder-breathing-button {
+  @apply bg-gradient-to-r from-demon-purple to-demon-indigo;
+}
+
+.thunder-breathing-button::before {
+  background: linear-gradient(to right, rgba(94, 23, 235, 0.2), rgba(99, 102, 241, 0.2));
+}
+
+/* Sword Animation */
+.sword-draw {
   position: relative;
+  overflow: hidden;
 }
 
-.kanji-bg::before {
-  content: '刃';
+.sword-draw::before {
+  content: '';
   position: absolute;
-  font-size: 8rem;
-  opacity: 0.05;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+  height: 100%;
+  width: 3px;
+  background: linear-gradient(to bottom, transparent, #FF2D55, transparent);
+  left: 0;
+  top: 0;
+  animation: sword-draw-shine 1s ease-out;
 }
 
-/* Stylized scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+@keyframes sword-draw-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(1000%);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
+/* Demon Slayer Mark UI */
+.demon-slayer-mark {
+  @apply relative inline-block;
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, rgba(255, 0, 0, 0.6), rgba(255, 80, 0, 0.6));
-  border-radius: 4px;
+.demon-slayer-mark::before {
+  content: '火';
+  @apply absolute -top-2 -right-2 text-xs font-bold text-demon-red opacity-0 transition-opacity;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, rgba(255, 0, 0, 0.8), rgba(255, 80, 0, 0.8));
+.demon-slayer-mark:hover::before {
+  @apply opacity-100;
+}
+
+/* Rarity colors for items */
+.rarity-common {
+  @apply border-gray-400 bg-gradient-to-br from-gray-800/80 to-gray-900/80;
+}
+
+.rarity-rare {
+  @apply border-demon-teal/50 bg-gradient-to-br from-gray-900/80 to-[#1a3e4a]/80;
+  box-shadow: 0 0 10px rgba(0, 255, 221, 0.2);
+}
+
+.rarity-epic {
+  @apply border-demon-purple/50 bg-gradient-to-br from-gray-900/80 to-[#2a1a4a]/80;
+  box-shadow: 0 0 15px rgba(94, 23, 235, 0.2);
+}
+
+.rarity-legendary {
+  @apply border-demon-gold/50 bg-gradient-to-br from-gray-900/80 to-[#4a3a1a]/80;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
