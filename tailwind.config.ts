@@ -95,10 +95,52 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "flame-pulse": {
+          "0%": { opacity: "0.6", filter: "brightness(1)" },
+          "50%": { opacity: "1", filter: "brightness(1.3)" },
+          "100%": { opacity: "0.6", filter: "brightness(1)" },
+        },
+        "sword-draw": {
+          "0%": { transform: "translateX(-5px) rotate(0deg)" },
+          "50%": { transform: "translateX(5px) rotate(10deg)" },
+          "100%": { transform: "translateX(-5px) rotate(0deg)" },
+        },
+        "float": {
+          "0%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+          "100%": { transform: "translateY(0px)" },
+        },
+        "breath-pulse": {
+          "0%": { opacity: "0.5", transform: "scale(0.95)" },
+          "50%": { opacity: "0.8", transform: "scale(1.05)" },
+          "100%": { opacity: "0.5", transform: "scale(0.95)" },
+        },
+        "energy-flow": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        "floating-card": {
+          "0%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-5px)" },
+          "100%": { transform: "translateY(0px)" },
+        },
+        "pulse-subtle": {
+          "0%": { opacity: "0.8" },
+          "50%": { opacity: "1" },
+          "100%": { opacity: "0.8" },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "flame-pulse": "flame-pulse 2s ease-in-out infinite",
+        "sword-draw": "sword-draw 0.5s ease-in-out",
+        "float": "float 3s ease-in-out infinite",
+        "breath-pulse": "breath-pulse 5s ease-in-out infinite",
+        "energy-flow": "energy-flow 3s ease infinite",
+        "floating-card": "floating-card 4s ease-in-out infinite",
+        "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
       },
     },
   },

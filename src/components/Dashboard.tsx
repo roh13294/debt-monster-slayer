@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
 import { toast } from "@/hooks/use-toast";
+import MonthlyEncounter from './MonthlyEncounter';
 
 const Dashboard = () => {
   const { 
@@ -24,7 +25,8 @@ const Dashboard = () => {
     advanceMonth, 
     monthsPassed,
     specialMoves,
-    paymentStreak
+    paymentStreak,
+    playerTraits
   } = useGameContext();
   
   const [selectedMonster, setSelectedMonster] = useState<string | null>(null);
@@ -47,15 +49,6 @@ const Dashboard = () => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amount);
-  };
-  
-  const handleAdvanceMonth = () => {
-    toast({
-      title: "Month Advanced",
-      description: "Your financial situation has been updated for the next month.",
-      variant: "default",
-    });
-    advanceMonth();
   };
   
   // Get first challenge for the sample challenge widget
@@ -151,14 +144,8 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="mt-4 p-3">
-            <Button 
-              onClick={handleAdvanceMonth} 
-              className="oni-button w-full group"
-            >
-              <Flame className="w-4 h-4 mr-2 group-hover:animate-flame-pulse text-amber-200" />
-              Advance to Next Month
-              <Sword className="w-4 h-4 ml-2 group-hover:animate-sword-draw" />
-            </Button>
+            {/* Replace the simple button with our new MonthlyEncounter component */}
+            <MonthlyEncounter />
           </div>
         </div>
       </div>
@@ -198,7 +185,7 @@ const Dashboard = () => {
               <div className="absolute left-5 top-5 opacity-5 text-6xl font-bold kanji-bg">戦略</div>
               <h2 className="text-lg font-bold mb-3 flex items-center">
                 <span className="p-1 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-md mr-2 shadow-oni">
-                  <PiggyBank className="w-3.5 h-3.5" />
+                  <Shield className="w-3.5 h-3.5" />
                 </span>
                 <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Strategy</span>
               </h2>
