@@ -54,9 +54,11 @@ export type PlayerTraits = {
   careerFocus: number;        // 1-10 scale: affects career events
   savingAbility: number;      // 1-10 scale: affects saving events
   luckyStreak: number;        // 1-10 scale: affects random outcomes
+  discipline: number;         // 1-10 scale: affects debt payment effectiveness
+  courage: number;            // 1-10 scale: affects risky financial moves
+  wisdom: number;             // 1-10 scale: affects financial decision quality
 };
 
-// Shop item interface
 export interface ShopItem {
   id: string;
   name: string;

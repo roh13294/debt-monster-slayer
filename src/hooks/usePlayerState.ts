@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { PlayerTraits } from '../types/gameTypes';
 import { initialPlayerTraits } from '../data/initialGameState';
@@ -36,7 +35,10 @@ export const usePlayerState = () => {
       spendingHabits: Math.floor(Math.random() * 4) + 3, // 3-6
       careerFocus: Math.floor(Math.random() * 4) + 3, // 3-6
       savingAbility: Math.floor(Math.random() * 4) + 3, // 3-6
-      luckyStreak: Math.floor(Math.random() * 10) + 1 // 1-10
+      luckyStreak: Math.floor(Math.random() * 10) + 1, // 1-10
+      discipline: Math.floor(Math.random() * 4) + 3, // 3-6
+      courage: Math.floor(Math.random() * 4) + 3, // 3-6
+      wisdom: Math.floor(Math.random() * 4) + 3 // 3-6
     };
   };
 

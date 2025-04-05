@@ -9,7 +9,7 @@ import LifeEvent from './LifeEvent';
 import StreakDisplay from './StreakDisplay';
 import CharacterProfile from './CharacterProfile';
 import StatsDashboard from './StatsDashboard';
-import { Coins, CalendarDays, Sparkles, PiggyBank, Zap, Calendar, Sword, Flame, Trophy } from 'lucide-react';
+import { Coins, CalendarDays, Sparkles, PiggyBank, Zap, Calendar, Sword, Flame, Trophy, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
@@ -27,7 +27,8 @@ const GameDashboard = () => {
     advanceMonth, 
     monthsPassed,
     specialMoves,
-    paymentStreak
+    paymentStreak,
+    playerTraits
   } = useGameContext();
   
   const [selectedMonster, setSelectedMonster] = useState<string | null>(null);

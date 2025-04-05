@@ -119,5 +119,9 @@ export const initialPlayerTraits: PlayerTraits = {
   spendingHabits: 5,
   careerFocus: 5,
   savingAbility: 5,
-  luckyStreak: 5
+  luckyStreak: 5,
+  // New anime-themed traits
+  discipline: 5,
+  courage: 5,
+  wisdom: 5
 };
