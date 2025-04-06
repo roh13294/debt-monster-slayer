@@ -113,10 +113,9 @@ export const useGameProgress = (
 
   // New advanceMonth implementation that doesn't immediately update financials
   const advanceMonth = () => {
-    // This function now doesn't do the financial processing directly
-    // Instead, it's handled by the MonthlyEncounter component after user makes choices
-    // The actual financial processing is done in processMonthlyFinancials which is called 
-    // after the encounter is resolved in MonthlyEncounter component
+    // This function is now just a trigger for the monthly encounter
+    // The actual financial processing is handled in processMonthlyFinancials
+    // which is called after the encounter is resolved
   };
 
   // Check for level-up and award special moves

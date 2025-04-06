@@ -117,6 +117,7 @@ export type GameContextType = {
   // Game progress
   monthsPassed: number;
   advanceMonth: () => void;
+  processMonthlyFinancials: () => void;
   
   // Monster battles
   damageMonster: (debtId: string, amount: number) => void;

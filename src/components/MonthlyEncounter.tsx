@@ -10,7 +10,7 @@ import { EncounterBackdrop } from './encounter/EncounterEffects';
 import { motion } from 'framer-motion';
 
 const MonthlyEncounter = () => {
-  const { advanceMonth, cash, budget, setCash, updateBudget } = useGameContext();
+  const { advanceMonth, cash, budget, setCash, updateBudget, processMonthlyFinancials } = useGameContext();
   const [isOpen, setIsOpen] = useState(false);
   const [stage, setStage] = useState(1);
   const [stance, setStance] = useState<string | null>(null);
@@ -56,8 +56,8 @@ const MonthlyEncounter = () => {
       switch (selected) {
         case 'aggressive':
           outcome = {
-            title: 'Debt Slayer Stance',
-            description: 'You've focused your energy on slashing your debt this month. Your payments will be more effective!',
+            title: "Debt Slayer Stance",
+            description: "You've focused your energy on slashing your debt this month. Your payments will be more effective!",
             cashChange: 0,
             debtChange: 15
           };
@@ -65,8 +65,8 @@ const MonthlyEncounter = () => {
           
         case 'defensive':
           outcome = {
-            title: 'Savings Shield Stance',
-            description: 'You've taken a defensive position to build your savings this month. Your emergency fund grows stronger!',
+            title: "Savings Shield Stance",
+            description: "You've taken a defensive position to build your savings this month. Your emergency fund grows stronger!",
             cashChange: 5,
             debtChange: -5
           };
@@ -78,32 +78,32 @@ const MonthlyEncounter = () => {
           if (riskRoll < 0.25) {
             // Big success
             outcome = {
-              title: 'Fortune Favors the Bold!',
-              description: 'Your risky approach paid off handsomely this month. Your investments yielded significant returns!',
+              title: "Fortune Favors the Bold!",
+              description: "Your risky approach paid off handsomely this month. Your investments yielded significant returns!",
               cashChange: 30,
               debtChange: 10
             };
           } else if (riskRoll < 0.65) {
             // Moderate success
             outcome = {
-              title: 'Calculated Risk',
-              description: 'Your investments performed reasonably well this month, yielding modest returns.',
+              title: "Calculated Risk",
+              description: "Your investments performed reasonably well this month, yielding modest returns.",
               cashChange: 15,
               debtChange: 0
             };
           } else if (riskRoll < 0.9) {
             // Break even
             outcome = {
-              title: 'Market Volatility',
-              description: 'Your investments faced a turbulent market. You managed to break even, but gained valuable experience.',
+              title: "Market Volatility",
+              description: "Your investments faced a turbulent market. You managed to break even, but gained valuable experience.",
               cashChange: 0,
               debtChange: 0
             };
           } else {
             // Loss
             outcome = {
-              title: 'Investment Setback',
-              description: 'Your risky investments didn't pan out this month. The market turned against your positions.',
+              title: "Investment Setback",
+              description: "Your risky investments didn't pan out this month. The market turned against your positions.",
               cashChange: -15,
               debtChange: -5
             };
@@ -164,8 +164,8 @@ const MonthlyEncounter = () => {
     // Close the encounter
     handleCloseEncounter();
     
-    // Advance to next month
-    advanceMonth();
+    // Process financials and advance to next month
+    processMonthlyFinancials();
     
     toast({
       title: "A New Month Begins!",
