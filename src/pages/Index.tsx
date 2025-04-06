@@ -1,9 +1,9 @@
 
-import GameDashboard from "@/components/GameDashboard";
 import { useGameContext } from "@/context/GameContext";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import AnimeAvatar from "@/components/AnimeAvatar";
+import MonthEngine from "@/components/MonthEngine";
 
 const Index = () => {
   const { gameStarted, initializeGame } = useGameContext();
@@ -40,7 +40,7 @@ const Index = () => {
 
   return (
     <div className="container mx-auto py-6 px-4">
-      <GameDashboard />
+      <MonthEngine />
     </div>
   );
 };

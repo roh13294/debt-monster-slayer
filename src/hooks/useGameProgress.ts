@@ -1,160 +1,200 @@
 
-import { useState, useEffect } from 'react';
-import { PlayerTraits } from '../types/gameTypes';
-import { toast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { toast } from "../hooks/use-toast";
+import { Debt } from '../types/gameTypes';
 
-export const useGameProgress = (
-  setDebts: (fn: (prev: any[]) => any[]) => void,
-  debts: any[],
-  budget: any,
-  setCash: (fn: (prev: number) => number) => void,
-  setPaymentStreak: (fn: (prev: number) => number) => void,
+interface StanceMultipliers {
+  debtPaymentMultiplier: number;
+  savingsMultiplier: number;
+  incomeMultiplier: number;
+  expensesMultiplier: number;
+}
+
+interface Budget {
+  income: number;
+  essentials: number;
+  debt: number;
+  savings: number;
+  discretionary: number;
+}
+
+interface PlayerTraits {
+  financialKnowledge: number;
+  determination: number;
+  riskTolerance: number;
+}
+
+export function useGameProgress(
+  setDebts: React.Dispatch<React.SetStateAction<Debt[]>>,
+  debts: Debt[],
+  budget: Budget,
+  setCash: React.Dispatch<React.SetStateAction<number>>,
+  setPaymentStreak: React.Dispatch<React.SetStateAction<number>>,
   paymentStreak: number,
-  setSpecialMoves: (fn: (prev: number) => number) => void,
+  setSpecialMoves: React.Dispatch<React.SetStateAction<number>>,
   specialMoves: number,
   strategy: string,
   generateLifeEvent: () => void,
   playerTraits: PlayerTraits,
-  setChallenges: (challenges: any[]) => void,
-  generatePersonalizedChallenges: (traits: PlayerTraits) => any[]
-) => {
+  setChallenges: React.Dispatch<React.SetStateAction<any[]>>,
+  generatePersonalizedChallenges: () => any[]
+) {
   const [monthsPassed, setMonthsPassed] = useState<number>(0);
-  const [lastLevelSeen, setLastLevelSeen] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [lastLevelSeen, setLastLevelSeen] = useState<number>(1);
 
-  // Process financial updates after monthly decision is made
-  const processMonthlyFinancials = () => {
-    // Apply interest to debts
-    setDebts(prevDebts => prevDebts.map(debt => ({
-      ...debt,
-      amount: debt.amount * (1 + debt.interest / 1200) // Monthly interest
-    })));
+  // Process monthly finances
+  const processMonthlyFinancials = (stanceMultipliers?: StanceMultipliers) => {
+    // Default multipliers
+    const multipliers = stanceMultipliers || {
+      debtPaymentMultiplier: 1,
+      savingsMultiplier: 1,
+      incomeMultiplier: 1,
+      expensesMultiplier: 1
+    };
     
-    // Apply income
-    setCash(prev => prev + budget.income);
+    // Income
+    const monthlyIncome = budget.income * multipliers.incomeMultiplier;
     
-    // Apply expenses
-    setCash(prev => prev - budget.essentials);
+    // Expenses
+    const monthlyExpenses = budget.essentials * multipliers.expensesMultiplier;
     
-    // Apply minimum payments to all debts
-    let remainingDebtBudget = budget.debt;
+    // Handle income and expenses
+    const netCashFlow = monthlyIncome - monthlyExpenses;
+    setCash(prevCash => prevCash + netCashFlow);
+
+    // Handle savings
+    const monthlySavings = budget.savings * multipliers.savingsMultiplier;
+    setCash(prevCash => prevCash - monthlySavings);
+
+    // Handle debt payments
+    const debtPayment = budget.debt;
+    const effectiveDebtPayment = debtPayment * multipliers.debtPaymentMultiplier;
     
-    // Sort debts by strategy
-    const sortedDebts = [...debts].sort((a, b) => {
-      if (strategy === 'snowball') {
-        return a.amount - b.amount; // Smallest first
-      } else {
-        return b.interest - a.interest; // Highest interest first
+    // Apply debt payment strategy
+    if (debts.length > 0) {
+      const updatedDebts = [...debts];
+      
+      // Deduct cash for the debt payment
+      setCash(prevCash => prevCash - debtPayment);
+      
+      // Set payment streak
+      setPaymentStreak(prevStreak => prevStreak + 1);
+      
+      // Apply payment based on strategy
+      switch (strategy) {
+        case "avalanche":
+          // Sort by interest rate (highest first)
+          updatedDebts.sort((a, b) => b.interestRate - a.interestRate);
+          break;
+        case "snowball":
+          // Sort by balance (lowest first)
+          updatedDebts.sort((a, b) => a.balance - b.balance);
+          break;
+        case "highImpact":
+          // Sort by psychological impact (highest first)
+          updatedDebts.sort((a, b) => b.psychologicalImpact - a.psychologicalImpact);
+          break;
+        default:
+          // Default - proportional payments
+          // No sorting needed
+          break;
       }
-    });
-    
-    // Apply minimum payments
-    const updatedDebts = sortedDebts.map(debt => {
-      const payment = Math.min(debt.minimumPayment, debt.amount);
-      remainingDebtBudget -= payment;
       
-      return {
-        ...debt,
-        amount: Math.max(0, debt.amount - payment),
-        health: debt.amount <= payment ? 0 : debt.health - (payment / debt.amount) * 100
-      };
-    });
-    
-    // Apply extra payments to first debt in sorted list
-    if (remainingDebtBudget > 0 && updatedDebts.length > 0) {
-      const targetDebt = updatedDebts[0];
-      const extraPayment = Math.min(remainingDebtBudget, targetDebt.amount);
-      
-      updatedDebts[0] = {
-        ...targetDebt,
-        amount: Math.max(0, targetDebt.amount - extraPayment),
-        health: targetDebt.amount <= extraPayment ? 0 : targetDebt.health - (extraPayment / targetDebt.amount) * 100
-      };
-    }
-    
-    // Remove paid off debts
-    setDebts(prev => prev.filter(debt => debt.amount > 0));
-    
-    // Apply savings
-    setCash(prev => prev + budget.savings);
-    
-    // Increment months
-    setMonthsPassed(prev => prev + 1);
-    
-    // Increment payment streak
-    setPaymentStreak(prev => prev + 1);
-    
-    // If payment streak reaches certain milestones, award special moves
-    if (paymentStreak > 0 && paymentStreak % 3 === 0) {
-      setSpecialMoves(prev => prev + 1);
-      
-      toast({
-        title: "Payment Streak!",
-        description: `${paymentStreak} months of consistent payments! +1 Special Move!`,
-        variant: "default",
-      });
-    }
-    
-    // Life event chance affected by player traits
-    let eventChance = 0.5; // Base 50% chance
-    
-    // Risk-tolerant players get more events
-    if (playerTraits.riskTolerance > 7) {
-      eventChance += 0.2;
-    } else if (playerTraits.riskTolerance < 4) {
-      eventChance -= 0.1;
-    }
-    
-    // Generate life event based on chance
-    if (Math.random() < eventChance) {
-      generateLifeEvent();
-    }
-  };
-
-  // New advanceMonth implementation that doesn't immediately update financials
-  const advanceMonth = () => {
-    // This function is now just a trigger for the monthly encounter
-    // The actual financial processing is handled in processMonthlyFinancials
-    // which is called after the encounter is resolved
-  };
-
-  // Check for level-up and award special moves
-  useEffect(() => {
-    if (!gameStarted) return;
-    
-    const currentLevel = Math.max(1, Math.floor(monthsPassed / 3) + 1);
-    if (currentLevel > lastLevelSeen) {
-      // Player leveled up
-      setSpecialMoves(prev => prev + 1);
-      setLastLevelSeen(currentLevel);
-      
-      toast({
-        title: "Level Up!",
-        description: `You reached level ${currentLevel}! +1 Special Move unlocked!`,
-        variant: "default",
-      });
-      
-      // Every 3 levels, update challenges based on player traits
-      if (currentLevel % 3 === 0) {
-        const newChallenges = generatePersonalizedChallenges(playerTraits);
-        setChallenges(newChallenges);
-        
+      // Check if we should reward a special move for payment streak
+      if (paymentStreak > 0 && paymentStreak % 3 === 0) {
+        setSpecialMoves(prev => prev + 1);
         toast({
-          title: "New Challenges!",
-          description: `New personalized challenges available based on your play style!`,
+          title: "Streak Reward!",
+          description: `You've maintained your payment streak for ${paymentStreak} months! You earned a special move!`,
+          variant: "default",
+        });
+      }
+
+      // Apply debt payment according to strategy
+      if (strategy === "proportional") {
+        // Proportional payments to all debts
+        const totalDebtAmount = updatedDebts.reduce((sum, debt) => sum + debt.balance, 0);
+        
+        updatedDebts.forEach((debt, index) => {
+          const proportion = debt.balance / totalDebtAmount;
+          const payment = effectiveDebtPayment * proportion;
+          
+          updatedDebts[index] = {
+            ...debt,
+            balance: Math.max(0, debt.balance - payment)
+          };
+        });
+      } else {
+        // For avalanche, snowball, and highImpact: focus on first debt
+        let remainingPayment = effectiveDebtPayment;
+        
+        for (let i = 0; i < updatedDebts.length && remainingPayment > 0; i++) {
+          const payment = Math.min(remainingPayment, updatedDebts[i].balance);
+          
+          updatedDebts[i] = {
+            ...updatedDebts[i],
+            balance: Math.max(0, updatedDebts[i].balance - payment)
+          };
+          
+          remainingPayment -= payment;
+        }
+      }
+      
+      // Remove any paid off debts
+      const filteredDebts = updatedDebts.filter(debt => debt.balance > 0);
+      
+      setDebts(filteredDebts);
+      
+      // If all debts are paid off
+      if (filteredDebts.length === 0 && debts.length > 0) {
+        toast({
+          title: "All Debts Paid!",
+          description: "Congratulations! You've defeated all your debt demons!",
           variant: "default",
         });
       }
     }
-  }, [monthsPassed, lastLevelSeen, gameStarted, playerTraits, setSpecialMoves, setChallenges, generatePersonalizedChallenges]);
+
+    // Increase month counter
+    setMonthsPassed(prevMonths => prevMonths + 1);
+    
+    // Generate life event with 30% chance
+    if (Math.random() < 0.3) {
+      generateLifeEvent();
+    }
+    
+    // Generate new personalized challenges every 3 months
+    if ((monthsPassed + 1) % 3 === 0) {
+      setChallenges(generatePersonalizedChallenges());
+    }
+    
+    // Check for level up
+    const currentLevel = Math.floor(monthsPassed / 3) + 1;
+    const newLevel = Math.floor((monthsPassed + 1) / 3) + 1;
+    
+    if (newLevel > currentLevel && newLevel > lastLevelSeen) {
+      toast({
+        title: "Level Up!",
+        description: `You've reached level ${newLevel}! Keep up the good financial habits!`,
+        variant: "default",
+      });
+      setLastLevelSeen(newLevel);
+    }
+  };
+
+  // Advance to next month
+  const advanceMonth = () => {
+    processMonthlyFinancials();
+  };
 
   return {
     monthsPassed,
+    setMonthsPassed,
     gameStarted,
     setGameStarted,
     advanceMonth,
     processMonthlyFinancials,
-    setMonthsPassed,
     setLastLevelSeen
   };
-};
+}

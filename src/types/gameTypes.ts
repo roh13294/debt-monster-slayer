@@ -1,146 +1,142 @@
+import { Dispatch, SetStateAction } from 'react';
 
-import { JobType, LifeStage, Circumstance } from '../hooks/useRandomCharacter';
-import { ReactNode } from 'react';
-
-export type Debt = {
+export interface Debt {
   id: string;
   name: string;
-  amount: number;
-  interest: number;
+  balance: number;
+  interestRate: number;
   minimumPayment: number;
-  monsterType: 'red' | 'blue' | 'green' | 'purple' | 'yellow';
-  health: number; // Monster health percentage
-};
+  psychologicalImpact: number;
+}
 
-export type Strategy = 'snowball' | 'avalanche';
-
-export type Budget = {
+export interface Budget {
   income: number;
   essentials: number;
   debt: number;
   savings: number;
-};
+  discretionary: number;
+}
 
-export type BudgetPreset = 'frugal' | 'balanced' | 'aggressive';
-
-export type LifeEvent = {
-  id: string;
-  title: string;
-  description: string;
-  options: {
-    text: string;
-    effect: {
-      cash?: number;
-      debt?: number;
-      income?: number;
-      description: string;
-    };
-  }[];
-};
-
-export type Challenge = {
+export interface Challenge {
   id: string;
   title: string;
   description: string;
   reward: number;
-  progress: number;
-  target: number;
   completed: boolean;
-};
-
-export type PlayerTraits = {
-  riskTolerance: number;      // 1-10 scale: affects event probabilities
-  financialKnowledge: number; // 1-10 scale: affects advice and options
-  spendingHabits: number;     // 1-10 scale: affects spending events
-  careerFocus: number;        // 1-10 scale: affects career events
-  savingAbility: number;      // 1-10 scale: affects saving events
-  luckyStreak: number;        // 1-10 scale: affects random outcomes
-  discipline: number;         // 1-10 scale: affects debt payment effectiveness
-  courage: number;            // 1-10 scale: affects risky financial moves
-  wisdom: number;             // 1-10 scale: affects financial decision quality
-};
-
-export interface ShopItem {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  effect: {
-    type: string;
-    value: number;
-    trait?: keyof PlayerTraits;
-  };
-  icon?: ReactNode;
 }
 
-export type GameContextType = {
-  // Player data
+export interface LifeEvent {
+  id: string;
+  title: string;
+  description: string;
+  options: LifeEventOption[];
+}
+
+export interface LifeEventOption {
+  text: string;
+  cashChange?: number;
+  debtChange?: number;
+  budgetChange?: {
+    income?: number;
+    essentials?: number;
+    debt?: number;
+    savings?: number;
+    discretionary?: number;
+  };
+  traitChange?: {
+    financialKnowledge?: number;
+    determination?: number;
+    riskTolerance?: number;
+  };
+}
+
+export interface PlayerTraits {
+  financialKnowledge: number;
+  determination: number;
+  riskTolerance: number;
+}
+
+export interface Job {
+  title: string;
+  baseSalary: number;
+}
+
+export interface LifeStage {
+  name: string;
+  baseExpenses: number;
+}
+
+export interface GameContextType {
   playerName: string;
   setPlayerName: (name: string) => void;
   avatar: string;
   setAvatar: (avatar: string) => void;
   cash: number;
   setCash: (cash: number) => void;
-  
-  // Player traits for personalization
   playerTraits: PlayerTraits;
   updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
-  
-  // Game events tracking
-  eventHistory: string[];
-  
-  // Debt data
+  eventHistory: LifeEvent[];
   debts: Debt[];
-  addDebt: (debt: Omit<Debt, 'id' | 'health'>) => void;
+  addDebt: (debt: Debt) => void;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
   removeDebt: (id: string) => void;
   totalDebt: number;
-  
-  // Strategy
-  strategy: Strategy;
-  setStrategy: (strategy: Strategy) => void;
-  
-  // Budget
+  strategy: string;
+  setStrategy: (strategy: string) => void;
   budget: Budget;
-  updateBudget: (budget: Partial<Budget>) => void;
-  applyBudgetPreset: (preset: BudgetPreset) => void;
-  
-  // Life events
+  updateBudget: (updates: Partial<Budget>) => void;
+  applyBudgetPreset: (preset: string) => void;
   currentLifeEvent: LifeEvent | null;
   generateLifeEvent: () => void;
-  resolveLifeEvent: (optionIndex: number) => void;
-  
-  // Challenges
+  resolveLifeEvent: (optionIndex: number, originalResolve: () => void) => void;
   challenges: Challenge[];
-  updateChallenge: (id: string, progress: number) => void;
-  
-  // Game progress
+  updateChallenge: (id: string, updates: Partial<Challenge>) => void;
   monthsPassed: number;
   advanceMonth: () => void;
-  processMonthlyFinancials: () => void;
-  
-  // Monster battles
-  damageMonster: (debtId: string, amount: number) => void;
-  
-  // Special moves
+  processMonthlyFinancials: (stance?: string | null) => void;
+  damageMonster: (debtId: string, damage: number) => void;
   specialMoves: number;
-  setSpecialMoves: (value: number | ((prev: number) => number)) => void;
+  setSpecialMoves: (moves: number) => void;
   useSpecialMove: (debtId: string) => void;
-  
-  // Streaks
   paymentStreak: number;
-  
-  // Game initialization
   initializeGame: () => void;
   resetGame: () => void;
   gameStarted: boolean;
-  
-  // Character properties
-  job: JobType | null;
-  lifeStage: LifeStage | null;
-  circumstances: Circumstance[];
+  job: Job;
+  lifeStage: LifeStage;
+  circumstances: string[];
   characterBackground: string;
-  
-  // Shop functionality
-  purchaseItem: (item: ShopItem) => void;
-};
+  purchaseItem: (itemId: string) => void;
+}
+
+export interface PlayerStateType {
+  playerName: string;
+  setPlayerName: Dispatch<SetStateAction<string>>;
+  avatar: string;
+  setAvatar: Dispatch<SetStateAction<string>>;
+  cash: number;
+  setCash: Dispatch<SetStateAction<number>>;
+  playerTraits: PlayerTraits;
+  updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
+  specialMoves: number;
+  setSpecialMoves: Dispatch<SetStateAction<number>>;
+  paymentStreak: number;
+  setPaymentStreak: Dispatch<SetStateAction<number>>;
+  eventHistory: LifeEvent[];
+  setEventHistory: Dispatch<SetStateAction<LifeEvent[]>>;
+  job: Job;
+  lifeStage: LifeStage;
+  circumstances: string[];
+  characterBackground: string;
+  setCharacterBackground: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterDetails: (job: Job, lifeStage: LifeStage, circumstances: string[]) => void;
+  initializePlayerState: (job: Job, lifeStage: LifeStage, circumstances: string[]) => PlayerStateType;
+  resetPlayerState: () => void;
+}
+
+export interface StanceMultipliers {
+  debtPaymentMultiplier: number;
+  savingsMultiplier: number;
+  incomeMultiplier: number;
+  expensesMultiplier: number;
+}

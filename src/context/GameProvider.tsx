@@ -95,7 +95,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     gameStarted,
     setGameStarted,
     advanceMonth,
-    processMonthlyFinancials,
+    processMonthlyFinancials: originalProcessMonthlyFinancials,
     setMonthsPassed,
     setLastLevelSeen
   } = useGameProgress(
@@ -144,8 +144,52 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { resolveLifeEvent } = useEventResolver({
     updatePlayerTrait,
     playerTraits,
-    processMonthlyFinancials
+    processMonthlyFinancials: originalProcessMonthlyFinancials
   });
+
+  // Modified processMonthlyFinancials to accept stance parameter
+  const processMonthlyFinancials = (stance?: string | null) => {
+    let stanceMultipliers = {
+      debtPaymentMultiplier: 1,
+      savingsMultiplier: 1,
+      incomeMultiplier: 1,
+      expensesMultiplier: 1
+    };
+    
+    // Apply stance effects if provided
+    if (stance) {
+      switch (stance) {
+        case 'aggressive':
+          stanceMultipliers.debtPaymentMultiplier = 1.15; // 15% more effective debt payments
+          break;
+        case 'defensive':
+          stanceMultipliers.savingsMultiplier = 1.05; // 5% more savings
+          stanceMultipliers.debtPaymentMultiplier = 0.95; // 5% less debt payment
+          break;
+        case 'risky':
+          // Random outcome for risky stance
+          const riskRoll = Math.random();
+          if (riskRoll < 0.25) {
+            // Big success
+            stanceMultipliers.incomeMultiplier = 1.3; // 30% more income
+            stanceMultipliers.debtPaymentMultiplier = 1.1; // 10% more effective debt payments
+          } else if (riskRoll < 0.65) {
+            // Moderate success
+            stanceMultipliers.incomeMultiplier = 1.15; // 15% more income
+          } else if (riskRoll < 0.9) {
+            // Break even - no changes
+          } else {
+            // Loss
+            stanceMultipliers.incomeMultiplier = 0.85; // 15% less income
+            stanceMultipliers.debtPaymentMultiplier = 0.95; // 5% less effective debt payments
+          }
+          break;
+      }
+    }
+    
+    // Call original with stance multipliers
+    originalProcessMonthlyFinancials(stanceMultipliers);
+  };
 
   // Initialize game with random character
   const initializeGame = () => {

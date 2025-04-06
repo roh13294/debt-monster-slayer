@@ -9,10 +9,14 @@ import StreakDisplay from './StreakDisplay';
 import { Shield, Sword, Flame, Trophy, Zap } from 'lucide-react';
 import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
-import MonthlyEncounter from './MonthlyEncounter';
 import FinancialSummaryCard from './dashboard/FinancialSummaryCard';
+import { Button } from '@/components/ui/button';
 
-const Dashboard = () => {
+interface DashboardProps {
+  onAdvanceMonth?: () => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
   const { 
     debts, 
     totalDebt, 
@@ -94,10 +98,18 @@ const Dashboard = () => {
             rightValue: `${Math.max(1, Math.floor(monthsPassed / 3) + 1)}`
           }}
         >
-          <MonthlyEncounter />
+          <Button 
+            onClick={onAdvanceMonth} 
+            className="oni-button w-full group"
+          >
+            <Flame className="w-4 h-4 mr-2 group-hover:animate-flame-pulse text-amber-200" />
+            Advance to Next Month
+            <Flame className="w-4 h-4 ml-2 group-hover:animate-sword-draw" />
+          </Button>
         </FinancialSummaryCard>
       </div>
       
+      {/* Rest of dashboard content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
           {/* Debt Monsters section */}
