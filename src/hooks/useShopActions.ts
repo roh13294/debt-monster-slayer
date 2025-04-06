@@ -3,9 +3,9 @@ import { ShopItem, PlayerTraits, Debt } from "@/types/gameTypes";
 
 type ShopActionsProps = {
   cash: number;
-  setCash: (value: number) => void;
+  setCash: (value: number | ((prev: number) => number)) => void;
   setSpecialMoves: (value: number | ((prev: number) => number)) => void;
-  setDebts: (value: Debt[]) => void;
+  setDebts: (value: Debt[] | ((prev: Debt[]) => Debt[])) => void;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
   updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
   playerTraits: PlayerTraits;

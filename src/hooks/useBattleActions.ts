@@ -4,7 +4,7 @@ import { Debt } from "@/types/gameTypes";
 
 type BattleActionsProps = {
   cash: number;
-  setCash: (value: number) => void;
+  setCash: (value: number | ((prev: number) => number)) => void;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
   removeDebt: (id: string) => void;
   updateChallenge: (id: string, progress: number) => void;
