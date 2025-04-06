@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameContext } from '../context/GameContext';
@@ -30,7 +29,6 @@ const MonthlyEncounter: React.FC = () => {
     cashBonus?: number;
   } | null>(null);
   
-  // Open the monthly encounter dialog
   const startEncounter = () => {
     setShowEncounter(true);
     setEncounterStage('intro');
@@ -38,13 +36,10 @@ const MonthlyEncounter: React.FC = () => {
     setStanceEffects(null);
   };
   
-  // Close the dialog and reset state
   const closeEncounter = () => {
     setShowEncounter(false);
-    // If the player completed the encounter, actually advance the month
     if (encounterStage === 'result') {
       advanceMonth();
-      // 50% chance to trigger a life event after month advance
       if (Math.random() > 0.5) {
         setTimeout(() => {
           generateLifeEvent();
@@ -53,16 +48,13 @@ const MonthlyEncounter: React.FC = () => {
     }
   };
   
-  // Proceed to stance selection
   const proceedToStance = () => {
     setEncounterStage('stance');
   };
   
-  // Select a stance and see the results
   const selectStance = (stance: StanceType) => {
     setSelectedStance(stance);
     
-    // Calculate effects based on stance and player traits
     let effects: {
       description: string;
       traitChanges?: {[key: string]: number};
@@ -70,52 +62,49 @@ const MonthlyEncounter: React.FC = () => {
     } = { description: "" };
     
     if (stance === 'slash') {
-      // Offensive stance - high risk, high reward
-      const slashSuccess = Math.random() < (playerTraits.courage / 10); // Courage affects success chance
+      const slashSuccess = Math.random() < (playerTraits.courage / 10);
       
       if (slashSuccess) {
         effects = {
           description: "Your decisive attack was successful! Your courage grows, and you find unexpected money.",
           traitChanges: { courage: 0.5 },
-          cashBonus: Math.round(budget.income * 0.1) // 10% of monthly income as bonus
+          cashBonus: Math.round(budget.income * 0.1)
         };
       } else {
         effects = {
           description: "Your attack was too hasty. While you gained some discipline, you lost some cash in the process.",
           traitChanges: { discipline: 0.3, courage: -0.2 },
-          cashBonus: -Math.round(budget.essentials * 0.05) // Lose 5% of monthly expenses
+          cashBonus: -Math.round(budget.essentials * 0.05)
         };
       }
     } 
     else if (stance === 'defend') {
-      // Defensive stance - safe, modest benefits
       effects = {
         description: "Your cautious approach pays off. You've strengthened your finances and gained discipline.",
         traitChanges: { discipline: 0.4 },
-        cashBonus: Math.round(budget.savings * 0.5) // 50% of monthly savings as bonus
+        cashBonus: Math.round(budget.savings * 0.5)
       };
     } 
     else if (stance === 'surge') {
-      // Emotional stance - unpredictable
       const surgeResult = Math.random();
       
       if (surgeResult > 0.7) {
         effects = {
           description: "Your emotional surge creates a brilliant opportunity! Your wisdom grows significantly.",
           traitChanges: { wisdom: 0.7 },
-          cashBonus: Math.round(budget.income * 0.15) // 15% of monthly income as bonus
+          cashBonus: Math.round(budget.income * 0.15)
         };
       } else if (surgeResult > 0.3) {
         effects = {
           description: "Your emotional approach has mixed results. You gain some wisdom but at a small cost.",
           traitChanges: { wisdom: 0.3 },
-          cashBonus: -Math.round(budget.essentials * 0.03) // Lose 3% of monthly expenses
+          cashBonus: -Math.round(budget.essentials * 0.03)
         };
       } else {
         effects = {
           description: "Your emotions led you astray this time. You've learned a lesson, but at a cost.",
           traitChanges: { wisdom: 0.2, courage: -0.2 },
-          cashBonus: -Math.round(budget.essentials * 0.1) // Lose 10% of monthly expenses
+          cashBonus: -Math.round(budget.essentials * 0.1)
         };
       }
     }
@@ -123,33 +112,30 @@ const MonthlyEncounter: React.FC = () => {
     setStanceEffects(effects);
     setEncounterStage('result');
     
-    // Apply effects
     if (effects.traitChanges) {
       Object.entries(effects.traitChanges).forEach(([trait, change]) => {
         updatePlayerTrait(trait as keyof typeof playerTraits, playerTraits[trait as keyof typeof playerTraits] + change);
       });
     }
     
-    if (effects.cashBonus) {
-      setCash(prev => Math.max(0, prev + effects.cashBonus!));
-      
-      if (effects.cashBonus > 0) {
-        toast({
-          title: "Cash Bonus!",
-          description: `You gained $${effects.cashBonus} from your approach.`,
-          variant: "default",
-        });
-      } else if (effects.cashBonus < 0) {
-        toast({
-          title: "Cash Lost",
-          description: `You lost $${Math.abs(effects.cashBonus)} from your approach.`,
-          variant: "default",
-        });
-      }
+    const newCashValue = Math.max(0, cash + effects.cashBonus);
+    setCash(newCashValue);
+    
+    if (effects.cashBonus > 0) {
+      toast({
+        title: "Cash Bonus!",
+        description: `You gained $${effects.cashBonus} from your approach.`,
+        variant: "default",
+      });
+    } else if (effects.cashBonus < 0) {
+      toast({
+        title: "Cash Lost",
+        description: `You lost $${Math.abs(effects.cashBonus)} from your approach.`,
+        variant: "default",
+      });
     }
   };
   
-  // Get breathing technique info based on traits
   const getBreathingStyle = () => {
     const { discipline, courage, wisdom } = playerTraits;
     
@@ -178,7 +164,6 @@ const MonthlyEncounter: React.FC = () => {
   
   return (
     <>
-      {/* Trigger button */}
       <Button 
         onClick={startEncounter} 
         className="oni-button w-full group"
@@ -188,28 +173,20 @@ const MonthlyEncounter: React.FC = () => {
         <Sword className="w-4 h-4 ml-2 group-hover:animate-sword-draw" />
       </Button>
       
-      {/* Encounter Dialog */}
       <Dialog open={showEncounter} onOpenChange={setShowEncounter}>
         <DialogContent className="bg-night-sky border-demon-red/30 max-w-3xl p-0 overflow-hidden">
           <div className="relative w-full h-[60vh] flex flex-col">
-            {/* Background effects */}
             <div className="absolute inset-0 bg-night-sky">
-              {/* Animated moon */}
               <motion.div 
                 className="absolute top-10 right-10 w-20 h-20 rounded-full bg-white/80 shadow-[0_0_30px_rgba(255,255,255,0.4)]"
                 initial={{ opacity: 0.3, scale: 0.8 }}
                 animate={{ opacity: 0.8, scale: 1 }}
                 transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse' }}
               />
-              
-              {/* Mist effects */}
               <div className="absolute bottom-0 left-0 right-0 h-20 bg-misty-mountains"></div>
-              
-              {/* Kanji background */}
               <div className="absolute inset-0 kanji-bg opacity-10"></div>
             </div>
             
-            {/* Content based on current stage */}
             <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 text-white">
               <AnimatePresence mode="wait">
                 {encounterStage === 'intro' && (
@@ -277,7 +254,6 @@ const MonthlyEncounter: React.FC = () => {
                     </p>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
-                      {/* Offensive Stance */}
                       <motion.div
                         className="stance-card bg-gradient-to-b from-demon-red/20 to-black/40 border border-demon-red/30 rounded-lg p-4 flex flex-col items-center cursor-pointer hover:border-demon-red/80"
                         whileHover={{ scale: 1.03, boxShadow: '0 0 15px rgba(255,45,85,0.3)' }}
@@ -295,7 +271,6 @@ const MonthlyEncounter: React.FC = () => {
                         </p>
                       </motion.div>
                       
-                      {/* Defensive Stance */}
                       <motion.div
                         className="stance-card bg-gradient-to-b from-demon-blue/20 to-black/40 border border-demon-blue/30 rounded-lg p-4 flex flex-col items-center cursor-pointer hover:border-demon-blue/80"
                         whileHover={{ scale: 1.03, boxShadow: '0 0 15px rgba(14,165,233,0.3)' }}
@@ -313,7 +288,6 @@ const MonthlyEncounter: React.FC = () => {
                         </p>
                       </motion.div>
                       
-                      {/* Emotional Stance */}
                       <motion.div
                         className="stance-card bg-gradient-to-b from-demon-purple/20 to-black/40 border border-demon-purple/30 rounded-lg p-4 flex flex-col items-center cursor-pointer hover:border-demon-purple/80"
                         whileHover={{ scale: 1.03, boxShadow: '0 0 15px rgba(94,23,235,0.3)' }}
@@ -349,7 +323,6 @@ const MonthlyEncounter: React.FC = () => {
                        'Your Spirit Surges!'}
                     </h2>
                     
-                    {/* Visual effect based on stance */}
                     <motion.div 
                       className={`w-32 h-32 mb-6 rounded-full flex items-center justify-center
                         ${selectedStance === 'slash' ? 'bg-gradient-to-br from-demon-red/40 to-demon-ember/20' : 
