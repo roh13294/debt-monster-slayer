@@ -22,8 +22,8 @@ export const useGameProgress = (
   const [lastLevelSeen, setLastLevelSeen] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
 
-  // Advance game by one month
-  const advanceMonth = () => {
+  // Process financial updates after monthly decision is made
+  const processMonthlyFinancials = () => {
     // Apply interest to debts
     setDebts(prevDebts => prevDebts.map(debt => ({
       ...debt,
@@ -111,6 +111,14 @@ export const useGameProgress = (
     }
   };
 
+  // New advanceMonth implementation that doesn't immediately update financials
+  const advanceMonth = () => {
+    // This function now doesn't do the financial processing directly
+    // Instead, it's handled by the MonthlyEncounter component after user makes choices
+    // The actual financial processing is done in processMonthlyFinancials which is called 
+    // after the encounter is resolved in MonthlyEncounter component
+  };
+
   // Check for level-up and award special moves
   useEffect(() => {
     if (!gameStarted) return;
@@ -146,6 +154,7 @@ export const useGameProgress = (
     gameStarted,
     setGameStarted,
     advanceMonth,
+    processMonthlyFinancials,
     setMonthsPassed,
     setLastLevelSeen
   };

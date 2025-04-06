@@ -96,6 +96,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     gameStarted,
     setGameStarted,
     advanceMonth,
+    processMonthlyFinancials,
     setMonthsPassed,
     setLastLevelSeen
   } = useGameProgress(
@@ -143,7 +144,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Event resolver
   const { resolveLifeEvent } = useEventResolver({
     updatePlayerTrait,
-    playerTraits
+    playerTraits,
+    processMonthlyFinancials
   });
 
   // Initialize game with random character
@@ -230,6 +232,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateChallenge,
     monthsPassed,
     advanceMonth,
+    processMonthlyFinancials,
     damageMonster,
     specialMoves,
     setSpecialMoves,
@@ -238,12 +241,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeGame,
     resetGame,
     gameStarted,
-    // New character properties
     job,
     lifeStage,
     circumstances,
     characterBackground,
-    // Shop functionality
     purchaseItem
   };
 

@@ -1,12 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useGameContext } from '../context/GameContext';
-import { Flame } from 'lucide-react';
+import { Flame, Shield, Sword } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import { EncounterStageOne, EncounterStageTwo } from './encounter/EncounterStages';
 import { EncounterBackdrop } from './encounter/EncounterEffects';
+import { motion } from 'framer-motion';
 
 const MonthlyEncounter = () => {
   const { advanceMonth, cash, budget, setCash, updateBudget } = useGameContext();

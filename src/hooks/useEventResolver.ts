@@ -4,11 +4,13 @@ import { PlayerTraits } from "@/types/gameTypes";
 type EventResolverProps = {
   updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
   playerTraits: PlayerTraits;
+  processMonthlyFinancials?: () => void;
 };
 
 export const useEventResolver = ({
   updatePlayerTrait,
-  playerTraits
+  playerTraits,
+  processMonthlyFinancials
 }: EventResolverProps) => {
   // Handle resolving life events
   const resolveLifeEvent = (
