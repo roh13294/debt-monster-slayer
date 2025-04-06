@@ -1,3 +1,4 @@
+
 import { JobType, LifeStage, Circumstance } from '../hooks/useRandomCharacter';
 import { ReactNode } from 'react';
 
@@ -122,6 +123,7 @@ export type GameContextType = {
   
   // Special moves
   specialMoves: number;
+  setSpecialMoves: (value: number | ((prev: number) => number)) => void;
   useSpecialMove: (debtId: string) => void;
   
   // Streaks

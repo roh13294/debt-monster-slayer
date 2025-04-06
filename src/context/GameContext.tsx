@@ -332,6 +332,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     advanceMonth,
     damageMonster: handleDamageMonster,
     specialMoves,
+    setSpecialMoves,
     useSpecialMove: handleUseSpecialMove,
     paymentStreak,
     initializeGame,
