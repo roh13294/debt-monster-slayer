@@ -3,16 +3,14 @@ import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
 import MonsterBattle from './MonsterBattle';
-import Challenge from './Challenge';
 import MultiChallenge from './MultiChallenge';
 import LifeEvent from './LifeEvent';
 import StreakDisplay from './StreakDisplay';
-import { Coins, CalendarDays, Sparkles, PiggyBank, Zap, Calendar, Sword, Flame, Trophy, Shield } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Shield, Sword, Flame, Trophy, Zap } from 'lucide-react';
 import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
-import { toast } from "@/hooks/use-toast";
 import MonthlyEncounter from './MonthlyEncounter';
+import FinancialSummaryCard from './dashboard/FinancialSummaryCard';
 
 const Dashboard = () => {
   const { 
@@ -22,7 +20,6 @@ const Dashboard = () => {
     cash, 
     challenges, 
     currentLifeEvent, 
-    advanceMonth, 
     monthsPassed,
     specialMoves,
     paymentStreak,
@@ -51,17 +48,6 @@ const Dashboard = () => {
     }).format(amount);
   };
   
-  // Get first challenge for the sample challenge widget
-  const sampleChallenge = challenges && challenges.length > 0 ? challenges[0] : {
-    id: '1',
-    title: 'Sample Challenge',
-    description: 'This is a sample challenge description',
-    progress: 0,
-    target: 5,
-    reward: 100,
-    completed: false
-  };
-  
   return (
     <div className="relative space-y-6">
       {/* Decorative background elements */}
@@ -71,83 +57,45 @@ const Dashboard = () => {
       {/* Header with financial summary and advance month button */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Current Cash card */}
-        <div className="oni-card flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute -right-10 top-0 h-40 w-40 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity"></div>
-          <div className="p-5 relative z-10">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Current Cash</h3>
-            <div className="flex items-center">
-              <div className="p-2 bg-gradient-to-br from-green-500/20 to-green-500/10 rounded-full mr-3">
-                <Coins className="h-6 w-6 text-green-500" />
-              </div>
-              <span className="text-2xl font-bold text-green-400 oni-text-glow">{formatCurrency(cash)}</span>
-            </div>
-          </div>
-          <div className="bg-white/5 mt-4 p-3 rounded-b-xl flex justify-between items-center backdrop-blur-sm">
-            <div>
-              <p className="text-xs text-gray-400">Monthly Income</p>
-              <p className="text-sm font-medium text-green-400">+{formatCurrency(budget.income)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400">Monthly Expenses</p>
-              <p className="text-sm font-medium text-red-400">-{formatCurrency(budget.essentials)}</p>
-            </div>
-          </div>
-        </div>
+        <FinancialSummaryCard
+          type="cash"
+          title="Current Cash"
+          value={formatCurrency(cash)}
+          details={{
+            leftLabel: "Monthly Income",
+            leftValue: `+${formatCurrency(budget.income)}`,
+            rightLabel: "Monthly Expenses",
+            rightValue: `-${formatCurrency(budget.essentials)}`
+          }}
+        />
         
         {/* Total Debt card */}
-        <div className="oni-card flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute -left-10 top-0 h-40 w-40 bg-gradient-to-br from-red-500/10 to-purple-500/10 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity"></div>
-          <div className="p-5 relative z-10">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Total Debt</h3>
-            <div className="flex items-center">
-              <div className="p-2 bg-gradient-to-br from-purple-500/20 to-purple-500/10 rounded-full mr-3">
-                <CalendarDays className="h-6 w-6 text-purple-400" />
-              </div>
-              <span className="text-2xl font-bold text-purple-400 oni-text-glow">{formatCurrency(totalDebt)}</span>
-            </div>
-          </div>
-          <div className="bg-white/5 mt-4 p-3 rounded-b-xl flex justify-between items-center backdrop-blur-sm">
-            <div>
-              <p className="text-xs text-gray-400">Debt Payment Budget</p>
-              <p className="text-sm font-medium text-purple-400">{formatCurrency(budget.debt)}/month</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400">Months Passed</p>
-              <p className="text-sm font-medium text-amber-400">{monthsPassed}</p>
-            </div>
-          </div>
-        </div>
+        <FinancialSummaryCard
+          type="debt"
+          title="Total Debt"
+          value={formatCurrency(totalDebt)}
+          details={{
+            leftLabel: "Debt Payment Budget",
+            leftValue: `${formatCurrency(budget.debt)}/month`,
+            rightLabel: "Months Passed",
+            rightValue: `${monthsPassed}`
+          }}
+        />
         
         {/* Game Progress card */}
-        <div className="oni-card flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute -right-10 top-0 h-40 w-40 bg-gradient-to-br from-amber-500/10 to-orange-500/10 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity"></div>
-          <div className="p-5 relative z-10">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Game Progress</h3>
-            <div className="flex items-center">
-              <div className="p-2 bg-gradient-to-br from-amber-500/20 to-amber-500/10 rounded-full mr-3">
-                <Sparkles className="h-6 w-6 text-amber-400" />
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-amber-400 oni-text-glow">{specialMoves}</span>
-                <span className="text-sm text-amber-300">Special Moves</span>
-              </div>
-            </div>
-            <div className="flex mt-2 items-center space-x-3">
-              <div className="flex items-center">
-                <PiggyBank className="h-4 w-4 text-blue-400 mr-1" />
-                <span className="text-xs text-blue-300">Savings: {formatCurrency(budget.savings)}/mo</span>
-              </div>
-              <div className="flex items-center">
-                <Zap className="h-4 w-4 text-purple-400 mr-1" />
-                <span className="text-xs text-purple-300">Level: {Math.max(1, Math.floor(monthsPassed / 3) + 1)}</span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 p-3">
-            {/* Replace the simple button with our new MonthlyEncounter component */}
-            <MonthlyEncounter />
-          </div>
-        </div>
+        <FinancialSummaryCard
+          type="progress"
+          title="Game Progress"
+          value={`${specialMoves} Special Moves`}
+          details={{
+            leftLabel: "Savings",
+            leftValue: `${formatCurrency(budget.savings)}/mo`,
+            rightLabel: "Level",
+            rightValue: `${Math.max(1, Math.floor(monthsPassed / 3) + 1)}`
+          }}
+        >
+          <MonthlyEncounter />
+        </FinancialSummaryCard>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -199,7 +147,7 @@ const Dashboard = () => {
               <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">予算</div>
               <h2 className="text-lg font-bold mb-3 flex items-center">
                 <span className="p-1 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-md mr-2 shadow-oni">
-                  <Coins className="w-3.5 h-3.5" />
+                  <Sword className="w-3.5 h-3.5" />
                 </span>
                 <span className="bg-gradient-to-r from-green-400 to-teal-400 bg-clip-text text-transparent">Budget</span>
               </h2>
@@ -214,7 +162,7 @@ const Dashboard = () => {
             <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">挑戦</div>
             <h2 className="text-lg font-bold mb-3 flex items-center">
               <span className="p-1 bg-gradient-to-br from-amber-400 to-amber-600 text-white rounded-md mr-2 shadow-oni">
-                <Sparkles className="w-3.5 h-3.5" />
+                <Flame className="w-3.5 h-3.5" />
               </span>
               <span className="bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">
                 Daily Challenges
@@ -228,7 +176,7 @@ const Dashboard = () => {
             <div className="absolute left-5 top-5 opacity-5 text-6xl font-bold kanji-bg">連続</div>
             <h2 className="text-lg font-bold mb-3 flex items-center">
               <span className="p-1 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-md mr-2 shadow-oni">
-                <Calendar className="w-3.5 h-3.5" />
+                <Flame className="w-3.5 h-3.5" />
               </span>
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Your Streaks

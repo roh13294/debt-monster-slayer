@@ -1,10 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../context/GameContext';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import DebtMonster from './DebtMonster';
 import { Button } from '@/components/ui/button';
-import { X, Sword, Sparkles, Volume2, VolumeX, Info, Crown, Zap, Target, Trophy, ShieldAlert, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Volume2, VolumeX, Info, Crown, Zap, Target, Trophy } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
+import BattleTutorial from './battle/BattleTutorial';
+import BattleTips from './battle/BattleTips';
+import BattleControls from './battle/BattleControls';
 
 interface MonsterBattleProps {
   debtId: string;
@@ -22,6 +25,14 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
   const [showTutorial, setShowTutorial] = useState(false);
 
   const playerLevel = Math.max(1, Math.floor(monthsPassed / 3) + 1);
+
+  useEffect(() => {
+    // Find the index of the debt in the debts array
+    const index = debts.findIndex(debt => debt.id === debtId);
+    if (index !== -1) {
+      setCurrentMonsterIndex(index);
+    }
+  }, [debtId, debts]);
 
   const nextMonster = () => {
     setCurrentMonsterIndex((prev) => (prev + 1) % debts.length);
@@ -111,12 +122,12 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className={`text-xl font-bold flex items-center ${animateTitle ? 'animate-tada' : ''}`}>
             <span className="p-1.5 bg-gradient-to-br from-fun-purple to-fun-magenta text-white rounded-md mr-2 transform group-hover:rotate-12 transition-transform animate-wiggle">
-              <Sword className="w-4 h-4" />
+              <Target className="w-4 h-4" />
             </span>
             <span className="bg-gradient-to-r from-fun-purple to-fun-magenta bg-clip-text text-transparent">
               Debt Monster Battle
             </span>
-            <Sparkles className="w-4 h-4 ml-2 text-fun-yellow animate-sparkle" />
+            <Target className="w-4 h-4 ml-2 text-fun-yellow animate-sparkle" />
           </h2>
           
           <div className="flex items-center space-x-2">
@@ -161,56 +172,7 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
           </div>
         </div>
         
-        {showTutorial && (
-          <Dialog open={showTutorial} onOpenChange={setShowTutorial}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  <Sword className="w-5 h-5 inline-block text-fun-purple mr-2" />
-                  Debt Monster Battle Guide
-                </DialogTitle>
-                <DialogDescription>
-                  <div className="space-y-4">
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <h4 className="font-medium mb-1">Battle Mode</h4>
-                      <p className="text-sm text-gray-700">Activate Battle Mode to directly target and attack your debt monsters one at a time.</p>
-                    </div>
-                    
-                    <div className="bg-green-50 p-3 rounded-lg">
-                      <h4 className="font-medium mb-1">Making Payments</h4>
-                      <p className="text-sm text-gray-700">Use the slider to adjust your payment amount, then click "Attack" to reduce your debt.</p>
-                    </div>
-                    
-                    <div className="bg-yellow-50 p-3 rounded-lg">
-                      <h4 className="font-medium mb-1">Combo Attacks</h4>
-                      <p className="text-sm text-gray-700">Attack quickly in succession to build a combo that increases damage.</p>
-                    </div>
-                    
-                    <div className="bg-purple-50 p-3 rounded-lg">
-                      <h4 className="font-medium mb-1">Special Moves</h4>
-                      <p className="text-sm text-gray-700">Use Special Moves to reduce a debt's interest rate, making it easier to pay off.</p>
-                    </div>
-                    
-                    <div className="bg-red-50 p-3 rounded-lg">
-                      <h4 className="font-medium mb-1">Battle Streaks</h4>
-                      <p className="text-sm text-gray-700">Battle multiple monsters in a row to earn streak bonuses, including special moves.</p>
-                    </div>
-                    
-                    <div className="bg-orange-50 p-3 rounded-lg">
-                      <h4 className="font-medium mb-1">Monster Reactions</h4>
-                      <p className="text-sm text-gray-700">Monsters will react to your attacks and occasionally taunt you or counter-attack.</p>
-                    </div>
-                  </div>
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button onClick={() => setShowTutorial(false)}>
-                  Got it!
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
+        <BattleTutorial open={showTutorial} onOpenChange={setShowTutorial} />
         
         {debts.length === 0 ? (
           <div className="p-8 text-center bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100 animate-pulse-subtle">
@@ -222,68 +184,17 @@ const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex justify-between mb-4">
-              <Button 
-                onClick={toggleBattleMode}
-                className={`transition-all animate-pulse-subtle ${battleMode ? 
-                  'bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600' : 
-                  'bg-gradient-to-r from-fun-purple to-fun-magenta hover:from-fun-purple/90 hover:to-fun-magenta/90'
-                } text-white hover:shadow-lg`}
-              >
-                {battleMode ? 
-                  <><ShieldAlert className="w-4 h-4 mr-1" /> Exit Battle</> : 
-                  <><Sword className="w-4 h-4 mr-1" /> Enter Battle Mode <Zap className="w-3.5 h-3.5 ml-1 animate-pulse" /></>
-                }
-              </Button>
-
-              {battleMode && (
-                <div className="flex gap-2 bg-white/30 backdrop-blur-sm p-1 rounded-lg animate-pulse-subtle">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={prevMonster} 
-                    disabled={debts.length <= 1}
-                    className="hover:bg-fun-purple/20"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                  </Button>
-                  <span className="text-sm font-medium py-2 px-2 bg-white/50 backdrop-blur-sm rounded-md">
-                    {currentMonsterIndex + 1} / {debts.length}
-                  </span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={nextMonster} 
-                    disabled={debts.length <= 1}
-                    className="hover:bg-fun-purple/20"
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
-            </div>
+            <BattleControls 
+              battleMode={battleMode}
+              toggleBattleMode={toggleBattleMode}
+              prevMonster={prevMonster}
+              nextMonster={nextMonster}
+              currentMonsterIndex={currentMonsterIndex}
+              totalMonsters={debts.length}
+            />
 
             {showBattleTips && battleMode && (
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-100 mb-4 animate-fade-in relative">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
-                  onClick={() => setShowBattleTips(false)}
-                >
-                  ✕
-                </Button>
-                <h3 className="font-bold text-sm mb-2 flex items-center">
-                  <Target className="w-4 h-4 mr-1 text-fun-purple" />
-                  Battle Tips
-                </h3>
-                <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
-                  <li>Use the <strong>slider</strong> to set your payment amount</li>
-                  <li>Attack quickly in succession for <strong>bonus combo damage</strong></li>
-                  <li>Save <strong>Special Moves</strong> for large debts</li>
-                  <li>Battle all monsters in a row to earn <strong>streak bonuses</strong></li>
-                </ul>
-              </div>
+              <BattleTips onClose={() => setShowBattleTips(false)} />
             )}
 
             {battleMode ? (

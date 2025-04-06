@@ -9,6 +9,9 @@ import { useGameProgress } from '../hooks/useGameProgress';
 import { useRandomCharacter } from '../hooks/useRandomCharacter';
 import { GameContextType } from '../types/gameTypes';
 import { toast } from "@/hooks/use-toast";
+import { useBattleActions } from '../hooks/useBattleActions';
+import { useShopActions } from '../hooks/useShopActions';
+import { useEventResolver } from '../hooks/useEventResolver';
 
 // Create context
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -76,7 +79,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     currentLifeEvent,
     generateLifeEvent,
     setCurrentLifeEvent,
-    resolveLifeEvent
+    resolveLifeEvent: originalResolveLifeEvent
   } = useLifeEventState(
     setEventHistory,
     setCash,
@@ -110,6 +113,38 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setChallenges,
     generatePersonalizedChallenges
   );
+
+  // Battle actions
+  const { damageMonster, useSpecialMove } = useBattleActions({
+    cash,
+    setCash,
+    updateDebt,
+    removeDebt,
+    updateChallenge,
+    updatePlayerTrait,
+    playerTraits,
+    debts,
+    specialMoves,
+    setSpecialMoves
+  });
+
+  // Shop actions
+  const { purchaseItem } = useShopActions({
+    cash,
+    setCash,
+    setSpecialMoves,
+    setDebts,
+    updateDebt,
+    updatePlayerTrait,
+    playerTraits,
+    debts
+  });
+
+  // Event resolver
+  const { resolveLifeEvent } = useEventResolver({
+    updatePlayerTrait,
+    playerTraits
+  });
 
   // Initialize game with random character
   const initializeGame = () => {
@@ -162,144 +197,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentLifeEvent(null);
   };
 
-  // Wrapper for damageMonster that provides all necessary dependencies
-  const handleDamageMonster = (debtId: string, amount: number) => {
-    // Find the debt
-    const debt = debts.find(d => d.id === debtId);
-    if (!debt) return;
-    
-    // Ensure player has enough cash
-    if (cash < amount) {
-      toast({
-        title: "Not Enough Cash",
-        description: "You don't have enough cash to make this payment.",
-        variant: "default",
-      });
-      return;
-    }
-    
-    // Calculate health reduction (percentage of current debt)
-    const healthReduction = (amount / debt.amount) * 100;
-    const newAmount = Math.max(0, debt.amount - amount);
-    const newHealth = Math.max(0, debt.health - healthReduction);
-    
-    // Update the debt
-    updateDebt(debtId, {
-      amount: newAmount,
-      health: newHealth
-    });
-    
-    // Deduct payment from cash
-    setCash(prev => prev - amount);
-    
-    // Update challenge progress for making a payment
-    updateChallenge('1', 1);
-    
-    // If debt is paid off, remove it
-    if (newAmount === 0) {
-      removeDebt(debtId);
-      
-      // Improve financial knowledge
-      updatePlayerTrait('financialKnowledge', playerTraits.financialKnowledge + 0.5);
-    }
-    
-    toast({
-      title: "Payment Made!",
-      description: `You made a $${amount} payment on your ${debt.name}!`,
-      variant: "default",
-    });
-  };
-
-  // Wrapper for useSpecialMove that provides all necessary dependencies
-  const handleUseSpecialMove = (debtId: string) => {
-    // Check if player has special moves available
-    if (specialMoves <= 0) {
-      toast({
-        title: "No Special Moves",
-        description: "You don't have any special moves available.",
-        variant: "default",
-      });
-      return;
-    }
-    
-    // Find the debt
-    const debt = debts.find(d => d.id === debtId);
-    if (!debt) return;
-    
-    // Apply special move effects (reduce interest by 20%)
-    const newInterest = Math.max(1, debt.interest * 0.8);
-    
-    // Update the debt
-    updateDebt(debtId, {
-      interest: newInterest
-    });
-    
-    // Consume special move
-    setSpecialMoves(prev => prev - 1);
-    
-    toast({
-      title: "Special Move Used!",
-      description: `You negotiated a lower interest rate on your ${debt.name}!`,
-      variant: "default",
-    });
-  };
-
-  // Wrapper for resolveLifeEvent that provides necessary dependencies
+  // Handle resolving life events with the new resolver
   const handleResolveLifeEvent = (optionIndex: number) => {
-    resolveLifeEvent(optionIndex, updatePlayerTrait, playerTraits);
-  };
-
-  // Handle shop item purchases
-  const handlePurchaseItem = (item: any) => {
-    // Check if player has enough cash
-    if (cash < item.cost) {
-      return;
-    }
-    
-    // Deduct cost
-    setCash(prev => prev - item.cost);
-    
-    // Apply effects based on item type
-    switch (item.effect.type) {
-      case 'special_move':
-        setSpecialMoves(prev => prev + item.effect.value);
-        break;
-        
-      case 'interest_reduction':
-        // Apply interest reduction to all debts
-        setDebts(prevDebts => prevDebts.map(debt => ({
-          ...debt,
-          interest: Math.max(1, debt.interest - item.effect.value)
-        })));
-        break;
-        
-      case 'cash_boost':
-        setCash(prev => prev + item.effect.value);
-        break;
-        
-      case 'debt_reduction':
-        // Find highest interest debt
-        if (debts.length > 0) {
-          const highestInterestDebt = [...debts].sort((a, b) => b.interest - a.interest)[0];
-          const reductionAmount = Math.min(item.effect.value, highestInterestDebt.amount);
-          const healthReduction = (reductionAmount / highestInterestDebt.amount) * 100;
-          
-          updateDebt(highestInterestDebt.id, {
-            amount: Math.max(0, highestInterestDebt.amount - reductionAmount),
-            health: Math.max(0, highestInterestDebt.health - healthReduction)
-          });
-        }
-        break;
-        
-      case 'trait_boost':
-        if (item.effect.trait) {
-          updatePlayerTrait(
-            item.effect.trait, 
-            Math.min(10, playerTraits[item.effect.trait as keyof typeof playerTraits] as number + item.effect.value)
-          );
-        }
-        break;
-    }
+    resolveLifeEvent(optionIndex, () => originalResolveLifeEvent(optionIndex));
   };
 
   // Context value with character details
@@ -330,10 +230,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateChallenge,
     monthsPassed,
     advanceMonth,
-    damageMonster: handleDamageMonster,
+    damageMonster,
     specialMoves,
     setSpecialMoves,
-    useSpecialMove: handleUseSpecialMove,
+    useSpecialMove,
     paymentStreak,
     initializeGame,
     resetGame,
@@ -344,7 +244,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     circumstances,
     characterBackground,
     // Shop functionality
-    purchaseItem: handlePurchaseItem
+    purchaseItem
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
