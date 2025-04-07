@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { usePlayerState } from '../hooks/usePlayerState';
 import { useDebtState } from '../hooks/useDebtState';
@@ -7,16 +6,15 @@ import { useChallengeState } from '../hooks/useChallengeState';
 import { useLifeEventState } from '../hooks/useLifeEventState';
 import { useGameProgress } from '../hooks/useGameProgress';
 import { useRandomCharacter } from '../hooks/useRandomCharacter';
-import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge } from '../types/gameTypes';
+import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge, Job, LifeStage, PlayerTraits } from '../types/gameTypes';
 import { useBattleActions } from '../hooks/useBattleActions';
 import { useShopActions } from '../hooks/useShopActions';
 import { useEventResolver } from '../hooks/useEventResolver';
 import { GameContext } from './GameContextTypes';
 import { initializeGameState, resetGameState } from './GameInitialization';
+import { toast } from "@/hooks/use-toast";
 
-// Provider component
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Player state
   const {
     playerName, setPlayerName,
     avatar, setAvatar,
@@ -32,7 +30,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     resetPlayerState
   } = usePlayerState();
 
-  // Character generation
   const {
     generateRandomCharacter,
     calculateAdjustedIncome,
@@ -41,7 +38,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     generateCharacterBackground
   } = useRandomCharacter();
 
-  // Debt state
   const {
     debts,
     setDebts,
@@ -54,7 +50,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     resetDebtState
   } = useDebtState(setCash);
 
-  // Budget state
   const {
     budget,
     updateBudget,
@@ -63,7 +58,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     resetBudgetState
   } = useBudgetState(updatePlayerTrait, playerTraits);
 
-  // Challenge state
   const {
     challenges,
     updateChallenge,
@@ -73,7 +67,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setChallenges
   } = useChallengeState(setCash, setSpecialMoves);
 
-  // Life event state
   const {
     currentLifeEvent,
     generateLifeEvent,
@@ -89,7 +82,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     budget
   );
 
-  // Game progress
   const {
     monthsPassed,
     gameStarted,
@@ -111,16 +103,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     generateLifeEvent,
     playerTraits,
     setChallenges,
-    generatePersonalizedChallenges
+    (traits: PlayerTraits) => generatePersonalizedChallenges(traits)
   );
 
-  // Battle actions
   const { damageMonster, useSpecialMove } = useBattleActions({
     cash,
     setCash,
     updateDebt,
     removeDebt,
-    updateChallenge,
+    updateChallenge: (id: string, updates: Partial<Challenge>) => updateChallenge(id, updates),
     updatePlayerTrait,
     playerTraits,
     debts,
@@ -128,7 +119,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSpecialMoves
   });
 
-  // Shop actions
   const { purchaseItem } = useShopActions({
     cash,
     setCash,
@@ -140,14 +130,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     debts
   });
 
-  // Event resolver
   const { resolveLifeEvent } = useEventResolver({
     updatePlayerTrait,
     playerTraits,
     processMonthlyFinancials: originalProcessMonthlyFinancials
   });
 
-  // Modified processMonthlyFinancials to accept stance parameter
   const processMonthlyFinancials = (stance?: string | null) => {
     let stanceMultipliers = {
       debtPaymentMultiplier: 1,
@@ -156,62 +144,81 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       expensesMultiplier: 1
     };
     
-    // Apply stance effects if provided
     if (stance) {
       switch (stance) {
         case 'aggressive':
-          stanceMultipliers.debtPaymentMultiplier = 1.15; // 15% more effective debt payments
+          stanceMultipliers.debtPaymentMultiplier = 1.15;
           break;
         case 'defensive':
-          stanceMultipliers.savingsMultiplier = 1.05; // 5% more savings
-          stanceMultipliers.debtPaymentMultiplier = 0.95; // 5% less debt payment
+          stanceMultipliers.savingsMultiplier = 1.05;
+          stanceMultipliers.debtPaymentMultiplier = 0.95;
           break;
         case 'risky':
-          // Random outcome for risky stance
           const riskRoll = Math.random();
           if (riskRoll < 0.25) {
-            // Big success
-            stanceMultipliers.incomeMultiplier = 1.3; // 30% more income
-            stanceMultipliers.debtPaymentMultiplier = 1.1; // 10% more effective debt payments
+            stanceMultipliers.incomeMultiplier = 1.3;
+            stanceMultipliers.debtPaymentMultiplier = 1.1;
           } else if (riskRoll < 0.65) {
-            // Moderate success
-            stanceMultipliers.incomeMultiplier = 1.15; // 15% more income
+            stanceMultipliers.incomeMultiplier = 1.15;
           } else if (riskRoll < 0.9) {
-            // Break even - no changes
+            stanceMultipliers.incomeMultiplier = 1;
           } else {
-            // Loss
-            stanceMultipliers.incomeMultiplier = 0.85; // 15% less income
-            stanceMultipliers.debtPaymentMultiplier = 0.95; // 5% less effective debt payments
+            stanceMultipliers.incomeMultiplier = 0.85;
+            stanceMultipliers.debtPaymentMultiplier = 0.95;
           }
           break;
       }
     }
     
-    // Call original with stance multipliers
     originalProcessMonthlyFinancials(stanceMultipliers);
   };
 
-  // Initialize game with random character
   const initializeGame = () => {
-    const background = initializeGameState(
-      resetGame,
-      initializePlayerState,
-      initializeDebts,
-      initializeBudget,
-      (traits) => initializeChallenges(traits),
-      setMonthsPassed,
-      setLastLevelSeen,
-      setGameStarted,
-      generateRandomCharacter,
-      generateCharacterBackground
+    resetGame();
+    
+    const { job: randomJob, lifeStage: randomLifeStage, circumstances: randomCircumstances } = generateRandomCharacter();
+    
+    const gameJob: Job = { 
+      title: randomJob.title, 
+      baseSalary: randomJob.salary || 3500 
+    };
+    
+    const gameLifeStage: LifeStage = { 
+      name: randomLifeStage.name, 
+      baseExpenses: randomLifeStage.expenseRatio || 0.5 
+    };
+    
+    const gameCircumstances: string[] = randomCircumstances.map(c => c.name);
+    
+    const playerDetails = initializePlayerState(gameJob, gameLifeStage, gameCircumstances);
+    
+    const generatedDebts = initializeDebts(
+      playerDetails.traits.financialKnowledge,
+      randomLifeStage,
+      randomCircumstances
     );
     
+    const initializedBudget = initializeBudget(gameJob, gameLifeStage, randomCircumstances);
+    
+    initializeChallenges(playerDetails.traits);
+    
+    setMonthsPassed(0);
+    setLastLevelSeen(1);
+    setGameStarted(true);
+    
+    const background = generateCharacterBackground(randomJob, randomLifeStage, randomCircumstances);
+    
+    toast({
+      title: "Your Financial Journey Begins!",
+      description: `You're a ${randomLifeStage.name} ${randomJob.title} with ${randomCircumstances.length} life circumstances. Make payments to defeat your debt monsters!`,
+      variant: "default",
+    });
+
     if (setCharacterBackground) {
       setCharacterBackground(background);
     }
   };
 
-  // Reset game
   const resetGame = () => {
     resetGameState(
       resetPlayerState,
@@ -224,12 +231,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
-  // Handle resolving life events with the new resolver
   const handleResolveLifeEvent = (optionIndex: number) => {
     originalResolveLifeEvent(optionIndex, updatePlayerTrait, playerTraits);
   };
 
-  // Context value with character details
   const value: GameContextType = {
     playerName,
     setPlayerName,
@@ -266,9 +271,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeGame,
     resetGame,
     gameStarted,
-    job,
-    lifeStage,
-    circumstances,
+    job: job || { title: 'Unemployed', baseSalary: 0 },
+    lifeStage: lifeStage || { name: 'Adult', baseExpenses: 0.5 },
+    circumstances: circumstances.map(c => typeof c === 'string' ? c : c.name),
     characterBackground,
     purchaseItem
   };

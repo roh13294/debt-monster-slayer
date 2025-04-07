@@ -1,6 +1,6 @@
 
 import { toast } from "@/hooks/use-toast";
-import { Debt, ShopItem } from "@/types/gameTypes";
+import { Debt, ShopItem, PlayerTraits } from "@/types/gameTypes";
 import { Dispatch, SetStateAction } from "react";
 
 type ShopActionsProps = {
@@ -9,8 +9,8 @@ type ShopActionsProps = {
   setSpecialMoves: Dispatch<SetStateAction<number>>;
   setDebts: Dispatch<SetStateAction<Debt[]>>;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
-  updatePlayerTrait: (trait: string, value: number) => void;
-  playerTraits: any;
+  updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
+  playerTraits: PlayerTraits;
   debts: Debt[];
 };
 
@@ -24,38 +24,7 @@ export const useShopActions = ({
   playerTraits,
   debts
 }: ShopActionsProps) => {
-  const purchaseItem = (itemId: string) => {
-    // Mock shop items (these would normally be imported from a data file)
-    const shopItems: ShopItem[] = [
-      {
-        id: "special_move",
-        name: "Special Move Token",
-        description: "Grants one special move that can be used in battle.",
-        cost: 300,
-        effect: "specialMove",
-        category: "battle"
-      },
-      {
-        id: "interest_reducer",
-        name: "Interest Rate Negotiation",
-        description: "Reduces the interest rate on a selected debt by 10%.",
-        cost: 500,
-        effect: "reduceInterest",
-        category: "debt"
-      },
-      {
-        id: "debt_damage",
-        name: "Debt Damage Boost",
-        description: "Makes your next debt payment 20% more effective.",
-        cost: 400,
-        effect: "damageBoost",
-        category: "battle"
-      }
-    ];
-    
-    const item = shopItems.find(item => item.id === itemId);
-    if (!item) return;
-    
+  const purchaseItem = (item: ShopItem) => {
     // Check if player has enough cash
     if (cash < item.cost) {
       toast({
@@ -67,9 +36,9 @@ export const useShopActions = ({
     }
     
     // Apply item effect
-    switch (item.effect) {
+    switch (item.effect.type) {
       case "specialMove":
-        setSpecialMoves(prev => prev + 1);
+        setSpecialMoves(prev => prev + item.effect.value);
         break;
       case "reduceInterest":
         // Find debt with highest interest
@@ -83,7 +52,7 @@ export const useShopActions = ({
         }
         
         const highestInterestDebt = [...debts].sort((a, b) => b.interest - a.interest)[0];
-        const newInterestRate = highestInterestDebt.interest * 0.9;
+        const newInterestRate = highestInterestDebt.interest * (1 - item.effect.value / 100);
         
         updateDebt(highestInterestDebt.id, {
           interest: newInterestRate,
@@ -110,6 +79,52 @@ export const useShopActions = ({
           description: "Your next debt payment will be 20% more effective.",
           variant: "default",
         });
+        break;
+      case "cash_boost":
+        setCash(prev => prev + item.effect.value);
+        
+        toast({
+          title: "Cash Boost Applied!",
+          description: `You received a cash boost of $${item.effect.value}!`,
+          variant: "default",
+        });
+        break;
+      case "debt_reduction":
+        if (debts.length === 0) {
+          toast({
+            title: "No Debts Available",
+            description: "You don't have any debts to reduce.",
+            variant: "default",
+          });
+          return;
+        }
+        
+        const highestDebt = [...debts].sort((a, b) => b.amount - a.amount)[0];
+        const newAmount = Math.max(0, highestDebt.amount - item.effect.value);
+        const healthReduction = (item.effect.value / highestDebt.amount) * 100;
+        
+        updateDebt(highestDebt.id, {
+          amount: newAmount,
+          balance: newAmount,
+          health: Math.max(0, highestDebt.health - healthReduction)
+        });
+        
+        toast({
+          title: "Debt Reduced!",
+          description: `You reduced your ${highestDebt.name} by $${item.effect.value}!`,
+          variant: "default",
+        });
+        break;
+      case "trait_boost":
+        if (item.effect.trait) {
+          updatePlayerTrait(item.effect.trait, playerTraits[item.effect.trait] + item.effect.value);
+          
+          toast({
+            title: "Trait Improved!",
+            description: `You improved your ${item.effect.trait} trait by ${item.effect.value} point(s)!`,
+            variant: "default",
+          });
+        }
         break;
       default:
         break;

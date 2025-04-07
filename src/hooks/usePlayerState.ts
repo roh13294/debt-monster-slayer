@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { PlayerTraits } from '../types/gameTypes';
 import { initialPlayerTraits } from '../data/initialGameState';
@@ -35,6 +36,7 @@ export const usePlayerState = () => {
       spendingHabits: Math.floor(Math.random() * 4) + 3, // 3-6
       careerFocus: Math.floor(Math.random() * 4) + 3, // 3-6
       savingAbility: Math.floor(Math.random() * 4) + 3, // 3-6
+      determination: Math.floor(Math.random() * 4) + 3, // 3-6
       luckyStreak: Math.floor(Math.random() * 10) + 1, // 1-10
       discipline: Math.floor(Math.random() * 4) + 3, // 3-6
       courage: Math.floor(Math.random() * 4) + 3, // 3-6
@@ -104,14 +106,14 @@ export const usePlayerState = () => {
     
     // Adjust initial cash based on life stage and circumstances if provided
     let startingCash = 2000;
-    if (initialLifeStage?.modifier.startingCash) {
+    if (initialLifeStage?.modifier?.startingCash) {
       startingCash = initialLifeStage.modifier.startingCash;
     }
     
     // Apply circumstance cash modifiers
     if (initialCircumstances) {
       initialCircumstances.forEach(circumstance => {
-        if (circumstance.effect.cash) {
+        if (circumstance.effect?.cash) {
           startingCash += circumstance.effect.cash;
         }
       });
@@ -160,6 +162,7 @@ export const usePlayerState = () => {
     paymentStreak, setPaymentStreak,
     eventHistory, setEventHistory,
     job, lifeStage, circumstances, characterBackground,
+    setCharacterBackground,
     setCharacterDetails,
     initializePlayerState,
     resetPlayerState

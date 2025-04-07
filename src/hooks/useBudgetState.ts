@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Budget, PlayerTraits, BudgetPreset } from '../types/gameTypes';
 import { initialBudget } from '../data/initialGameState';
@@ -42,6 +43,7 @@ export const useBudgetState = (
     let essentials = 0;
     let debt = 0;
     let savings = 0;
+    let discretionary = 0;
     
     switch (preset) {
       case 'balanced':
@@ -49,6 +51,7 @@ export const useBudgetState = (
         essentials = income * 0.5;
         debt = income * 0.1;
         savings = income * 0.1;
+        discretionary = income - essentials - debt - savings;
         break;
       
       case 'aggressive':
@@ -56,6 +59,7 @@ export const useBudgetState = (
         essentials = income * 0.5;
         debt = income * 0.3;
         savings = income * 0.1;
+        discretionary = income - essentials - debt - savings;
         break;
       
       case 'conservative':
@@ -63,6 +67,7 @@ export const useBudgetState = (
         essentials = income * 0.5;
         debt = income * 0.15;
         savings = income * 0.25;
+        discretionary = income - essentials - debt - savings;
         break;
       
       case 'frugal':
@@ -70,6 +75,7 @@ export const useBudgetState = (
         essentials = income * 0.4;
         debt = income * 0.3;
         savings = income * 0.2;
+        discretionary = income - essentials - debt - savings;
         
         // Reward with improved saving ability
         if (updatePlayerTrait && playerTraits) {
@@ -87,7 +93,7 @@ export const useBudgetState = (
       essentials,
       debt,
       savings,
-      discretionary: income - essentials - debt - savings
+      discretionary
     });
   };
 

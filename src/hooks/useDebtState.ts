@@ -15,15 +15,17 @@ export const useDebtState = (
   const totalDebt = debts.reduce((sum, debt) => sum + debt.amount, 0);
 
   // Add a new debt
-  const addDebt = (debt: Omit<Debt, 'id' | 'health'>) => {
-    setDebts(prev => [
-      ...prev, 
-      { 
-        ...debt, 
-        id: uuidv4(),
-        health: 100
-      }
-    ]);
+  const addDebt = (debt: Omit<Debt, 'id'>) => {
+    const newDebt: Debt = {
+      ...debt,
+      id: uuidv4(),
+      health: debt.health || 100,
+      balance: debt.amount, // Ensure balance is set
+      interestRate: debt.interest, // Ensure interestRate is set
+      psychologicalImpact: debt.psychologicalImpact || 5 // Default psychological impact
+    };
+    
+    setDebts(prev => [...prev, newDebt]);
   };
 
   // Update an existing debt
@@ -44,99 +46,6 @@ export const useDebtState = (
     });
   };
 
-  // Damage a debt monster
-  const damageMonster = (
-    debtId: string, 
-    amount: number, 
-    cash: number,
-    updateChallenge: (id: string, progress: number) => void,
-    updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void,
-    playerTraits: PlayerTraits
-  ) => {
-    // Find the debt
-    const debt = debts.find(d => d.id === debtId);
-    if (!debt) return;
-    
-    // Ensure player has enough cash
-    if (cash < amount) {
-      toast({
-        title: "Not Enough Cash",
-        description: "You don't have enough cash to make this payment.",
-        variant: "default",
-      });
-      return;
-    }
-    
-    // Calculate health reduction (percentage of current debt)
-    const healthReduction = (amount / debt.amount) * 100;
-    const newAmount = Math.max(0, debt.amount - amount);
-    const newHealth = Math.max(0, debt.health - healthReduction);
-    
-    // Update the debt
-    updateDebt(debtId, {
-      amount: newAmount,
-      health: newHealth
-    });
-    
-    // Deduct payment from cash
-    setCash(prev => prev - amount);
-    
-    // Update challenge progress for making a payment
-    updateChallenge('1', 1);
-    
-    // If debt is paid off, remove it
-    if (newAmount === 0) {
-      removeDebt(debtId);
-      
-      // Improve financial knowledge
-      updatePlayerTrait('financialKnowledge', playerTraits.financialKnowledge + 0.5);
-    }
-    
-    toast({
-      title: "Payment Made!",
-      description: `You made a $${amount} payment on your ${debt.name}!`,
-      variant: "default",
-    });
-  };
-
-  // Use a special move on a debt monster
-  const useSpecialMove = (
-    debtId: string,
-    specialMoves: number,
-    setSpecialMoves: (fn: (prev: number) => number) => void
-  ) => {
-    // Check if player has special moves available
-    if (specialMoves <= 0) {
-      toast({
-        title: "No Special Moves",
-        description: "You don't have any special moves available.",
-        variant: "default",
-      });
-      return;
-    }
-    
-    // Find the debt
-    const debt = debts.find(d => d.id === debtId);
-    if (!debt) return;
-    
-    // Apply special move effects (reduce interest by 20%)
-    const newInterest = Math.max(1, debt.interest * 0.8);
-    
-    // Update the debt
-    updateDebt(debtId, {
-      interest: newInterest
-    });
-    
-    // Consume special move
-    setSpecialMoves(prev => prev - 1);
-    
-    toast({
-      title: "Special Move Used!",
-      description: `You negotiated a lower interest rate on your ${debt.name}!`,
-      variant: "default",
-    });
-  };
-
   // Initialize debts based on character details
   const initializeDebts = (
     financialKnowledge: number = 5,
@@ -153,41 +62,53 @@ export const useDebtState = (
       
       // First, check for specific debt from circumstances
       circumstances.forEach(circumstance => {
-        if (circumstance.effect.debt) {
+        if (circumstance.effect?.debt) {
           // If the circumstance is "Recent Homeowner", add a mortgage
           if (circumstance.name === "Recent Homeowner") {
+            const amount = circumstance.effect.debt;
             characterDebts.push({
               id: uuidv4(),
               name: "Mortgage",
-              amount: circumstance.effect.debt,
+              amount: amount,
+              balance: amount,
               interest: 4.5,
-              minimumPayment: Math.round(circumstance.effect.debt / 360), // 30-year mortgage
+              interestRate: 4.5,
+              minimumPayment: Math.round(amount / 360), // 30-year mortgage
               monsterType: 'green',
-              health: 100
+              health: 100,
+              psychologicalImpact: 7
             });
           } 
           // If the circumstance is "Recent Education", add a student loan
           else if (circumstance.name === "Recent Education") {
+            const amount = circumstance.effect.debt;
             characterDebts.push({
               id: uuidv4(),
               name: "Student Loan",
-              amount: circumstance.effect.debt,
+              amount: amount,
+              balance: amount,
               interest: 5.8,
-              minimumPayment: Math.round(circumstance.effect.debt * 0.01),
+              interestRate: 5.8,
+              minimumPayment: Math.round(amount * 0.01),
               monsterType: 'blue',
-              health: 100
+              health: 100,
+              psychologicalImpact: 6
             });
           }
           // For all other circumstances with debt, add a generic debt
           else {
+            const amount = circumstance.effect.debt;
             characterDebts.push({
               id: uuidv4(),
               name: "Personal Loan",
-              amount: circumstance.effect.debt,
+              amount: amount,
+              balance: amount,
               interest: 9.9,
-              minimumPayment: Math.round(circumstance.effect.debt * 0.02),
+              interestRate: 9.9,
+              minimumPayment: Math.round(amount * 0.02),
               monsterType: 'purple',
-              health: 100
+              health: 100,
+              psychologicalImpact: 5
             });
           }
         }
@@ -199,7 +120,7 @@ export const useDebtState = (
         // If debt-free, don't add additional random debts
       } 
       // Otherwise, possibly add credit card debt based on life stage
-      else if (lifeStage && lifeStage.modifier.debtChance && Math.random() < lifeStage.modifier.debtChance) {
+      else if (lifeStage && lifeStage.modifier?.debtChance && Math.random() < lifeStage.modifier.debtChance) {
         // Credit card debt amount based on life stage
         let ccDebtAmount = 0;
         
@@ -220,10 +141,13 @@ export const useDebtState = (
             id: uuidv4(),
             name: "Credit Card Debt",
             amount: ccDebtAmount,
+            balance: ccDebtAmount,
             interest: 18.99,
+            interestRate: 18.99,
             minimumPayment: Math.max(25, Math.round(ccDebtAmount * 0.02)),
             monsterType: 'red',
-            health: 100
+            health: 100,
+            psychologicalImpact: 8
           });
         }
       }
@@ -235,10 +159,13 @@ export const useDebtState = (
           id: uuidv4(),
           name: "Car Loan",
           amount: carLoanAmount,
+          balance: carLoanAmount,
           interest: 4.5,
+          interestRate: 4.5,
           minimumPayment: Math.round(carLoanAmount / 60), // 5-year car loan
           monsterType: 'yellow',
-          health: 100
+          health: 100,
+          psychologicalImpact: 4
         });
       }
     } 
@@ -253,7 +180,9 @@ export const useDebtState = (
         characterDebts = characterDebts.map(debt => ({
           ...debt,
           amount: Math.round(debt.amount * 0.7),
+          balance: Math.round(debt.balance * 0.7),
           interest: Math.max(1, debt.interest * 0.8),
+          interestRate: Math.max(1, debt.interestRate * 0.8),
           minimumPayment: Math.round(debt.minimumPayment * 0.7)
         }));
       } else if (financialKnowledge < 4) {
@@ -261,7 +190,9 @@ export const useDebtState = (
         characterDebts = characterDebts.map(debt => ({
           ...debt,
           amount: Math.round(debt.amount * 1.3),
+          balance: Math.round(debt.balance * 1.3),
           interest: debt.interest * 1.2,
+          interestRate: debt.interestRate * 1.2,
           minimumPayment: Math.round(debt.minimumPayment * 1.3)
         }));
       }
@@ -273,10 +204,13 @@ export const useDebtState = (
         id: uuidv4(),
         name: "Credit Card Debt",
         amount: 2000,
+        balance: 2000,
         interest: 18.99,
+        interestRate: 18.99,
         minimumPayment: 50,
         monsterType: 'red',
-        health: 100
+        health: 100,
+        psychologicalImpact: 8
       });
     }
     
@@ -298,8 +232,6 @@ export const useDebtState = (
     addDebt,
     updateDebt,
     removeDebt,
-    damageMonster,
-    useSpecialMove,
     initializeDebts,
     resetDebtState
   };

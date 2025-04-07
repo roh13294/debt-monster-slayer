@@ -57,8 +57,8 @@ export interface LifeEventOption {
 
 export interface PlayerTraits {
   financialKnowledge: number;
-  determination: number;
   riskTolerance: number;
+  determination: number;
   
   // Additional properties used in implementation
   discipline: number;
@@ -172,6 +172,10 @@ export interface PlayerStateType {
   characterBackground: string;
   setCharacterBackground: React.Dispatch<React.SetStateAction<string>>;
   setCharacterDetails: (job: Job, lifeStage: LifeStage, circumstances: string[]) => void;
-  initializePlayerState: (job: Job, lifeStage: LifeStage, circumstances: string[]) => PlayerStateType;
+  initializePlayerState: (job: Job, lifeStage: LifeStage, circumstances: string[]) => any;
   resetPlayerState: () => void;
 }
+
+// Add utility type for the hooks/useRandomCharacter.ts compatibility
+export type JobType = Job;
+export type CircumstanceType = string;

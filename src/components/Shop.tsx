@@ -13,7 +13,7 @@ const shopItems: ShopItem[] = [
     description: 'Add one special move to your arsenal to reduce debt interest',
     cost: 500,
     effect: {
-      type: 'special_move',
+      type: 'specialMove',
       value: 1
     },
     icon: <Zap className="h-10 w-10 text-yellow-500" />
@@ -24,7 +24,7 @@ const shopItems: ShopItem[] = [
     description: 'Reduce the interest rate on all your debts by 0.5%',
     cost: 1000,
     effect: {
-      type: 'interest_reduction',
+      type: 'reduceInterest',
       value: 0.5
     },
     icon: <Shield className="h-10 w-10 text-blue-500" />
