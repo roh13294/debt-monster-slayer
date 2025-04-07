@@ -103,9 +103,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     generateLifeEvent,
     playerTraits,
     setChallenges,
-    (traits: PlayerTraits) => {
-      return generatePersonalizedChallenges(traits);
-    }
+    () => generatePersonalizedChallenges(playerTraits)
   );
 
   const { damageMonster, useSpecialMove } = useBattleActions({
@@ -182,7 +180,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const gameJob: Job = { 
       title: randomJob.title, 
-      baseSalary: randomJob.salary || randomJob.baseIncome || 3500,
+      baseSalary: randomJob.baseIncome || 3500,
       description: randomJob.description
     };
     
@@ -193,7 +191,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ageBracket: randomLifeStage.ageBracket
     };
     
-    const gameCircumstances: string[] = randomCircumstances.map(c => c.name);
+    const gameCircumstances: string[] = randomCircumstances.map(c => 
+      typeof c === 'string' ? c : c.name
+    );
     
     const playerDetails = initializePlayerState(gameJob, gameLifeStage, gameCircumstances);
     
@@ -278,7 +278,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     gameStarted,
     job: job || { title: 'Unemployed', baseSalary: 0 },
     lifeStage: lifeStage || { name: 'Adult', baseExpenses: 0.5 },
-    circumstances: circumstances.map(c => typeof c === 'string' ? c : c.name),
+    circumstances: circumstances && circumstances.length > 0 
+      ? circumstances.map(c => typeof c === 'string' ? c : (typeof c === 'object' && c !== null && 'name' in c ? c.name : ''))
+      : [],
     characterBackground,
     purchaseItem
   };
