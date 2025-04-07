@@ -1,18 +1,19 @@
 
 import { toast } from "@/hooks/use-toast";
 import { Debt } from "@/types/gameTypes";
+import { Dispatch, SetStateAction } from "react";
 
 type BattleActionsProps = {
   cash: number;
-  setCash: (value: number | ((prev: number) => number)) => void;
+  setCash: Dispatch<SetStateAction<number>>;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
   removeDebt: (id: string) => void;
-  updateChallenge: (id: string, progress: number) => void;
+  updateChallenge: (id: string, updates: Partial<Challenge>) => void;
   updatePlayerTrait: (trait: string, value: number) => void;
   playerTraits: any;
   debts: Debt[];
   specialMoves: number;
-  setSpecialMoves: (value: number | ((prev: number) => number)) => void;
+  setSpecialMoves: Dispatch<SetStateAction<number>>;
 };
 
 export const useBattleActions = ({
@@ -51,6 +52,7 @@ export const useBattleActions = ({
     // Update the debt
     updateDebt(debtId, {
       amount: newAmount,
+      balance: newAmount,
       health: newHealth
     });
     
@@ -58,7 +60,7 @@ export const useBattleActions = ({
     setCash(prev => prev - amount);
     
     // Update challenge progress for making a payment
-    updateChallenge('1', 1);
+    updateChallenge('1', { progress: 1 });
     
     // If debt is paid off, remove it
     if (newAmount === 0) {
@@ -96,7 +98,8 @@ export const useBattleActions = ({
     
     // Update the debt
     updateDebt(debtId, {
-      interest: newInterest
+      interest: newInterest,
+      interestRate: newInterest
     });
     
     // Consume special move

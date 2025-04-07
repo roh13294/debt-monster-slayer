@@ -5,29 +5,38 @@ export const initialDebts: Debt[] = [
   {
     id: '1',
     name: 'Credit Card Debt',
+    balance: 5000,
     amount: 5000,
+    interestRate: 18.99,
     interest: 18.99,
     minimumPayment: 125,
     monsterType: 'red',
     health: 100,
+    psychologicalImpact: 8
   },
   {
     id: '2',
     name: 'Student Loan',
+    balance: 15000,
     amount: 15000,
+    interestRate: 5.8,
     interest: 5.8,
     minimumPayment: 180,
     monsterType: 'blue',
     health: 100,
+    psychologicalImpact: 6
   },
   {
     id: '3',
     name: 'Car Loan',
+    balance: 12000,
     amount: 12000,
+    interestRate: 4.5,
     interest: 4.5,
     minimumPayment: 220,
     monsterType: 'green',
     health: 100,
+    psychologicalImpact: 5
   }
 ];
 
@@ -36,6 +45,7 @@ export const initialBudget: Budget = {
   essentials: 1800,
   debt: 600,
   savings: 200,
+  discretionary: 900
 };
 
 export const initialChallenges: Challenge[] = [
@@ -120,8 +130,9 @@ export const initialPlayerTraits: PlayerTraits = {
   careerFocus: 5,
   savingAbility: 5,
   luckyStreak: 5,
-  // New anime-themed traits
+  // Anime-themed traits
   discipline: 5,
   courage: 5,
-  wisdom: 5
+  wisdom: 5,
+  determination: 5
 };

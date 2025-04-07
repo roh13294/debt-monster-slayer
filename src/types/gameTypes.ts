@@ -1,3 +1,4 @@
+
 import { Dispatch, SetStateAction } from 'react';
 
 export interface Debt {
@@ -7,6 +8,12 @@ export interface Debt {
   interestRate: number;
   minimumPayment: number;
   psychologicalImpact: number;
+  
+  // Additional properties used in implementation
+  amount: number;
+  interest: number;
+  health: number;
+  monsterType: string;
 }
 
 export interface Budget {
@@ -23,6 +30,10 @@ export interface Challenge {
   description: string;
   reward: number;
   completed: boolean;
+  
+  // Additional properties used in implementation
+  progress: number;
+  target: number;
 }
 
 export interface LifeEvent {
@@ -47,13 +58,31 @@ export interface LifeEventOption {
     financialKnowledge?: number;
     determination?: number;
     riskTolerance?: number;
+    courage?: number;
+    wisdom?: number;
+    discipline?: number;
+    savingAbility?: number;
+    spendingHabits?: number;
+    careerFocus?: number;
   };
+  
+  // Additional property used in implementation
+  effect?: string;
 }
 
 export interface PlayerTraits {
   financialKnowledge: number;
   determination: number;
   riskTolerance: number;
+  
+  // Additional properties used in implementation
+  discipline: number;
+  courage: number;
+  wisdom: number;
+  spendingHabits: number;
+  careerFocus: number;
+  savingAbility: number;
+  luckyStreak?: number;
 }
 
 export interface Job {
@@ -65,6 +94,23 @@ export interface LifeStage {
   name: string;
   baseExpenses: number;
 }
+
+// Define ShopItem interface for the Shop component
+export interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  effect: string;
+  category: string;
+  icon?: string;
+}
+
+// Define Strategy type for debt repayment strategies
+export type Strategy = 'avalanche' | 'snowball' | 'highImpact' | 'proportional';
+
+// Define BudgetPreset type
+export type BudgetPreset = 'balanced' | 'aggressive' | 'conservative' | 'custom';
 
 export interface GameContextType {
   playerName: string;
