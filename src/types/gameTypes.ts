@@ -73,11 +73,20 @@ export interface PlayerTraits {
 export interface Job {
   title: string;
   baseSalary: number;
+  description?: string;  // Added optional description to match JobType
 }
 
 export interface LifeStage {
   name: string;
   baseExpenses: number;
+  description?: string;  // Added optional fields to match useRandomCharacter's LifeStage
+  ageBracket?: string;
+  modifier?: {
+    income?: number;
+    expenses?: number;
+    debtChance?: number;
+    startingCash?: number;
+  };
 }
 
 // Define ShopItem interface for the Shop component
@@ -177,5 +186,11 @@ export interface PlayerStateType {
 }
 
 // Add utility type for the hooks/useRandomCharacter.ts compatibility
-export type JobType = Job;
+export type JobType = {
+  title: string;
+  baseIncome: number;
+  description: string;
+  salary?: number; // Added to support both interfaces
+};
+
 export type CircumstanceType = string;

@@ -103,7 +103,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     generateLifeEvent,
     playerTraits,
     setChallenges,
-    (traits: PlayerTraits) => generatePersonalizedChallenges(traits)
+    (traits: PlayerTraits) => {
+      return generatePersonalizedChallenges(traits);
+    }
   );
 
   const { damageMonster, useSpecialMove } = useBattleActions({
@@ -180,12 +182,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const gameJob: Job = { 
       title: randomJob.title, 
-      baseSalary: randomJob.salary || 3500 
+      baseSalary: randomJob.salary || randomJob.baseIncome || 3500,
+      description: randomJob.description
     };
     
     const gameLifeStage: LifeStage = { 
       name: randomLifeStage.name, 
-      baseExpenses: randomLifeStage.expenseRatio || 0.5 
+      baseExpenses: randomLifeStage.expenseRatio || 0.5,
+      description: randomLifeStage.description,
+      ageBracket: randomLifeStage.ageBracket
     };
     
     const gameCircumstances: string[] = randomCircumstances.map(c => c.name);

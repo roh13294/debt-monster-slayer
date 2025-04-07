@@ -1,9 +1,8 @@
 
 import { useState } from 'react';
-import { PlayerTraits } from '../types/gameTypes';
+import { PlayerTraits, Job, LifeStage } from '../types/gameTypes';
 import { initialPlayerTraits } from '../data/initialGameState';
 import { toast } from "@/hooks/use-toast";
-import { JobType, LifeStage, Circumstance } from '../hooks/useRandomCharacter';
 
 export const usePlayerState = () => {
   const [playerName, setPlayerName] = useState<string>('Player');
@@ -15,9 +14,9 @@ export const usePlayerState = () => {
   const [paymentStreak, setPaymentStreak] = useState<number>(0);
   
   // New state for character details
-  const [job, setJob] = useState<JobType | null>(null);
+  const [job, setJob] = useState<Job | null>(null);
   const [lifeStage, setLifeStage] = useState<LifeStage | null>(null);
-  const [circumstances, setCircumstances] = useState<Circumstance[]>([]);
+  const [circumstances, setCircumstances] = useState<string[]>([]);
   const [characterBackground, setCharacterBackground] = useState<string>('');
 
   // Update a player trait
@@ -45,15 +44,15 @@ export const usePlayerState = () => {
   };
 
   // Update player traits based on circumstances
-  const applyCircumstancesToTraits = (playerCircumstances: Circumstance[], baseTraits: PlayerTraits): PlayerTraits => {
+  const applyCircumstancesToTraits = (playerCircumstances: any[], baseTraits: PlayerTraits): PlayerTraits => {
     let updatedTraits = { ...baseTraits };
     
     playerCircumstances.forEach(circumstance => {
-      if (circumstance.effect.traits) {
+      if (typeof circumstance === 'object' && circumstance.effect && circumstance.effect.traits) {
         Object.entries(circumstance.effect.traits).forEach(([trait, modifier]) => {
           const traitKey = trait as keyof PlayerTraits;
           if (updatedTraits[traitKey] !== undefined && modifier !== undefined) {
-            updatedTraits[traitKey] = Math.max(1, Math.min(10, updatedTraits[traitKey] + modifier));
+            updatedTraits[traitKey] = Math.max(1, Math.min(10, updatedTraits[traitKey] + (modifier as number)));
           }
         });
       }
@@ -64,9 +63,9 @@ export const usePlayerState = () => {
 
   // Set character details
   const setCharacterDetails = (
-    jobData: JobType | null, 
-    lifeStageData: LifeStage | null, 
-    circumstancesData: Circumstance[]
+    jobData: Job, 
+    lifeStageData: LifeStage, 
+    circumstancesData: string[]
   ) => {
     setJob(jobData);
     setLifeStage(lifeStageData);
@@ -74,24 +73,28 @@ export const usePlayerState = () => {
     
     // Generate and set character background description
     if (jobData && lifeStageData) {
-      const background = `You are a ${lifeStageData.name} (${lifeStageData.ageBracket}) working as a ${jobData.title}. ${
-        circumstancesData.map(c => c.description).join(' ')
-      }`;
+      const background = `You are a ${lifeStageData.name} ${lifeStageData.ageBracket ? `(${lifeStageData.ageBracket})` : ''} working as a ${jobData.title}. ${
+        jobData.description || ''
+      } ${lifeStageData.description || ''} ${circumstancesData.join(' ')}`;
       setCharacterBackground(background);
     }
   };
 
   // Initialize player state with character details
   const initializePlayerState = (
-    initialJob?: JobType | null,
-    initialLifeStage?: LifeStage | null,
-    initialCircumstances?: Circumstance[]
+    initialJob: Job,
+    initialLifeStage: LifeStage,
+    initialCircumstances: string[]
   ) => {
     let initialTraits = generateInitialPlayerTraits();
     
     // Apply circumstance trait modifications if provided
-    if (initialCircumstances && initialCircumstances.length > 0) {
-      initialTraits = applyCircumstancesToTraits(initialCircumstances, initialTraits);
+    const circumstanceObjects = initialCircumstances.length > 0 && typeof initialCircumstances[0] === 'object' 
+      ? initialCircumstances 
+      : [];
+    
+    if (circumstanceObjects.length > 0) {
+      initialTraits = applyCircumstancesToTraits(circumstanceObjects, initialTraits);
     }
     
     setPlayerTraits(initialTraits);
@@ -99,10 +102,8 @@ export const usePlayerState = () => {
     setPaymentStreak(0);
     setEventHistory([]);
     
-    // Set character details if provided
-    if (initialJob && initialLifeStage && initialCircumstances) {
-      setCharacterDetails(initialJob, initialLifeStage, initialCircumstances);
-    }
+    // Set character details
+    setCharacterDetails(initialJob, initialLifeStage, initialCircumstances);
     
     // Adjust initial cash based on life stage and circumstances if provided
     let startingCash = 2000;
@@ -110,9 +111,9 @@ export const usePlayerState = () => {
       startingCash = initialLifeStage.modifier.startingCash;
     }
     
-    // Apply circumstance cash modifiers
-    if (initialCircumstances) {
-      initialCircumstances.forEach(circumstance => {
+    // Apply circumstance cash modifiers if we have objects with effect.cash
+    if (circumstanceObjects.length > 0) {
+      circumstanceObjects.forEach((circumstance: any) => {
         if (circumstance.effect?.cash) {
           startingCash += circumstance.effect.cash;
         }
@@ -120,7 +121,7 @@ export const usePlayerState = () => {
     }
     
     // Further adjust based on saving ability if not overridden
-    if (!initialLifeStage && !initialCircumstances) {
+    if (!initialLifeStage.modifier && circumstanceObjects.length === 0) {
       if (initialTraits.savingAbility > 6) {
         startingCash = 2500; // Better savers start with more cash
       } else if (initialTraits.savingAbility < 4) {
@@ -132,9 +133,9 @@ export const usePlayerState = () => {
 
     return {
       traits: initialTraits,
-      job: initialJob || null,
-      lifeStage: initialLifeStage || null,
-      circumstances: initialCircumstances || []
+      job: initialJob,
+      lifeStage: initialLifeStage,
+      circumstances: initialCircumstances
     };
   };
 

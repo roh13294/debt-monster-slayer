@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Challenge, PlayerTraits } from '../types/gameTypes';
 import { initialChallenges } from '../data/initialGameState';
@@ -11,14 +12,38 @@ export const useChallengeState = (
   const [lastChallengeUpdate, setLastChallengeUpdate] = useState<number>(Date.now());
 
   // Update challenge progress
-  const updateChallenge = (id: string, progress: number) => {
+  const updateChallenge = (id: string, updates: Partial<Challenge> | number) => {
     setChallenges(prevChallenges => prevChallenges.map(challenge => {
       if (challenge.id === id) {
-        const newProgress = challenge.progress + progress;
-        const completed = newProgress >= challenge.target;
+        // Handle both number (legacy) and Partial<Challenge> (new format)
+        let progressValue: number;
+        let updatedChallenge: Challenge;
+        
+        if (typeof updates === 'number') {
+          // Legacy format: updates is progress value (number)
+          progressValue = challenge.progress + updates;
+          updatedChallenge = {
+            ...challenge,
+            progress: progressValue,
+            completed: progressValue >= challenge.target
+          };
+        } else {
+          // New format: updates is Partial<Challenge>
+          updatedChallenge = {
+            ...challenge,
+            ...updates,
+          };
+          
+          // If progress was updated, check completion
+          if (updates.progress !== undefined) {
+            const newProgress = challenge.progress + (updates.progress - challenge.progress);
+            updatedChallenge.progress = newProgress;
+            updatedChallenge.completed = newProgress >= challenge.target;
+          }
+        }
         
         // Award rewards for completed challenges
-        if (completed && !challenge.completed) {
+        if (updatedChallenge.completed && !challenge.completed) {
           setCash(prev => prev + challenge.reward);
           setSpecialMoves(prev => prev + 1);
           
@@ -29,11 +54,7 @@ export const useChallengeState = (
           });
         }
         
-        return {
-          ...challenge,
-          progress: newProgress,
-          completed: completed
-        };
+        return updatedChallenge;
       }
       return challenge;
     }));

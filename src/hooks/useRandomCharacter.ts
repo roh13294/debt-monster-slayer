@@ -1,17 +1,19 @@
-
 import { useState } from 'react';
+import { JobType as GameJobType, LifeStage as GameLifeStage } from '../types/gameTypes';
 
 // Define types for our character attributes
 export type JobType = {
   title: string;
   baseIncome: number;
   description: string;
+  salary?: number; // Added to support conversion to Job type
 };
 
 export type LifeStage = {
   name: string;
   description: string;
   ageBracket: string;
+  expenseRatio?: number; // Added to support conversion to GameLifeStage
   modifier: {
     income?: number;
     expenses?: number;
@@ -239,8 +241,14 @@ export const useRandomCharacter = () => {
     // Select a random job
     const randomJob = availableJobs[Math.floor(Math.random() * availableJobs.length)];
     
+    // Add salary property that matches baseIncome for compatibility
+    randomJob.salary = randomJob.baseIncome;
+    
     // Select a random life stage
     const randomLifeStage = lifeStages[Math.floor(Math.random() * lifeStages.length)];
+    
+    // Add expenseRatio property for compatibility
+    randomLifeStage.expenseRatio = 0.5; // Default value, can be adjusted
     
     // Select 1-3 random circumstances without repeats
     const shuffledCircumstances = [...circumstances].sort(() => Math.random() - 0.5);
@@ -329,17 +337,7 @@ export const useRandomCharacter = () => {
     selectedLifeStage: LifeStage, 
     selectedCircumstances: Circumstance[]
   ) => {
-    return {
-      jobTitle: selectedJob.title,
-      jobDescription: selectedJob.description,
-      lifeStage: selectedLifeStage.name,
-      lifeStageBracket: selectedLifeStage.ageBracket,
-      lifeStageDescription: selectedLifeStage.description,
-      circumstances: selectedCircumstances.map(c => ({
-        name: c.name,
-        description: c.description
-      }))
-    };
+    return `You are a ${selectedLifeStage.name} (${selectedLifeStage.ageBracket}) working as a ${selectedJob.title}. ${selectedJob.description}. ${selectedLifeStage.description}. ${selectedCircumstances.map(c => c.description).join(' ')}`;
   };
 
   return {
