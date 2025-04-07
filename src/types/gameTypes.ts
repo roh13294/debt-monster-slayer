@@ -1,5 +1,6 @@
 
 import { Dispatch, SetStateAction } from 'react';
+import { ReactNode } from 'react';
 
 export interface Debt {
   id: string;
@@ -45,29 +46,13 @@ export interface LifeEvent {
 
 export interface LifeEventOption {
   text: string;
-  cashChange?: number;
-  debtChange?: number;
-  budgetChange?: {
-    income?: number;
-    essentials?: number;
+  effect: {
+    cash?: number;
     debt?: number;
-    savings?: number;
-    discretionary?: number;
+    income?: number;
+    description: string;
+    // Additional properties can be added as needed
   };
-  traitChange?: {
-    financialKnowledge?: number;
-    determination?: number;
-    riskTolerance?: number;
-    courage?: number;
-    wisdom?: number;
-    discipline?: number;
-    savingAbility?: number;
-    spendingHabits?: number;
-    careerFocus?: number;
-  };
-  
-  // Additional property used in implementation
-  effect?: string;
 }
 
 export interface PlayerTraits {
@@ -101,16 +86,27 @@ export interface ShopItem {
   name: string;
   description: string;
   cost: number;
-  effect: string;
-  category: string;
-  icon?: string;
+  effect: {
+    type: string;
+    value: number;
+    trait?: keyof PlayerTraits;
+  };
+  icon?: ReactNode;
+  category?: string;
 }
 
 // Define Strategy type for debt repayment strategies
 export type Strategy = 'avalanche' | 'snowball' | 'highImpact' | 'proportional';
 
 // Define BudgetPreset type
-export type BudgetPreset = 'balanced' | 'aggressive' | 'conservative' | 'custom';
+export type BudgetPreset = 'balanced' | 'aggressive' | 'conservative' | 'custom' | 'frugal';
+
+export interface StanceMultipliers {
+  debtPaymentMultiplier: number;
+  savingsMultiplier: number;
+  incomeMultiplier: number;
+  expensesMultiplier: number;
+}
 
 export interface GameContextType {
   playerName: string;
@@ -121,20 +117,20 @@ export interface GameContextType {
   setCash: (cash: number) => void;
   playerTraits: PlayerTraits;
   updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
-  eventHistory: LifeEvent[];
+  eventHistory: string[];
   debts: Debt[];
   addDebt: (debt: Debt) => void;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
   removeDebt: (id: string) => void;
   totalDebt: number;
-  strategy: string;
-  setStrategy: (strategy: string) => void;
+  strategy: Strategy;
+  setStrategy: (strategy: Strategy) => void;
   budget: Budget;
   updateBudget: (updates: Partial<Budget>) => void;
-  applyBudgetPreset: (preset: string) => void;
+  applyBudgetPreset: (preset: BudgetPreset) => void;
   currentLifeEvent: LifeEvent | null;
   generateLifeEvent: () => void;
-  resolveLifeEvent: (optionIndex: number, originalResolve: () => void) => void;
+  resolveLifeEvent: (optionIndex: number) => void;
   challenges: Challenge[];
   updateChallenge: (id: string, updates: Partial<Challenge>) => void;
   monthsPassed: number;
@@ -152,7 +148,7 @@ export interface GameContextType {
   lifeStage: LifeStage;
   circumstances: string[];
   characterBackground: string;
-  purchaseItem: (itemId: string) => void;
+  purchaseItem: (item: ShopItem) => void;
 }
 
 export interface PlayerStateType {
@@ -168,8 +164,8 @@ export interface PlayerStateType {
   setSpecialMoves: Dispatch<SetStateAction<number>>;
   paymentStreak: number;
   setPaymentStreak: Dispatch<SetStateAction<number>>;
-  eventHistory: LifeEvent[];
-  setEventHistory: Dispatch<SetStateAction<LifeEvent[]>>;
+  eventHistory: string[];
+  setEventHistory: Dispatch<SetStateAction<string[]>>;
   job: Job;
   lifeStage: LifeStage;
   circumstances: string[];
@@ -178,11 +174,4 @@ export interface PlayerStateType {
   setCharacterDetails: (job: Job, lifeStage: LifeStage, circumstances: string[]) => void;
   initializePlayerState: (job: Job, lifeStage: LifeStage, circumstances: string[]) => PlayerStateType;
   resetPlayerState: () => void;
-}
-
-export interface StanceMultipliers {
-  debtPaymentMultiplier: number;
-  savingsMultiplier: number;
-  incomeMultiplier: number;
-  expensesMultiplier: number;
 }

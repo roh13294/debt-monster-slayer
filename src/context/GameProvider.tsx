@@ -7,7 +7,7 @@ import { useChallengeState } from '../hooks/useChallengeState';
 import { useLifeEventState } from '../hooks/useLifeEventState';
 import { useGameProgress } from '../hooks/useGameProgress';
 import { useRandomCharacter } from '../hooks/useRandomCharacter';
-import { GameContextType } from '../types/gameTypes';
+import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge } from '../types/gameTypes';
 import { useBattleActions } from '../hooks/useBattleActions';
 import { useShopActions } from '../hooks/useShopActions';
 import { useEventResolver } from '../hooks/useEventResolver';
@@ -198,7 +198,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       initializePlayerState,
       initializeDebts,
       initializeBudget,
-      initializeChallenges,
+      (traits) => initializeChallenges(traits),
       setMonthsPassed,
       setLastLevelSeen,
       setGameStarted,
@@ -206,7 +206,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       generateCharacterBackground
     );
     
-    setCharacterBackground(background);
+    if (setCharacterBackground) {
+      setCharacterBackground(background);
+    }
   };
 
   // Reset game
@@ -224,7 +226,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Handle resolving life events with the new resolver
   const handleResolveLifeEvent = (optionIndex: number) => {
-    resolveLifeEvent(optionIndex, () => originalResolveLifeEvent(optionIndex));
+    originalResolveLifeEvent(optionIndex, updatePlayerTrait, playerTraits);
   };
 
   // Context value with character details

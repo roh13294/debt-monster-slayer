@@ -42,7 +42,7 @@ export const useLifeEventState = (
     
     // Apply cash effect
     if (option.effect.cash) {
-      setCash(prev => prev + option.effect.cash);
+      setCash(prev => prev + option.effect.cash!);
     }
     
     // Apply debt effect
@@ -60,7 +60,11 @@ export const useLifeEventState = (
           amount: option.effect.debt,
           interest: 18.99,
           minimumPayment: Math.max(25, option.effect.debt * 0.02),
-          monsterType: 'red'
+          monsterType: 'red',
+          balance: option.effect.debt,
+          interestRate: 18.99,
+          health: 100,
+          psychologicalImpact: 8
         });
       }
     }
@@ -85,7 +89,6 @@ export const useLifeEventState = (
     if (!option) return;
     
     const text = option.text.toLowerCase();
-    const effect = option.effect;
     
     // Example trait modifications based on choices
     const traitUpdates: Partial<PlayerTraits> = {};
@@ -103,7 +106,7 @@ export const useLifeEventState = (
     }
     
     // Spending habits
-    if (effect.cash && effect.cash < 0 && text.includes('buy')) {
+    if (option.effect.cash && option.effect.cash < 0 && text.includes('buy')) {
       traitUpdates.spendingHabits = playerTraits.spendingHabits + 1;
     } else if (text.includes('save') || text.includes('budget')) {
       traitUpdates.spendingHabits = Math.max(1, playerTraits.spendingHabits - 1);
@@ -115,7 +118,7 @@ export const useLifeEventState = (
     }
     
     // Saving ability
-    if (text.includes('save') || (effect.cash && effect.cash > 0)) {
+    if (text.includes('save') || (option.effect.cash && option.effect.cash > 0)) {
       traitUpdates.savingAbility = playerTraits.savingAbility + 1;
     }
     
