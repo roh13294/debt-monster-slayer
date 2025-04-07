@@ -5,11 +5,11 @@ type MonsterImageMap = {
 };
 
 export const monsterImages: MonsterImageMap = {
-  'Credit Card Debt': '/images/credit-card-monster.png', // Red monster with credit cards
-  'Student Loan': '/images/student-loan-monster.png', // Green monster with documents
-  'Car Loan': '/images/car-loan-monster.png', // Yellow/gold lion monster
-  'Mortgage': '/images/mortgage-monster.png', // Stone golem with hourglass
-  'Personal Loan': '/images/personal-loan-monster.png', // Purple snake in suit
+  'Credit Card Debt': '/images/credit-demon.png', // Red monster with credit cards
+  'Student Loan': '/images/brain-demon.png', // Brain monster with documents
+  'Car Loan': '/images/lion-demon.png', // Yellow/gold lion monster
+  'Mortgage': '/images/stone-golem.png', // Stone golem with hourglass
+  'Personal Loan': '/images/snake-demon.png', // Purple snake in suit
   // Default fallback image if no specific one is found
   'default': '/images/default-monster.png'
 };

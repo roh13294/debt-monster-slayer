@@ -1,6 +1,6 @@
 
 import { toast } from "@/hooks/use-toast";
-import { Debt } from "@/types/gameTypes";
+import { Debt, Challenge } from "@/types/gameTypes";
 import { Dispatch, SetStateAction } from "react";
 
 type BattleActionsProps = {
