@@ -1,6 +1,11 @@
 
 // Game terminology mapping to replace financial terms with RPG terms
-export const gameTerms = {
+type GameTermsType = {
+  [key: string]: string | ((term: string) => string);
+}
+
+// Define the base terms object first
+const baseTerms = {
   // Financial concepts
   income: 'Spirit Flow',
   expenses: 'Corruption Drain',
@@ -22,28 +27,35 @@ export const gameTerms = {
   high: 'empowered',
   overdue: 'enraged',
   paid: 'purified',
+};
+
+// Helper function to translate finance terms to game terms
+const translateTerm = (term: string): string => {
+  const lowerTerm = term.toLowerCase();
   
-  // Helper function to translate finance terms to game terms
-  translate: (term: string): string => {
-    const lowerTerm = term.toLowerCase();
-    
-    // Check if we have a direct match
-    for (const [key, value] of Object.entries(gameTerms)) {
-      if (key === lowerTerm && key !== 'translate') {
-        return value;
-      }
+  // Check if we have a direct match in baseTerms
+  for (const [key, value] of Object.entries(baseTerms)) {
+    if (key === lowerTerm) {
+      return value as string; // We know it's a string from baseTerms
     }
-    
-    // Check for partial matches in longer phrases
-    if (lowerTerm.includes('payment')) return lowerTerm.replace('payment', 'Spirit Strike');
-    if (lowerTerm.includes('budget')) return lowerTerm.replace('budget', 'Soul Alignment');
-    if (lowerTerm.includes('debt')) return lowerTerm.replace('debt', 'Curse Bind');
-    if (lowerTerm.includes('save')) return lowerTerm.replace('save', 'seal');
-    if (lowerTerm.includes('cash')) return lowerTerm.replace('cash', 'Spirit Energy');
-    
-    // Return original if no match
-    return term;
   }
+  
+  // Check for partial matches in longer phrases
+  if (lowerTerm.includes('payment')) return lowerTerm.replace('payment', 'Spirit Strike');
+  if (lowerTerm.includes('budget')) return lowerTerm.replace('budget', 'Soul Alignment');
+  if (lowerTerm.includes('debt')) return lowerTerm.replace('debt', 'Curse Bind');
+  if (lowerTerm.includes('save')) return lowerTerm.replace('save', 'seal');
+  if (lowerTerm.includes('cash')) return lowerTerm.replace('cash', 'Spirit Energy');
+  
+  // Return original if no match
+  return term;
+};
+
+// Now create the gameTerms object with properly typed translate function
+export const gameTerms: GameTermsType = {
+  ...baseTerms,
+  // Add the translate function separately
+  translate: translateTerm
 };
 
 // Different battle stances (replacing financial strategies)

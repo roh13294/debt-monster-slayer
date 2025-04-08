@@ -60,16 +60,17 @@ const Index = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.5 }}
           >
-            <Button 
-              onClick={initializeGame} 
-              className="w-full bg-demon-gradient hover:bg-demon-gradient hover:opacity-90 flex items-center justify-center gap-2 group"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Sword className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-              <span>Begin Your Slayer Journey</span>
-              <Sparkles className="w-4 h-4 animate-pulse-subtle" />
-            </Button>
+            {/* Replaced Button with motion.button that has whileHover and whileTap */}
+            <motion.div className="w-full">
+              <Button 
+                onClick={initializeGame} 
+                className="w-full bg-demon-gradient hover:bg-demon-gradient hover:opacity-90 flex items-center justify-center gap-2 group"
+              >
+                <Sword className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                <span>Begin Your Slayer Journey</span>
+                <Sparkles className="w-4 h-4 animate-pulse-subtle" />
+              </Button>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>

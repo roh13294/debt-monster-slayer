@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Debt } from '@/types/gameTypes';
@@ -9,9 +8,10 @@ import { Progress } from '@/components/ui/progress';
 interface DebtMonsterProps {
   debt: Debt;
   onClick?: () => void;
+  isInBattle?: boolean;
 }
 
-const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick }) => {
+const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick, isInBattle = false }) => {
   const monsterImage = getMonsterImage(debt.name);
   const elementType = getDemonElementType(debt.name);
   const monsterRank = getDemonRank(debt.amount);
@@ -52,7 +52,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick }) => {
   
   return (
     <motion.div 
-      className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer group"
+      className={`bg-slate-800 border border-slate-700 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer group ${isInBattle ? 'scale-105' : ''}`}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
@@ -61,8 +61,7 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick }) => {
       transition={{ duration: 0.3 }}
     >
       <div className="relative">
-        {/* Demon image */}
-        <div className="h-40 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 relative">
+        <div className={`h-40 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 relative ${isInBattle ? 'animate-pulse-subtle' : ''}`}>
           <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10"></div>
           <motion.div 
             className="absolute bottom-0 left-1/2 transform -translate-x-1/2"
@@ -75,22 +74,19 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick }) => {
             <img 
               src={monsterImage} 
               alt={debt.name} 
-              className="h-40 object-contain -mb-4 group-hover:-mb-6 transition-all transform group-hover:scale-110"
+              className={`h-40 object-contain -mb-4 group-hover:-mb-6 transition-all transform group-hover:scale-110 ${isInBattle ? 'scale-110' : ''}`}
             />
           </motion.div>
           
-          {/* Element type badge */}
           <div className={`absolute top-2 right-2 px-2 py-1 rounded-full bg-gradient-to-r ${getElementColor()} text-white text-xs font-medium`}>
             {elementType} Type
           </div>
           
-          {/* Monster rank badge */}
           <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-medium border border-slate-600">
             {monsterRank}
           </div>
         </div>
         
-        {/* Health bar */}
         <div className="px-3 -mt-3 relative z-10">
           <div className="bg-slate-700 p-1 rounded-full">
             <Progress value={debt.health} className={getHealthColor()} />
@@ -99,11 +95,9 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick }) => {
       </div>
       
       <div className="p-4">
-        {/* Monster name */}
         <h3 className="font-bold text-white mb-1">{monsterProfile.name}</h3>
         <p className="text-xs text-slate-400 mb-3">{monsterProfile.catchphrase}</p>
         
-        {/* Monster stats */}
         <div className="grid grid-cols-2 gap-2 text-xs text-slate-300 mb-3">
           <div>
             <span className="text-slate-400">Curse Power:</span> {formatCurrency(debt.amount)}
@@ -119,7 +113,6 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick }) => {
           </div>
         </div>
         
-        {/* Attack button */}
         <button className="w-full px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm rounded-md font-medium transition-colors">
           Attack This Demon
         </button>
