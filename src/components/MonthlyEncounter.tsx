@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useGameContext } from '../context/GameContext';
-import { Flame, Shield, Sword } from 'lucide-react';
+import { Flame, Sword, Zap } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import { EncounterStageOne, EncounterStageTwo } from './encounter/EncounterStages';
 import { EncounterBackdrop } from './encounter/EncounterEffects';
 import { motion } from 'framer-motion';
+import { gameTerms } from '@/utils/gameTerms';
 
 const MonthlyEncounter = () => {
   const { advanceMonth, cash, budget, setCash, updateBudget, processMonthlyFinancials } = useGameContext();
@@ -56,8 +57,8 @@ const MonthlyEncounter = () => {
       switch (selected) {
         case 'aggressive':
           outcome = {
-            title: "Debt Slayer Stance",
-            description: "You've focused your energy on slashing your debt this month. Your payments will be more effective!",
+            title: "Flame Breathing Form",
+            description: "Your fiery attacks burn through the demon's defenses, weakening their cursed bonds.",
             cashChange: 0,
             debtChange: 15
           };
@@ -65,8 +66,8 @@ const MonthlyEncounter = () => {
           
         case 'defensive':
           outcome = {
-            title: "Savings Shield Stance",
-            description: "You've taken a defensive position to build your savings this month. Your emergency fund grows stronger!",
+            title: "Water Breathing Form",
+            description: "Your fluid defensive movements protect your spirit energy and strengthen your power seals.",
             cashChange: 5,
             debtChange: -5
           };
@@ -78,32 +79,32 @@ const MonthlyEncounter = () => {
           if (riskRoll < 0.25) {
             // Big success
             outcome = {
-              title: "Fortune Favors the Bold!",
-              description: "Your risky approach paid off handsomely this month. Your investments yielded significant returns!",
+              title: "Thunder Breathing: First Form",
+              description: "Your lightning-fast strikes critically hit the demon's core, creating massive resonance damage!",
               cashChange: 30,
               debtChange: 10
             };
           } else if (riskRoll < 0.65) {
             // Moderate success
             outcome = {
-              title: "Calculated Risk",
-              description: "Your investments performed reasonably well this month, yielding modest returns.",
+              title: "Thunder Breathing: Second Form",
+              description: "Your erratic movements confuse the demon, allowing you to land several effective strikes.",
               cashChange: 15,
               debtChange: 0
             };
           } else if (riskRoll < 0.9) {
             // Break even
             outcome = {
-              title: "Market Volatility",
-              description: "Your investments faced a turbulent market. You managed to break even, but gained valuable experience.",
+              title: "Thunder Breathing: Failed Form",
+              description: "The demon anticipated your movements. You managed to avoid damage but couldn't land effective strikes.",
               cashChange: 0,
               debtChange: 0
             };
           } else {
             // Loss
             outcome = {
-              title: "Investment Setback",
-              description: "Your risky investments didn't pan out this month. The market turned against your positions.",
+              title: "Thunder Breathing: Reverse Strike",
+              description: "Your risky maneuver backfired! The demon countered your attack and drained some of your energy.",
               cashChange: -15,
               debtChange: -5
             };
@@ -124,15 +125,15 @@ const MonthlyEncounter = () => {
       
       if (cashChange > 0) {
         toast({
-          title: "Extra Income!",
-          description: `You earned an additional $${cashChange} from your monthly approach.`,
+          title: "Energy Surge!",
+          description: `You gained ${cashChange} Spirit Energy from your battle technique.`,
           variant: "default",
         });
       } else if (cashChange < 0) {
         toast({
-          title: "Financial Setback",
-          description: `You lost $${Math.abs(cashChange)} from your risky approach.`,
-          variant: "default",
+          title: "Energy Drained",
+          description: `You lost ${Math.abs(cashChange)} Spirit Energy from the demon's counterattack.`,
+          variant: "destructive",
         });
       }
     }
@@ -148,14 +149,14 @@ const MonthlyEncounter = () => {
       
       if (debtBudgetChange > 0) {
         toast({
-          title: "Debt Payment Boost!",
-          description: `Your monthly debt payment budget increased by $${debtBudgetChange}.`,
+          title: "Attack Power Increased!",
+          description: `Your spirit strikes are ${stanceOutcome.debtChange}% more effective against demons.`,
           variant: "default",
         });
       } else if (debtBudgetChange < 0) {
         toast({
-          title: "Debt Payment Reduced",
-          description: `Your monthly debt payment budget decreased by $${Math.abs(debtBudgetChange)}.`,
+          title: "Attack Power Decreased",
+          description: `Your spirit strikes are ${Math.abs(stanceOutcome.debtChange)}% less effective against demons.`,
           variant: "default",
         });
       }
@@ -168,8 +169,8 @@ const MonthlyEncounter = () => {
     processMonthlyFinancials();
     
     toast({
-      title: "A New Month Begins!",
-      description: "Your financial journey continues as you face new challenges.",
+      title: "New Moon Rises!",
+      description: "The cycle begins anew as you continue your journey to slay the curse demons.",
       variant: "default",
     });
   };
@@ -181,13 +182,13 @@ const MonthlyEncounter = () => {
         className="oni-button w-full group"
       >
         <Flame className="w-4 h-4 mr-2 group-hover:animate-flame-pulse text-amber-200" />
-        Advance to Next Month
-        <Flame className="w-4 h-4 ml-2 group-hover:animate-sword-draw" />
+        Begin Next Moon Cycle
+        <Sword className="w-4 h-4 ml-2 group-hover:animate-pulse-subtle" />
       </Button>
       
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-3xl bg-slate-900/95 border border-yellow-500/30 p-0">
-          <div className="relative min-h-[50vh] p-8">
+        <DialogContent className="max-w-4xl bg-slate-900/95 border border-yellow-500/30 p-0">
+          <div className="relative min-h-[60vh] p-0">
             {/* Dynamic backdrop based on stance */}
             <EncounterBackdrop stance={stance || 'default'} />
             

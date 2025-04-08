@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { usePlayerState } from '../hooks/usePlayerState';
 import { useDebtState } from '../hooks/useDebtState';
@@ -13,6 +14,7 @@ import { useEventResolver } from '../hooks/useEventResolver';
 import { GameContext } from './GameContextTypes';
 import { initializeGameState, resetGameState } from './GameInitialization';
 import { toast } from "@/hooks/use-toast";
+import { gameTerms } from '@/utils/gameTerms';
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
@@ -193,8 +195,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     
     const gameCircumstances: string[] = randomCircumstances.map(c => 
-      typeof c === 'string' ? c : c.name
-    );
+      typeof c === 'string' ? c : (c && typeof c === 'object' && 'name' in c ? c.name : '')
+    ).filter(Boolean);
     
     const playerDetails = initializePlayerState(gameJob, gameLifeStage, gameCircumstances);
     
@@ -215,8 +217,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const background = generateCharacterBackground(randomJob, randomLifeStage, randomCircumstances);
     
     toast({
-      title: "Your Financial Journey Begins!",
-      description: `You're a ${randomLifeStage.name} ${randomJob.title} with ${randomCircumstances.length} life circumstances. Make payments to defeat your debt monsters!`,
+      title: "Your Slayer Journey Begins!",
+      description: `You're a ${randomLifeStage.name} ${randomJob.title} with ${randomCircumstances.length} unique traits. Defeat the demons that haunt your path!`,
       variant: "default",
     });
 

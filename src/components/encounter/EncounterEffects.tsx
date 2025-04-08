@@ -1,106 +1,92 @@
 
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { EnergyWave } from '../battle/BattleEffects';
 
-interface ParticleProps {
-  x: number;
-  y: number;
-  size: number;
-  color: string;
-  duration: number;
-  delay: number;
-}
-
-export const Particle = ({ x, y, size, color, duration, delay }: ParticleProps) => {
-  return (
-    <div 
-      className="absolute rounded-full pointer-events-none"
-      style={{
-        left: `${x}%`,
-        top: `${y}%`,
-        width: `${size}px`,
-        height: `${size}px`,
-        backgroundColor: color,
-        opacity: 0,
-        animation: `fadeInOut ${duration}s ease-in-out ${delay}s forwards`
-      }}
-    />
-  );
-};
-
-interface ParticleEffectProps {
-  count?: number;
-  colors?: string[];
-}
-
-export const ParticleEffect = ({ count = 20, colors = ['#FCD34D', '#F59E0B', '#D97706'] }: ParticleEffectProps) => {
-  const [particles, setParticles] = useState<ParticleProps[]>([]);
-  
-  useEffect(() => {
-    const newParticles = [];
-    for (let i = 0; i < count; i++) {
-      newParticles.push({
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 6 + 2,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        duration: Math.random() * 2 + 1,
-        delay: Math.random() * 2
-      });
-    }
-    setParticles(newParticles);
-  }, [count, colors]);
-  
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((particle, index) => (
-        <Particle key={index} {...particle} />
-      ))}
-    </div>
-  );
-};
-
-interface EncounterBackdropProps {
-  stance: string;
-}
-
-export const EncounterBackdrop = ({ stance }: EncounterBackdropProps) => {
-  const getBackdropStyles = () => {
+export const EncounterBackdrop: React.FC<{ stance: string }> = ({ stance }) => {
+  const getBackdropEffect = () => {
     switch (stance) {
       case 'aggressive':
-        return {
-          bgFrom: 'from-red-900/30',
-          bgTo: 'to-orange-900/10',
-          colors: ['#FCA5A5', '#FECACA', '#FEE2E2']
-        };
+        return (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-red-900/30 via-red-800/20 to-black"></div>
+            <motion.div 
+              className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-gradient-radial from-red-500/30 to-transparent"
+              initial={{ scale: 0.6 }}
+              animate={{ scale: [0.6, 0.9, 0.7], opacity: [0.4, 0.6, 0.4] }}
+              transition={{ duration: 4, repeat: Infinity, repeatType: "reverse" }}
+            />
+            <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10"></div>
+            <EnergyWave color="red" />
+          </>
+        );
+        
       case 'defensive':
-        return {
-          bgFrom: 'from-blue-900/30',
-          bgTo: 'to-cyan-900/10',
-          colors: ['#93C5FD', '#BFDBFE', '#DBEAFE']
-        };
+        return (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-blue-800/20 to-black"></div>
+            <motion.div 
+              className="absolute inset-0 bg-[url('/images/wave-pattern.png')] bg-repeat-x bg-bottom opacity-20"
+              animate={{ backgroundPositionX: ['0%', '100%'] }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            />
+            <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10"></div>
+            <EnergyWave color="blue" />
+          </>
+        );
+        
       case 'risky':
-        return {
-          bgFrom: 'from-purple-900/30',
-          bgTo: 'to-fuchsia-900/10',
-          colors: ['#C4B5FD', '#DDD6FE', '#EDE9FE']
-        };
+        return (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-purple-800/20 to-black"></div>
+            <motion.div 
+              className="absolute inset-0"
+              initial={{ opacity: 0.2 }}
+              animate={{ opacity: [0.2, 0.4, 0.2] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              {Array.from({ length: 10 }).map((_, i) => (
+                <motion.div 
+                  key={i}
+                  className="absolute w-px h-[30vh] bg-purple-400 opacity-40"
+                  style={{ 
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    rotate: `${Math.random() * 90}deg`
+                  }}
+                  initial={{ opacity: 0.4, height: 0 }}
+                  animate={{ 
+                    opacity: [0.4, 0.8, 0], 
+                    height: ['0vh', '30vh', '0vh']
+                  }}
+                  transition={{ 
+                    duration: 0.8 + Math.random() * 2,
+                    delay: Math.random() * 5,
+                    repeat: Infinity,
+                    repeatDelay: Math.random() * 5
+                  }}
+                />
+              ))}
+            </motion.div>
+            <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10"></div>
+            <EnergyWave color="purple" />
+          </>
+        );
+        
       default:
-        return {
-          bgFrom: 'from-yellow-900/30',
-          bgTo: 'to-amber-900/10',
-          colors: ['#FCD34D', '#FBBF24', '#F59E0B']
-        };
+        return (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-purple-800/20 to-black"></div>
+            <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10"></div>
+            <EnergyWave color="yellow" />
+          </>
+        );
     }
   };
   
-  const { bgFrom, bgTo, colors } = getBackdropStyles();
-  
   return (
-    <>
-      <div className={`absolute inset-0 bg-gradient-to-br ${bgFrom} ${bgTo}`}></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-900/5 via-transparent to-transparent"></div>
-      <ParticleEffect colors={colors} />
-    </>
+    <div className="absolute inset-0 overflow-hidden">
+      {getBackdropEffect()}
+    </div>
   );
 };
