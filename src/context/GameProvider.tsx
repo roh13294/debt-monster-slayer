@@ -240,6 +240,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     originalResolveLifeEvent(optionIndex, updatePlayerTrait, playerTraits);
   };
 
+  const safeCircumstances = circumstances || [];
+  const formattedCircumstances = safeCircumstances.map(c => {
+    if (typeof c === 'string') {
+      return c;
+    } else if (c && typeof c === 'object' && 'name' in c) {
+      return c.name;
+    }
+    return '';
+  }).filter(Boolean);
+
   const value: GameContextType = {
     playerName,
     setPlayerName,
@@ -278,9 +288,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     gameStarted,
     job: job || { title: 'Unemployed', baseSalary: 0 },
     lifeStage: lifeStage || { name: 'Adult', baseExpenses: 0.5 },
-    circumstances: circumstances && circumstances.length > 0 
-      ? circumstances.map(c => typeof c === 'string' ? c : (typeof c === 'object' && c !== null && 'name' in c ? c.name : ''))
-      : [],
+    circumstances: formattedCircumstances,
     characterBackground,
     purchaseItem
   };
