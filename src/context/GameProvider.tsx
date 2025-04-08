@@ -23,7 +23,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     specialMoves, setSpecialMoves,
     paymentStreak, setPaymentStreak,
     eventHistory, setEventHistory,
-    job, lifeStage, circumstances, characterBackground,
+    job, lifeStage, circumstances,
+    characterBackground,
     setCharacterBackground,
     setCharacterDetails,
     initializePlayerState,
@@ -241,7 +242,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const safeCircumstances = circumstances || [];
-  const formattedCircumstances = safeCircumstances.map(c => {
+  const formattedCircumstances = safeCircumstances.map((c: any) => {
     if (typeof c === 'string') {
       return c;
     } else if (c && typeof c === 'object' && 'name' in c) {
