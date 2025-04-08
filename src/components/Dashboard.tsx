@@ -6,11 +6,15 @@ import MonsterBattle from './MonsterBattle';
 import MultiChallenge from './MultiChallenge';
 import LifeEvent from './LifeEvent';
 import StreakDisplay from './StreakDisplay';
-import { Shield, Sword, Flame, Trophy, Zap } from 'lucide-react';
+import { Shield, Sword, Flame, Trophy, Zap, BookOpen, Scroll } from 'lucide-react';
 import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
 import FinancialSummaryCard from './dashboard/FinancialSummaryCard';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import JourneyTimeline from './journey/JourneyTimeline';
+import SlayerLog from './journey/SlayerLog';
+import { calculatePlayerLevel, getPlayerRank } from '@/utils/gameTerms';
 
 interface DashboardProps {
   onAdvanceMonth?: () => void;
@@ -31,6 +35,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
   } = useGameContext();
   
   const [selectedMonster, setSelectedMonster] = useState<string | null>(null);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [showSlayerLog, setShowSlayerLog] = useState(false);
   
   // Handle monster selection
   const handleMonsterClick = (id: string) => {
@@ -51,6 +57,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
       maximumFractionDigits: 0
     }).format(amount);
   };
+  
+  // Get current player level and rank
+  const playerLevel = calculatePlayerLevel(monthsPassed);
+  const playerRank = getPlayerRank(playerLevel);
   
   return (
     <div className="relative space-y-6">
@@ -92,10 +102,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
           title="Game Progress"
           value={`${specialMoves} Special Moves`}
           details={{
-            leftLabel: "Savings",
-            leftValue: `${formatCurrency(budget.savings)}/mo`,
-            rightLabel: "Level",
-            rightValue: `${Math.max(1, Math.floor(monthsPassed / 3) + 1)}`
+            leftLabel: playerRank,
+            leftValue: `Level ${playerLevel}`,
+            rightLabel: "Growth",
+            rightValue: `${playerTraits.determination + playerTraits.discipline + playerTraits.financialKnowledge}/30`
           }}
         >
           <Button 
@@ -107,6 +117,29 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
             <Flame className="w-4 h-4 ml-2 group-hover:animate-sword-draw" />
           </Button>
         </FinancialSummaryCard>
+      </div>
+      
+      {/* Journey Buttons */}
+      <div className="flex space-x-4 mb-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowTimeline(true)}
+          className="border-slate-700 bg-slate-800/50 hover:bg-slate-800 flex items-center gap-2"
+        >
+          <Scroll className="w-4 h-4 text-amber-400" />
+          <span>Journey Timeline</span>
+        </Button>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowSlayerLog(true)}
+          className="border-slate-700 bg-slate-800/50 hover:bg-slate-800 flex items-center gap-2"
+        >
+          <BookOpen className="w-4 h-4 text-emerald-400" />
+          <span>Book of the Slayer</span>
+        </Button>
       </div>
       
       {/* Rest of dashboard content */}
@@ -202,25 +235,74 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
             />
           </div>
           
-          {/* Tips section */}
+          {/* Character Growth section */}
           <div className="oni-card relative overflow-hidden">
-            <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">助言</div>
+            <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">成長</div>
             <h2 className="text-lg font-bold mb-3 flex items-center">
-              <span className="p-1 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-md mr-2 shadow-oni">
+              <span className="p-1 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-md mr-2 shadow-oni">
                 <Zap className="w-3.5 h-3.5" />
               </span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Helpful Tips
+              <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                Character Growth
               </span>
             </h2>
-            <div className="p-4 bg-blue-950/50 rounded-lg border border-blue-500/20">
-              <p className="text-sm text-blue-300">
-                Make regular payments to your debts to keep your payment streak going. Every 3 months of consistent payments earns you a special move!
-              </p>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className="text-blue-300">Discipline</span>
+                  <span className="text-blue-300">{playerTraits.discipline}/10</span>
+                </div>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-500" 
+                    style={{ width: `${playerTraits.discipline * 10}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className="text-amber-300">Resilience</span>
+                  <span className="text-amber-300">{playerTraits.determination}/10</span>
+                </div>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-amber-500" 
+                    style={{ width: `${playerTraits.determination * 10}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className="text-emerald-300">Focus</span>
+                  <span className="text-emerald-300">{playerTraits.financialKnowledge}/10</span>
+                </div>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-emerald-500" 
+                    style={{ width: `${playerTraits.financialKnowledge * 10}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Journey Timeline Dialog */}
+      <Dialog open={showTimeline} onOpenChange={setShowTimeline}>
+        <DialogContent className="sm:max-w-[600px] p-0 bg-transparent border-none">
+          <JourneyTimeline onClose={() => setShowTimeline(false)} />
+        </DialogContent>
+      </Dialog>
+      
+      {/* Slayer Log Dialog */}
+      <Dialog open={showSlayerLog} onOpenChange={setShowSlayerLog}>
+        <DialogContent className="sm:max-w-[600px] p-0 bg-transparent border-none">
+          <SlayerLog onClose={() => setShowSlayerLog(false)} />
+        </DialogContent>
+      </Dialog>
       
       {selectedMonster && (
         <MonsterBattle 

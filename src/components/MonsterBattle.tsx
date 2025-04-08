@@ -1,238 +1,270 @@
-
 import React, { useState, useEffect } from 'react';
-import { useGameContext } from '../context/GameContext';
-import DebtMonster from './DebtMonster';
+import { useGameContext } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
-import { Volume2, VolumeX, Info, Crown, Zap, Target, Trophy } from 'lucide-react';
-import { toast } from "@/hooks/use-toast";
-import BattleTutorial from './battle/BattleTutorial';
-import BattleTips from './battle/BattleTips';
-import BattleControls from './battle/BattleControls';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import DebtMonster from './DebtMonster';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { motion } from 'framer-motion';
+import { Flame, Sword, Shield, Zap } from 'lucide-react';
+import NarrativeMoment from './journey/NarrativeMoment';
 
 interface MonsterBattleProps {
   debtId: string;
   onClose: () => void;
 }
 
-const MonsterBattle: React.FC<MonsterBattleProps> = ({ debtId, onClose }) => {
-  const { debts, specialMoves, monthsPassed } = useGameContext();
-  const [currentMonsterIndex, setCurrentMonsterIndex] = useState(0);
-  const [battleMode, setBattleMode] = useState(false);
-  const [animateTitle, setAnimateTitle] = useState(false);
-  const [showBattleTips, setShowBattleTips] = useState(false);
-  const [battleStreak, setBattleStreak] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
-
-  const playerLevel = Math.max(1, Math.floor(monthsPassed / 3) + 1);
-
+const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
+  const { debts, cash, damageMonster, specialMoves, useSpecialMove } = useGameContext();
+  const debt = debts.find(d => d.id === debtId);
+  
+  const [paymentAmount, setPaymentAmount] = useState<number>(0);
+  const [customAmount, setCustomAmount] = useState<string>('');
+  const [isInBattle, setIsInBattle] = useState<boolean>(true);
+  const [showNarrative, setShowNarrative] = useState<boolean>(true);
+  const [narrativeType, setNarrativeType] = useState<'battle' | 'victory' | 'decision'>('battle');
+  
+  // Update payment amount when debt changes
   useEffect(() => {
-    // Find the index of the debt in the debts array
-    const index = debts.findIndex(debt => debt.id === debtId);
-    if (index !== -1) {
-      setCurrentMonsterIndex(index);
+    if (debt) {
+      setPaymentAmount(debt.minimumPayment);
+      setCustomAmount(debt.minimumPayment.toString());
     }
-  }, [debtId, debts]);
-
-  const nextMonster = () => {
-    setCurrentMonsterIndex((prev) => (prev + 1) % debts.length);
-    if (battleMode) {
-      setBattleStreak(prev => prev + 1);
-      if (battleStreak + 1 >= 3) {
-        toast({
-          title: "Battle Streak!",
-          description: "You've battled 3 monsters in a row! +1 Special Move unlocked!",
-          variant: "default",
-        });
-      }
-    }
+  }, [debt]);
+  
+  if (!debt) {
+    return null;
+  }
+  
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
   };
-
-  const prevMonster = () => {
-    setCurrentMonsterIndex((prev) => (prev - 1 + debts.length) % debts.length);
+  
+  // Handle slider change
+  const handleSliderChange = (value: number[]) => {
+    setPaymentAmount(value[0]);
+    setCustomAmount(value[0].toString());
   };
-
-  const toggleBattleMode = () => {
-    if (!battleMode) {
-      setBattleMode(true);
-      toast({
-        title: "Battle Mode Activated!",
-        description: "Target a debt monster and attack it directly to reduce your debt faster!",
-        variant: "default",
-      });
-    } else {
-      setBattleMode(false);
-      setBattleStreak(0);
-    }
-  };
-
-  const toggleSound = () => {
-    setSoundEnabled(!soundEnabled);
-    if (!soundEnabled) {
-      toast({
-        title: "Sound Effects Enabled",
-        description: "Battle sounds are now on! Attack with audio feedback.",
-        variant: "default",
-      });
-    } else {
-      toast({
-        title: "Sound Effects Disabled",
-        description: "Battle sounds are now off.",
-        variant: "default",
-      });
-    }
-  };
-
-  const handleMonsterClick = (debtId: string) => {
-    // Handle monster click logic here
-  };
-
-  useEffect(() => {
-    const animationInterval = setInterval(() => {
-      setAnimateTitle(true);
-      setTimeout(() => setAnimateTitle(false), 1000);
-    }, 7000);
+  
+  // Handle custom amount change
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCustomAmount(value);
     
-    return () => clearInterval(animationInterval);
-  }, []);
-
-  useEffect(() => {
-    if (battleMode && localStorage.getItem('firstBattle') !== 'completed') {
-      setShowBattleTips(true);
-      localStorage.setItem('firstBattle', 'completed');
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue)) {
+      setPaymentAmount(numericValue);
     }
-  }, [battleMode]);
+  };
+  
+  // Handle payment submission
+  const handlePayment = () => {
+    damageMonster(debtId, paymentAmount);
+    setNarrativeType('victory');
+    setShowNarrative(true);
+  };
+  
+  // Handle special move
+  const handleSpecialMove = () => {
+    useSpecialMove(debtId);
+  };
+  
+  // Get payment preset options
+  const getPaymentOptions = () => {
+    if (!debt) return [];
+    
+    return [
+      { label: 'Minimum', value: debt.minimumPayment },
+      { label: 'Medium', value: Math.min(debt.amount, debt.minimumPayment * 3) },
+      { label: 'Large', value: Math.min(debt.amount, Math.max(debt.minimumPayment * 5, debt.amount * 0.2)) },
+      { label: 'Full', value: debt.amount }
+    ];
+  };
+  
+  const paymentOptions = getPaymentOptions();
 
   return (
-    <div className="card-fun relative overflow-hidden group">
-      {soundEnabled && (
-        <>
-          <audio id="attack-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-swift-sword-strike-2166.mp3"></audio>
-          <audio id="combo-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3"></audio>
-          <audio id="special-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sweep-game-trophy-257.mp3"></audio>
-          <audio id="monster-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-monster-growl-1993.mp3"></audio>
-        </>
-      )}
-      
-      <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-fun-purple/30 to-fun-magenta/30 rounded-full animate-pulse-subtle"></div>
-      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-br from-fun-blue/30 to-fun-green/30 rounded-full animate-pulse-subtle"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-gradient-to-br from-fun-yellow/5 to-fun-orange/5 rounded-full animate-pulse-subtle"></div>
-      
-      <div className="relative">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className={`text-xl font-bold flex items-center ${animateTitle ? 'animate-tada' : ''}`}>
-            <span className="p-1.5 bg-gradient-to-br from-fun-purple to-fun-magenta text-white rounded-md mr-2 transform group-hover:rotate-12 transition-transform animate-wiggle">
-              <Target className="w-4 h-4" />
-            </span>
-            <span className="bg-gradient-to-r from-fun-purple to-fun-magenta bg-clip-text text-transparent">
-              Debt Monster Battle
-            </span>
-            <Target className="w-4 h-4 ml-2 text-fun-yellow animate-sparkle" />
-          </h2>
+    <Dialog open={true} onOpenChange={() => onClose()}>
+      <DialogContent className="sm:max-w-[700px] bg-night-sky p-0 border-slate-700">
+        <div className="relative overflow-hidden">
+          {/* Animated background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-purple-950">
+            <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-5"></div>
+          </div>
           
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={toggleSound}
-              className="flex items-center justify-center p-1 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200 transition-all"
-              title={soundEnabled ? "Turn sound off" : "Turn sound on"}
-            >
-              {soundEnabled ? (
-                <Volume2 className="w-4 h-4 text-green-600" />
-              ) : (
-                <VolumeX className="w-4 h-4 text-gray-400" />
-              )}
-            </button>
-            
-            <button
-              onClick={() => setShowTutorial(true)}
-              className="flex items-center justify-center p-1 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200 transition-all"
-              title="Show tutorial"
-            >
-              <Info className="w-4 h-4 text-blue-600" />
-            </button>
-            
-            <div className="flex items-center bg-gradient-to-r from-purple-100 to-indigo-100 px-2 py-1 rounded-full text-xs">
-              <Crown className="w-3.5 h-3.5 mr-1 text-fun-purple" />
-              <span className="font-medium">Level {playerLevel}</span>
-            </div>
-            
-            {battleStreak > 0 && (
-              <div className="flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 px-2 py-1 rounded-full text-xs animate-pulse-subtle">
-                <Zap className="w-3.5 h-3.5 mr-1 text-fun-orange" />
-                <span className="font-medium">Streak: {battleStreak}</span>
+          <div className="relative z-10 p-6">
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                <Sword className="w-5 h-5 text-red-500" />
+                <span className="bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">
+                  Battle with {debt.name}
+                </span>
+              </h2>
+              <div className="text-right">
+                <p className="text-sm text-slate-300">Available Spirit Energy</p>
+                <p className="text-lg font-bold text-emerald-400">{formatCurrency(cash)}</p>
               </div>
+            </div>
+
+            {/* Narrative moment */}
+            {showNarrative && (
+              <NarrativeMoment 
+                type={narrativeType}
+                context={{ debt }}
+                onDismiss={() => setShowNarrative(false)}
+              />
             )}
             
-            {specialMoves > 0 && (
-              <div className="flex items-center bg-gradient-to-r from-red-100 to-pink-100 px-2 py-1 rounded-full text-xs">
-                <Target className="w-3.5 h-3.5 mr-1 text-fun-magenta" />
-                <span className="font-medium">Specials: {specialMoves}</span>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <BattleTutorial open={showTutorial} onOpenChange={setShowTutorial} />
-        
-        {debts.length === 0 ? (
-          <div className="p-8 text-center bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100 animate-pulse-subtle">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-fun-green to-fun-blue text-white mb-4 animate-bounce-fun">
-              <Trophy className="w-6 h-6" />
-            </div>
-            <p className="text-lg font-medium mb-2 bg-gradient-to-r from-fun-green to-fun-blue bg-clip-text text-transparent">No Debt Monsters Found!</p>
-            <p className="text-gray-600">You've defeated all your debt monsters. Congratulations!</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <BattleControls 
-              battleMode={battleMode}
-              toggleBattleMode={toggleBattleMode}
-              prevMonster={prevMonster}
-              nextMonster={nextMonster}
-              currentMonsterIndex={currentMonsterIndex}
-              totalMonsters={debts.length}
-            />
-
-            {showBattleTips && battleMode && (
-              <BattleTips onClose={() => setShowBattleTips(false)} />
-            )}
-
-            {battleMode ? (
-              debts.length > 0 && (
-                <div className="battle-arena bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 rounded-xl transition-all duration-500 transform hover:scale-[1.01] shadow-xl border border-fun-purple/30 animate-pulse-subtle">
-                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-fun-purple/10 via-transparent to-transparent opacity-70"></div>
-                  <div className="relative">
-                    <DebtMonster 
-                      key={debts[currentMonsterIndex].id} 
-                      debt={debts[currentMonsterIndex]} 
-                      isInBattle={true} 
-                    />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <DebtMonster 
+                  key={debt.id} 
+                  debt={debt} 
+                  isInBattle={true}
+                />
+                
+                <div className="mt-4">
+                  <h3 className="text-lg font-medium text-slate-300 mb-2">Special Techniques</h3>
+                  <div className="bg-slate-800/60 rounded-lg p-4 border border-slate-700">
+                    <Button
+                      onClick={handleSpecialMove}
+                      disabled={specialMoves <= 0}
+                      className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 flex items-center gap-2"
+                    >
+                      <Flame className="w-4 h-4" />
+                      Negotiate Lower Interest ({specialMoves} remaining)
+                    </Button>
+                    <p className="text-xs text-slate-400 mt-2 text-center">
+                      Using this technique will reduce the demon's corruption aura (interest rate) by 20%
+                    </p>
                   </div>
                 </div>
-              )
-            ) : (
-              <div className="space-y-4 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 -z-10 rounded-xl"></div>
-                {debts.map((debt, index) => (
-                  <div 
-                    key={debt.id} 
-                    className={`transform transition-all duration-300 hover:scale-[1.02] ${
-                      index % 2 === 0 ? 'animate-pulse-subtle' : ''
-                    }`}
-                  >
-                    <DebtMonster
-                      debt={debt}
-                      isInBattle={false}
-                      onClick={() => handleMonsterClick(debt.id)}
-                    />
-                  </div>
-                ))}
               </div>
-            )}
+              
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-lg font-medium text-slate-300 mb-2">Attack Power</h3>
+                  <div className="bg-slate-800/60 rounded-lg p-4 border border-slate-700">
+                    <div className="flex justify-between text-sm text-slate-300 mb-2">
+                      <span>Minimum: {formatCurrency(debt.minimumPayment)}</span>
+                      <span>Maximum: {formatCurrency(Math.min(cash, debt.amount))}</span>
+                    </div>
+                    
+                    <Slider
+                      value={[paymentAmount]}
+                      min={debt.minimumPayment}
+                      max={Math.min(cash, debt.amount)}
+                      step={10}
+                      onValueChange={handleSliderChange}
+                      className="mb-6"
+                    />
+                    
+                    <div className="grid grid-cols-4 gap-2 mb-4">
+                      {paymentOptions.map((option, index) => (
+                        <Button 
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          disabled={option.value > cash}
+                          onClick={() => {
+                            setPaymentAmount(option.value);
+                            setCustomAmount(option.value.toString());
+                          }}
+                          className={`border-slate-600 ${
+                            paymentAmount === option.value 
+                              ? 'bg-slate-700 border-slate-500' 
+                              : 'bg-slate-800/60'
+                          }`}
+                        >
+                          {option.label}
+                        </Button>
+                      ))}
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label htmlFor="custom-amount" className="block text-sm text-slate-400 mb-1">
+                        Custom Attack Power
+                      </label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="custom-amount"
+                          type="number"
+                          min={0}
+                          max={cash}
+                          value={customAmount}
+                          onChange={handleCustomAmountChange}
+                          className="bg-slate-900 border-slate-700 text-slate-200"
+                        />
+                        <Button 
+                          variant="default"
+                          onClick={() => setPaymentAmount(Math.min(cash, debt.amount))}
+                          className="bg-blue-600 hover:bg-blue-700 shrink-0"
+                        >
+                          Max
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium text-slate-400 mb-1">Battle Effects</h4>
+                      <div className="bg-slate-900/80 rounded p-3 mb-3">
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <span className="text-slate-400">Damage:</span>{' '}
+                            <span className="text-red-400">-{formatCurrency(paymentAmount)}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-400">Spirit Cost:</span>{' '}
+                            <span className="text-emerald-400">-{formatCurrency(paymentAmount)}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-400">Health Reduction:</span>{' '}
+                            <span className="text-amber-400">~{Math.min(100, Math.round((paymentAmount / debt.amount) * 100))}%</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-400">Remaining:</span>{' '}
+                            <span className="text-blue-400">{formatCurrency(Math.max(0, debt.amount - paymentAmount))}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <motion.div whileTap={{ scale: 0.98 }}>
+                        <Button
+                          onClick={handlePayment}
+                          disabled={paymentAmount <= 0 || paymentAmount > cash || paymentAmount < debt.minimumPayment}
+                          className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 flex items-center justify-center gap-2 py-6"
+                        >
+                          <Sword className="w-5 h-5" />
+                          <span className="text-lg">Strike with {formatCurrency(paymentAmount)}</span>
+                        </Button>
+                      </motion.div>
+                      
+                      {paymentAmount < debt.minimumPayment && (
+                        <p className="text-red-400 text-xs mt-2 text-center">
+                          Your attack must be at least the minimum power ({formatCurrency(debt.minimumPayment)})
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end mt-4">
+              <Button variant="outline" onClick={onClose} className="border-slate-700 bg-slate-800/60 hover:bg-slate-800">
+                Retreat (Close)
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

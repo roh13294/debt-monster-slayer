@@ -1,12 +1,14 @@
-
-import React, { useEffect, useState } from 'react';
-import { useGameContext } from '../../context/GameContext';
+import React, { useState, useEffect } from 'react';
+import { useGameContext } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
-import { Sword, Shield, Flame, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getMonsterImage, getDemonElementType, getDemonRank } from '@/utils/monsterImages';
-import { gameTerms } from '@/utils/gameTerms';
-import { AnimatedSlash, ElementalBurst, EnergyWave } from './BattleEffects';
+import { Flame, Shield, Zap, Sword } from 'lucide-react';
+import DebtMonster from '@/components/DebtMonster';
+import { EnergyWave } from './BattleEffects';
+import BattleControls from './BattleControls';
+import BattleTips from './BattleTips';
+import NarrativeMoment from '@/components/journey/NarrativeMoment';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 interface BattleArenaProps {
   stance: string | null;
@@ -14,196 +16,327 @@ interface BattleArenaProps {
 }
 
 const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
-  const { debts } = useGameContext();
-  const [battleProgress, setBattleProgress] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(true);
-  const [showSlash, setShowSlash] = useState(false);
-  const [showBurst, setShowBurst] = useState(false);
-  const [burstElement, setBurstElement] = useState<'fire' | 'water' | 'lightning' | 'earth' | 'shadow'>('fire');
-  const [battlePhase, setBattlePhase] = useState<'approach' | 'engage' | 'victory'>('approach');
+  const { debts, cash, damageMonster, specialMoves, useSpecialMove, playerTraits } = useGameContext();
+  const [currentDebtIndex, setCurrentDebtIndex] = useState(0);
+  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [battlePhase, setBattlePhase] = useState<'prepare' | 'battle' | 'result'>('prepare');
+  const [battleResult, setBattleResult] = useState<'victory' | 'partial' | null>(null);
+  const [showNarrative, setShowNarrative] = useState(true);
+  const [narrativeChoice, setNarrativeChoice] = useState<string | null>(null);
+  const [narrativeOptions, setNarrativeOptions] = useState<string[]>([]);
   
-  // Simple animation effect for battle progress
+  const currentDebt = debts.length > 0 ? debts[currentDebtIndex] : null;
+  
   useEffect(() => {
-    if (isAnimating) {
-      const timer = setTimeout(() => {
-        if (battleProgress < 33 && battlePhase === 'approach') {
-          setBattleProgress(prev => prev + 10);
-          
-          if (battleProgress + 10 >= 33) {
-            setBattlePhase('engage');
-            
-            // Show slash animation when entering engage phase
-            setTimeout(() => {
-              setShowSlash(true);
-              
-              // After slash, show elemental burst based on stance
-              setTimeout(() => {
-                setShowBurst(true);
-                if (stance === 'aggressive') setBurstElement('fire');
-                else if (stance === 'defensive') setBurstElement('water');
-                else if (stance === 'risky') setBurstElement('lightning');
-                else setBurstElement('earth');
-              }, 700);
-            }, 500);
-          }
-        } 
-        else if (battleProgress < 67 && battlePhase === 'engage') {
-          setBattleProgress(prev => prev + 7);
-          
-          if (battleProgress + 7 >= 67) {
-            setBattlePhase('victory');
-          }
-        }
-        else if (battleProgress < 100 && battlePhase === 'victory') {
-          setBattleProgress(prev => Math.min(prev + 5, 100));
-        } 
-        else if (battleProgress >= 100) {
-          setIsAnimating(false);
-        }
-      }, 300);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [battleProgress, isAnimating, battlePhase, stance]);
-  
-  const getStanceIcon = () => {
-    switch (stance) {
+    if (!currentDebt) return;
+    
+    let options: string[] = [];
+    
+    switch(stance) {
       case 'aggressive':
-        return <Sword className="w-8 h-8 text-red-500" />;
+        options = [
+          "I'll face this head on, with everything I have.",
+          "This demon won't know what hit it.",
+          "My strength grows with every challenge."
+        ];
+        break;
       case 'defensive':
-        return <Shield className="w-8 h-8 text-blue-500" />;
+        options = [
+          "Patience and wisdom will guide my actions.",
+          "A careful approach will reveal the path forward.",
+          "Defense builds the foundation for lasting victory."
+        ];
+        break;
       case 'risky':
-        return <Zap className="w-8 h-8 text-purple-500" />;
+        options = [
+          "Sometimes you have to gamble to get ahead.",
+          "The greatest rewards often come with the greatest risks.",
+          "Fortune favors the bold."
+        ];
+        break;
       default:
-        return <Flame className="w-8 h-8 text-amber-500" />;
+        options = [
+          "I'll find the right approach for this challenge.",
+          "Each demon requires a different strategy.",
+          "I must adapt my technique to this opponent."
+        ];
+    }
+    
+    if (playerTraits.determination > 7) {
+      options.push("No matter the odds, I will persevere.");
+    }
+    
+    if (playerTraits.financialKnowledge > 7) {
+      options.push("Understanding the patterns reveals the solution.");
+    }
+    
+    const shuffled = options.sort(() => 0.5 - Math.random());
+    setNarrativeOptions(shuffled.slice(0, 3));
+  }, [currentDebt, stance, playerTraits]);
+  
+  const handleDebtAttack = (amount: number) => {
+    if (!currentDebt) return;
+    
+    damageMonster(currentDebt.id, amount);
+    
+    if (amount >= currentDebt.amount) {
+      if (currentDebtIndex < debts.length - 1) {
+        setCurrentDebtIndex(currentDebtIndex + 1);
+        setBattlePhase('prepare');
+        setShowNarrative(true);
+      } else {
+        setBattleResult('victory');
+        setBattlePhase('result');
+      }
+    } else {
+      setBattleResult('partial');
+      setBattlePhase('result');
     }
   };
   
-  const getStanceClass = () => {
-    switch (stance) {
-      case 'aggressive':
-        return 'from-red-600 to-red-900';
-      case 'defensive':
-        return 'from-blue-600 to-blue-900';
-      case 'risky':
-        return 'from-purple-600 to-purple-900';
-      default:
-        return 'from-amber-600 to-amber-900';
+  const handleSpecialMove = () => {
+    if (!currentDebt) return;
+    useSpecialMove(currentDebt.id);
+  };
+  
+  const handleNarrativeChoice = (choice: string) => {
+    setNarrativeChoice(choice);
+    setShowNarrative(false);
+    
+    setTimeout(() => {
+      setBattlePhase('battle');
+    }, 500);
+  };
+  
+  const handleNextEnemy = () => {
+    if (currentDebtIndex < debts.length - 1) {
+      setCurrentDebtIndex(currentDebtIndex + 1);
+      setBattlePhase('prepare');
+      setShowNarrative(true);
+    } else {
+      onComplete();
     }
   };
   
-  const getBattlePhaseText = () => {
-    switch (battlePhase) {
-      case 'approach':
-        return "Approaching demons...";
-      case 'engage':
-        return "Engaging in combat!";
-      case 'victory':
-        return "Claiming victory!";
-      default:
-        return "Battle in progress...";
-    }
+  const handleFinishBattle = () => {
+    onComplete();
   };
+  
+  if (!currentDebt) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-xl font-bold text-slate-300">No demons to battle</h2>
+        <p className="text-slate-400 mb-6">You have no debts to battle against. Well done!</p>
+        <Button onClick={onComplete}>Continue Journey</Button>
+      </div>
+    );
+  }
   
   return (
-    <div className="min-h-[70vh] relative overflow-hidden bg-slate-900 rounded-lg border border-slate-700">
-      {/* Battle background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 z-0 overflow-hidden">
+    <div className="min-h-[80vh] relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950">
         <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-5"></div>
-        <div className="absolute inset-0 opacity-30">
-          {/* Animated elements */}
-          <div className="absolute h-2 w-2 rounded-full bg-yellow-400 animate-pulse top-1/4 left-1/4"></div>
-          <div className="absolute h-3 w-3 rounded-full bg-blue-400 animate-float top-3/4 left-2/3"></div>
-          <div className="absolute h-2 w-2 rounded-full bg-purple-400 animate-float-slow top-2/3 left-1/3"></div>
-        </div>
+        <EnergyWave color="purple" duration={6} />
+        <EnergyWave color="blue" duration={8} delay={2} />
       </div>
       
-      <EnergyWave color={stance === 'aggressive' ? 'red' : stance === 'defensive' ? 'blue' : stance === 'risky' ? 'purple' : 'yellow'} />
-      
-      {/* Slash effect animation */}
-      <AnimatedSlash 
-        isActive={showSlash} 
-        onComplete={() => setShowSlash(false)} 
-      />
-      
-      {/* Elemental burst animation */}
-      <ElementalBurst 
-        element={burstElement} 
-        isActive={showBurst}
-        onComplete={() => setShowBurst(false)}
-      />
-      
-      {/* Battle content */}
-      <div className="relative z-10 flex flex-col items-center justify-center w-full h-full py-16 px-4">
-        <motion.div 
-          className="text-center mb-10"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-3xl font-bold text-white mb-3">Demon Encounter</h2>
-          <div className="flex justify-center items-center gap-3 mb-6">
-            <div className={`p-3 rounded-lg bg-gradient-to-br ${getStanceClass()}`}>
-              {getStanceIcon()}
-            </div>
-            <p className="text-xl text-white">Using {stance === 'aggressive' ? 'Flame' : stance === 'defensive' ? 'Water' : stance === 'risky' ? 'Thunder' : 'Beast'} Breathing</p>
-          </div>
-        </motion.div>
-        
-        {/* Battle progress bar */}
-        <div className="w-full max-w-lg mb-12">
-          <div className="h-6 bg-slate-700 rounded-full overflow-hidden">
-            <motion.div 
-              className={`h-full bg-gradient-to-r ${getStanceClass()}`}
-              initial={{ width: '0%' }}
-              animate={{ width: `${battleProgress}%` }}
-              transition={{ duration: 0.5 }}
-            ></motion.div>
-          </div>
-          <p className="text-center text-white mt-2">{getBattlePhaseText()}</p>
-        </div>
-        
-        {/* Enemy overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full mb-8">
-          <div className="bg-slate-800/60 rounded-lg p-4 border border-slate-700">
-            <h3 className="text-lg text-white mb-2">Current Demons</h3>
-            <div className="flex flex-wrap gap-2">
-              {debts.length > 0 ? debts.slice(0, 3).map((debt, idx) => (
-                <div key={debt.id} className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full overflow-hidden bg-slate-700 relative">
-                    <img 
-                      src={getMonsterImage(debt.name)}
-                      alt={debt.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="text-sm text-slate-300">{debt.name.split(' ')[0]}</span>
-                  {idx < Math.min(debts.length, 3) - 1 && <span className="text-slate-500">•</span>}
-                </div>
-              )) : (
-                <p className="text-sm text-green-400">No demons remaining!</p>
-              )}
-            </div>
-          </div>
-          
-          <div className="bg-slate-800/60 rounded-lg p-4 border border-slate-700">
-            <h3 className="text-lg text-white mb-2">Battle Effects</h3>
-            <p className="text-sm text-slate-300">
-              {stance === 'aggressive' && 'Flame Breathing: Spirit Strikes +15% effective'}
-              {stance === 'defensive' && 'Water Breathing: Power Seals reinforced by 5%'}
-              {stance === 'risky' && 'Thunder Breathing: Unpredictable combat outcomes'}
-            </p>
-          </div>
-        </div>
-        
-        {/* Continue button */}
-        {!isAnimating && (
-          <Button 
-            onClick={onComplete}
-            className={`bg-gradient-to-br ${getStanceClass()} hover:opacity-90 text-white`}
+      <div className="relative z-10 container mx-auto py-10 px-4">
+        <div className="mb-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-block px-3 py-1 bg-slate-800 rounded-full mb-2 text-sm"
           >
-            Complete Moon Cycle
-          </Button>
+            <span className="text-amber-400 font-medium">
+              {stance === 'aggressive' && 'Flame Breathing Style'}
+              {stance === 'defensive' && 'Water Breathing Style'}
+              {stance === 'risky' && 'Thunder Breathing Style'}
+              {!stance && 'Standard Stance'}
+            </span>
+          </motion.div>
+          
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+            {battlePhase === 'prepare' && 'Prepare for Battle'}
+            {battlePhase === 'battle' && 'Demon Encounter!'}
+            {battlePhase === 'result' && battleResult === 'victory' && 'Demon Defeated!'}
+            {battlePhase === 'result' && battleResult === 'partial' && 'Demon Weakened'}
+          </h1>
+          
+          <p className="text-slate-300 max-w-2xl mx-auto">
+            {battlePhase === 'prepare' && 'Center your focus and prepare your spirit for the coming battle.'}
+            {battlePhase === 'battle' && 'Channel your energy to strike at the demon\'s core.'}
+            {battlePhase === 'result' && 'Your technique has proved effective, but the journey continues.'}
+          </p>
+        </div>
+        
+        {battlePhase === 'prepare' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-2xl mx-auto"
+          >
+            <div className="text-center mb-8">
+              <DebtMonster 
+                debt={currentDebt} 
+                isInBattle={true}
+                onClick={() => {}}
+              />
+            </div>
+            
+            {showNarrative ? (
+              <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-6 mb-6">
+                <h3 className="text-lg font-medium text-slate-100 mb-4">Inner Reflection</h3>
+                <p className="text-slate-300 mb-6 italic">
+                  As you prepare to face this demon, what thoughts guide your approach?
+                </p>
+                
+                <div className="space-y-3">
+                  {narrativeOptions.map((option, index) => (
+                    <motion.button
+                      key={index}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleNarrativeChoice(option)}
+                      className="w-full p-3 text-left border border-slate-700 rounded-md bg-slate-800 hover:bg-slate-800/80 hover:border-slate-600 transition-colors"
+                    >
+                      <p className="text-slate-200">{option}</p>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-6 mb-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-full bg-blue-900/30 border border-blue-800">
+                    <Shield className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-slate-100 mb-1">Battle Preparation</h3>
+                    <p className="text-slate-300 mb-2 italic">"{narrativeChoice}"</p>
+                    <p className="text-sm text-slate-400">
+                      Your mindset shapes your approach to this battle, influencing your technique and effectiveness.
+                    </p>
+                    
+                    <Button 
+                      onClick={() => setBattlePhase('battle')}
+                      className="mt-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
+                    >
+                      Begin Battle
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <BattleTips stance={stance} />
+          </motion.div>
+        )}
+        
+        {battlePhase === 'battle' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            <div>
+              <DebtMonster 
+                debt={currentDebt} 
+                isInBattle={true}
+                onClick={() => {}}
+              />
+              
+              <div className="mt-4">
+                <NarrativeMoment type="battle" context={{ debt: currentDebt, stance }} />
+              </div>
+            </div>
+            
+            <div>
+              <BattleControls
+                debt={currentDebt}
+                stance={stance}
+                cash={cash}
+                specialMoves={specialMoves}
+                onAttack={handleDebtAttack}
+                onSpecialMove={handleSpecialMove}
+              />
+            </div>
+          </motion.div>
+        )}
+        
+        {battlePhase === 'result' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-2xl mx-auto text-center"
+          >
+            {battleResult === 'victory' ? (
+              <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-8">
+                <div className="mb-6">
+                  <div className="w-20 h-20 rounded-full bg-emerald-900/20 border-2 border-emerald-500 flex items-center justify-center mx-auto mb-4">
+                    <Sword className="w-10 h-10 text-emerald-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-emerald-400 mb-2">Demon Defeated!</h2>
+                  <p className="text-slate-300">
+                    You've successfully vanquished {currentDebt.name}, freeing yourself from its binding curse.
+                  </p>
+                </div>
+                
+                <NarrativeMoment type="victory" context={{ debt: currentDebt, stance }} />
+                
+                <div className="mt-6">
+                  {currentDebtIndex < debts.length - 1 ? (
+                    <Button 
+                      onClick={handleNextEnemy}
+                      className="px-8 py-6 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600"
+                    >
+                      <Sword className="w-5 h-5 mr-2" />
+                      Face Next Demon
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleFinishBattle}
+                      className="px-8 py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
+                    >
+                      Complete Monthly Battles
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-8">
+                <div className="mb-6">
+                  <div className="w-20 h-20 rounded-full bg-amber-900/20 border-2 border-amber-500 flex items-center justify-center mx-auto mb-4">
+                    <Shield className="w-10 h-10 text-amber-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-amber-400 mb-2">Demon Weakened</h2>
+                  <p className="text-slate-300">
+                    You've damaged {currentDebt.name}, but it still lingers. Your consistent attacks will eventually prevail.
+                  </p>
+                </div>
+                
+                <NarrativeMoment type="decision" context={{ debt: currentDebt, stance }} />
+                
+                <div className="mt-6">
+                  {currentDebtIndex < debts.length - 1 ? (
+                    <Button 
+                      onClick={handleNextEnemy}
+                      className="px-8 py-6 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600"
+                    >
+                      <Sword className="w-5 h-5 mr-2" />
+                      Face Next Demon
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleFinishBattle}
+                      className="px-8 py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
+                    >
+                      Complete Monthly Battles
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+          </motion.div>
         )}
       </div>
     </div>

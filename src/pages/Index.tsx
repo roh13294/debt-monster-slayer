@@ -1,14 +1,19 @@
 
 import { useGameContext } from "@/context/GameContext";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Sword, Scroll } from "lucide-react";
+import { Sparkles, Sword, Scroll, BookOpen, Shield } from "lucide-react";
 import AnimeAvatar from "@/components/AnimeAvatar";
 import MonthEngine from "@/components/MonthEngine";
 import { motion } from "framer-motion";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState } from "react";
+import JourneyTimeline from "@/components/journey/JourneyTimeline";
+import SlayerLog from "@/components/journey/SlayerLog";
 
 const Index = () => {
   const { gameStarted, initializeGame } = useGameContext();
-
+  const [showIntroStory, setShowIntroStory] = useState(false);
+  
   if (!gameStarted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-night-sky">
@@ -59,19 +64,67 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.5 }}
+            className="space-y-3"
           >
-            {/* Replaced Button with motion.button that has whileHover and whileTap */}
-            <motion.div className="w-full">
-              <Button 
-                onClick={initializeGame} 
-                className="w-full bg-demon-gradient hover:bg-demon-gradient hover:opacity-90 flex items-center justify-center gap-2 group"
-              >
-                <Sword className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                <span>Begin Your Slayer Journey</span>
-                <Sparkles className="w-4 h-4 animate-pulse-subtle" />
-              </Button>
-            </motion.div>
+            <Button 
+              onClick={() => setShowIntroStory(true)}
+              className="w-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center gap-2 group"
+            >
+              <Scroll className="w-4 h-4" />
+              <span>Read the Prologue</span>
+              <BookOpen className="w-4 h-4" />
+            </Button>
+            
+            <Button 
+              onClick={initializeGame} 
+              className="w-full bg-demon-gradient hover:bg-demon-gradient hover:opacity-90 flex items-center justify-center gap-2 group"
+            >
+              <Sword className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+              <span>Begin Your Slayer Journey</span>
+              <Sparkles className="w-4 h-4 animate-pulse-subtle" />
+            </Button>
           </motion.div>
+          
+          <Dialog open={showIntroStory} onOpenChange={setShowIntroStory}>
+            <DialogContent className="bg-slate-950/95 border border-slate-800 p-6 max-w-lg">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-red-500 bg-clip-text text-transparent mb-4 flex items-center gap-2">
+                <Scroll className="w-5 h-5 text-amber-400" />
+                The Slayer's Calling
+              </h2>
+              
+              <div className="prose prose-invert max-w-none">
+                <p className="text-slate-300">In a world much like our own, invisible forces bind people with unseen chains. These demons—manifestations of financial burdens—drain life force from their victims, limiting potential and causing silent suffering.</p>
+                
+                <p className="text-slate-300">You have awakened to see these demons for what they truly are. Not merely numbers on statements or bills in the mail, but tangible entities that can be fought and overcome with the right techniques.</p>
+                
+                <p className="text-slate-300">The path of the Slayer is one of discipline, focus, and resilience. By mastering your breathing techniques and harnessing your inner strength, you'll learn to:</p>
+                
+                <ul className="text-slate-300">
+                  <li>Channel your spirit energy efficiently</li>
+                  <li>Identify demon weaknesses</li>
+                  <li>Strike with precision and purpose</li>
+                  <li>Build resistance to future demon attacks</li>
+                </ul>
+                
+                <p className="text-slate-300">Your journey will reveal not just the demons around you, but the strength within you. Each victory will illuminate your path forward, each challenge will forge your resolve.</p>
+                
+                <p className="text-slate-300 font-medium">Are you ready to take your first step on the slayer's path?</p>
+              </div>
+              
+              <div className="mt-4 flex justify-end">
+                <Button 
+                  onClick={() => {
+                    setShowIntroStory(false);
+                    initializeGame();
+                  }}
+                  className="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500"
+                >
+                  <Sword className="w-4 h-4 mr-2" />
+                  Accept the Calling
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </motion.div>
       </div>
     );
