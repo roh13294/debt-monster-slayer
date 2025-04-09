@@ -9,7 +9,8 @@ import BattleControls from './BattleControls';
 import BattleTips from './BattleTips';
 import BattleNarrator from './BattleNarrator';
 import NarrativeMoment from '@/components/journey/NarrativeMoment';
-import LootDropCard, { LootItem } from '@/types/battleTypes';
+import LootDropCard from '@/components/battle/LootDropCard';
+import { LootItem } from '@/types/battleTypes';
 
 interface BattleArenaProps {
   stance: string | null;

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Flame, Zap, Droplet, Wind, Shield } from 'lucide-react';
@@ -22,14 +21,13 @@ export interface BreathingSkill {
 const BreathingStyleTree: React.FC = () => {
   const { cash, setCash, playerTraits, updatePlayerTrait } = useGameContext();
   
-  // Mock data for breathing styles - in a real implementation, this would come from context or state
   const [skills, setSkills] = React.useState<BreathingSkill[]>([
     {
       id: 'flame-1',
       name: 'Flame Breathing: First Form',
       description: 'Unleash a blazing strike that deals +20% damage',
       cost: 500,
-      unlocked: true, // First skills start unlocked
+      unlocked: true,
       effectType: 'damage',
       effectValue: 20,
       breathingStyle: 'flame',
@@ -109,7 +107,6 @@ const BreathingStyleTree: React.FC = () => {
       return;
     }
     
-    // Check if required skills are unlocked
     if (skill.requires) {
       const allRequirementsMet = skill.requires.every(req => 
         skills.find(s => s.id === req)?.unlocked
@@ -125,14 +122,12 @@ const BreathingStyleTree: React.FC = () => {
       }
     }
     
-    // Unlock the skill
-    setCash(prev => prev - skill.cost);
+    setCash(cash - skill.cost);
     
     setSkills(prev => 
       prev.map(s => s.id === skillId ? { ...s, unlocked: true } : s)
     );
     
-    // Apply skill effects to player traits
     if (skill.effectType === 'damage') {
       updatePlayerTrait('discipline', playerTraits.discipline + 1);
     } else if (skill.effectType === 'defense') {
@@ -148,7 +143,6 @@ const BreathingStyleTree: React.FC = () => {
     });
   };
   
-  // Group skills by breathing style
   const flameSkills = skills.filter(s => s.breathingStyle === 'flame');
   const waterSkills = skills.filter(s => s.breathingStyle === 'water');
   const thunderSkills = skills.filter(s => s.breathingStyle === 'thunder');
@@ -158,7 +152,6 @@ const BreathingStyleTree: React.FC = () => {
       <h2 className="text-2xl font-bold text-slate-100 mb-6">Breathing Style Techniques</h2>
       
       <div className="grid gap-8">
-        {/* Flame Breathing Section */}
         <section>
           <h3 className="text-xl font-medium text-red-400 flex items-center gap-2 mb-4">
             <Flame className="w-6 h-6" />
@@ -210,7 +203,6 @@ const BreathingStyleTree: React.FC = () => {
           </div>
         </section>
         
-        {/* Water Breathing Section */}
         <section>
           <h3 className="text-xl font-medium text-blue-400 flex items-center gap-2 mb-4">
             <Droplet className="w-6 h-6" />
@@ -262,7 +254,6 @@ const BreathingStyleTree: React.FC = () => {
           </div>
         </section>
         
-        {/* Thunder Breathing Section */}
         <section>
           <h3 className="text-xl font-medium text-yellow-400 flex items-center gap-2 mb-4">
             <Zap className="w-6 h-6" />
