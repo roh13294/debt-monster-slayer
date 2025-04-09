@@ -1,186 +1,319 @@
+
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
-import { ShoppingCart, Tag, ShieldPlus, Sword, Zap, Shield, Battery, Briefcase, PiggyBank } from 'lucide-react';
+import DebtMonster from './DebtMonster';
+import MonsterBattle from './MonsterBattle';
+import MultiChallenge from './MultiChallenge';
+import LifeEvent from './LifeEvent';
+import StreakDisplay from './StreakDisplay';
+import { Shield, Sword, Flame, Trophy, Zap, BookOpen, Scroll } from 'lucide-react';
+import StrategySelector from './StrategySelector';
+import BudgetAllocator from './BudgetAllocator';
+import FinancialSummaryCard from './dashboard/FinancialSummaryCard';
 import { Button } from '@/components/ui/button';
-import { toast } from "@/hooks/use-toast";
-import { ShopItem, PlayerTraits } from '../types/gameTypes';
-import DemonCoin from '@/components/ui/DemonCoin';
-import { Coins } from 'lucide-react';
-import GameFeatures from './GameFeatures';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import JourneyTimeline from './journey/JourneyTimeline';
+import SlayerLog from './journey/SlayerLog';
+import { calculatePlayerLevel, getPlayerRank } from '@/utils/gameTerms';
 
-const shopItems: ShopItem[] = [
-  {
-    id: 'special_move',
-    name: 'Special Attack',
-    description: 'Add one special move to your arsenal to reduce debt interest',
-    cost: 500,
-    effect: {
-      type: 'specialMove',
-      value: 1
-    },
-    icon: <Zap className="h-10 w-10 text-yellow-500" />
-  },
-  {
-    id: 'interest_reducer',
-    name: 'Interest Reducer',
-    description: 'Reduce the interest rate on all your debts by 0.5%',
-    cost: 1000,
-    effect: {
-      type: 'reduceInterest',
-      value: 0.5
-    },
-    icon: <Shield className="h-10 w-10 text-blue-500" />
-  },
-  {
-    id: 'cash_boost',
-    name: 'Cash Boost',
-    description: 'Get an immediate cash injection of $1000',
-    cost: 800,
-    effect: {
-      type: 'cash_boost',
-      value: 1000
-    },
-    icon: <Coins className="h-10 w-10 text-green-500" />
-  },
-  {
-    id: 'debt_reducer',
-    name: 'Debt Reducer',
-    description: 'Reduce your highest interest debt by $500',
-    cost: 700,
-    effect: {
-      type: 'debt_reduction',
-      value: 500
-    },
-    icon: <ShieldPlus className="h-10 w-10 text-purple-500" />
-  },
-  {
-    id: 'financial_knowledge',
-    name: 'Financial Education',
-    description: 'Improve your financial knowledge trait',
-    cost: 600,
-    effect: {
-      type: 'trait_boost',
-      value: 1,
-      trait: 'financialKnowledge' as keyof PlayerTraits
-    },
-    icon: <Briefcase className="h-10 w-10 text-indigo-500" />
-  },
-  {
-    id: 'saving_ability',
-    name: 'Saving Workshop',
-    description: 'Improve your saving ability trait',
-    cost: 600,
-    effect: {
-      type: 'trait_boost',
-      value: 1,
-      trait: 'savingAbility' as keyof PlayerTraits
-    },
-    icon: <PiggyBank className="h-10 w-10 text-pink-500" />
-  }
-];
+interface DashboardProps {
+  onAdvanceMonth?: () => void;
+}
 
-const Shop: React.FC = () => {
-  const { cash, purchaseItem } = useGameContext();
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-
-  const handlePurchase = (item: ShopItem) => {
-    if (cash < item.cost) {
-      toast({
-        title: "Not Enough DemonCoins",
-        description: "You don't have enough DemonCoins to purchase this item.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    purchaseItem(item);
-
-    toast({
-      title: "Purchase Successful!",
-      description: `You purchased ${item.name}!`,
-      variant: "default",
-    });
+const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
+  const { 
+    debts, 
+    totalDebt, 
+    budget, 
+    cash, 
+    challenges, 
+    currentLifeEvent, 
+    monthsPassed,
+    specialMoves,
+    paymentStreak,
+    playerTraits
+  } = useGameContext();
+  
+  const [selectedMonster, setSelectedMonster] = useState<string | null>(null);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [showSlayerLog, setShowSlayerLog] = useState(false);
+  
+  // Handle monster selection
+  const handleMonsterClick = (id: string) => {
+    setSelectedMonster(id);
   };
-
-  const categories = [
-    { id: 'all', name: 'All Items' },
-    { id: 'special_move', name: 'Special Moves' },
-    { id: 'interest_reduction', name: 'Interest Reducers' },
-    { id: 'trait_boost', name: 'Trait Boosts' }
-  ];
-
-  const filteredItems = selectedCategory === 'all' 
-    ? shopItems 
-    : shopItems.filter(item => item.effect.type.includes(selectedCategory));
-
+  
+  // Close monster battle modal
+  const handleCloseBattle = () => {
+    setSelectedMonster(null);
+  };
+  
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+  
+  // Get current player level and rank
+  const playerLevel = calculatePlayerLevel(monthsPassed);
+  const playerRank = getPlayerRank(playerLevel);
+  
   return (
-    <div className="card-fun">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold flex items-center">
-          <span className="p-1.5 bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-md mr-2">
-            <ShoppingCart size={18} className="animate-pulse-subtle" />
-          </span>
-          <span className="bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-            Financial Power-Ups Shop
-          </span>
-        </h2>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-full">
-          <DemonCoin amount={cash} size="md" />
-        </div>
-      </div>
-
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
-        {categories.map(category => (
+    <div className="relative space-y-6">
+      {/* Decorative background elements */}
+      <div className="absolute top-20 left-40 w-40 h-40 bg-red-500/10 rounded-full mix-blend-color-dodge filter blur-3xl opacity-30 animate-pulse-subtle pointer-events-none"></div>
+      <div className="absolute bottom-40 right-20 w-60 h-60 bg-purple-500/10 rounded-full mix-blend-color-dodge filter blur-3xl opacity-20 pointer-events-none"></div>
+      
+      {/* Header with financial summary and advance month button */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {/* Current Cash card */}
+        <FinancialSummaryCard
+          type="cash"
+          title="Current Cash"
+          value={formatCurrency(cash)}
+          details={{
+            leftLabel: "Monthly Income",
+            leftValue: `+${formatCurrency(budget.income)}`,
+            rightLabel: "Monthly Expenses",
+            rightValue: `-${formatCurrency(budget.essentials)}`
+          }}
+        />
+        
+        {/* Total Debt card */}
+        <FinancialSummaryCard
+          type="debt"
+          title="Total Debt"
+          value={formatCurrency(totalDebt)}
+          details={{
+            leftLabel: "Debt Payment Budget",
+            leftValue: `${formatCurrency(budget.debt)}/month`,
+            rightLabel: "Months Passed",
+            rightValue: `${monthsPassed}`
+          }}
+        />
+        
+        {/* Game Progress card */}
+        <FinancialSummaryCard
+          type="progress"
+          title="Game Progress"
+          value={`${specialMoves} Special Moves`}
+          details={{
+            leftLabel: playerRank,
+            leftValue: `Level ${playerLevel}`,
+            rightLabel: "Growth",
+            rightValue: `${playerTraits.determination + playerTraits.discipline + playerTraits.financialKnowledge}/30`
+          }}
+        >
           <Button 
-            key={category.id}
-            variant={selectedCategory === category.id ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedCategory(category.id)}
-            className={selectedCategory === category.id 
-              ? "bg-gradient-to-r from-green-600 to-teal-600" 
-              : ""}
+            onClick={onAdvanceMonth} 
+            className="oni-button w-full group"
           >
-            {category.name}
+            <Flame className="w-4 h-4 mr-2 group-hover:animate-flame-pulse text-amber-200" />
+            Advance to Next Month
+            <Flame className="w-4 h-4 ml-2 group-hover:animate-sword-draw" />
           </Button>
-        ))}
+        </FinancialSummaryCard>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {filteredItems.map(item => (
-          <div 
-            key={item.id} 
-            className="border border-green-100 bg-gradient-to-br from-white to-green-50 rounded-xl p-4 flex flex-col hover:shadow-md transition-all hover:translate-y-[-2px]"
-          >
-            <div className="flex items-start gap-3">
-              <div className="p-3 bg-green-50 rounded-lg">
-                {item.icon}
+      
+      {/* Journey Buttons */}
+      <div className="flex space-x-4 mb-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowTimeline(true)}
+          className="border-slate-700 bg-slate-800/50 hover:bg-slate-800 flex items-center gap-2"
+        >
+          <Scroll className="w-4 h-4 text-amber-400" />
+          <span>Journey Timeline</span>
+        </Button>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowSlayerLog(true)}
+          className="border-slate-700 bg-slate-800/50 hover:bg-slate-800 flex items-center gap-2"
+        >
+          <BookOpen className="w-4 h-4 text-emerald-400" />
+          <span>Book of the Slayer</span>
+        </Button>
+      </div>
+      
+      {/* Rest of dashboard content */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-6">
+          {/* Debt Monsters section */}
+          <div className="oni-card relative overflow-hidden">
+            <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">負債</div>
+            <h2 className="text-xl font-bold mb-4 flex items-center">
+              <span className="p-1.5 bg-gradient-to-br from-red-500 to-amber-500 text-white rounded-md mr-2 shadow-oni">
+                <Sword className="w-4 h-4" />
+              </span>
+              <span className="oni-text-fire">Your Debt Demons</span>
+            </h2>
+            {debts.length === 0 ? (
+              <div className="text-center py-8 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
+                <Trophy className="w-8 h-8 text-amber-500 mb-2 mx-auto animate-float" />
+                <p className="text-green-400 font-medium">You have no debts! Great job!</p>
               </div>
-              <div className="flex-1">
-                <h3 className="font-bold">{item.name}</h3>
-                <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-                    <DemonCoin amount={item.cost} size="sm" />
-                  </div>
-                  <Button 
-                    onClick={() => handlePurchase(item)} 
-                    variant="default" 
-                    size="sm"
-                    disabled={cash < item.cost}
-                    className={cash >= item.cost 
-                      ? "bg-gradient-to-r from-green-600 to-teal-600" 
-                      : "opacity-50"}
-                  >
-                    Purchase
-                  </Button>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {debts.map(debt => (
+                  <DebtMonster
+                    key={debt.id}
+                    debt={debt}
+                    onClick={() => handleMonsterClick(debt.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Strategy section with fixed UI */}
+            <div className="oni-card relative overflow-hidden">
+              <div className="absolute left-5 top-5 opacity-5 text-6xl font-bold kanji-bg">戦略</div>
+              <h2 className="text-lg font-bold mb-3 flex items-center">
+                <span className="p-1 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-md mr-2 shadow-oni">
+                  <Shield className="w-3.5 h-3.5" />
+                </span>
+                <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Strategy</span>
+              </h2>
+              <div className="overflow-hidden">
+                <StrategySelector />
+              </div>
+            </div>
+            
+            {/* Budget section */}
+            <div className="oni-card relative overflow-hidden">
+              <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">予算</div>
+              <h2 className="text-lg font-bold mb-3 flex items-center">
+                <span className="p-1 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-md mr-2 shadow-oni">
+                  <Sword className="w-3.5 h-3.5" />
+                </span>
+                <span className="bg-gradient-to-r from-green-400 to-teal-400 bg-clip-text text-transparent">Budget</span>
+              </h2>
+              <BudgetAllocator />
+            </div>
+          </div>
+        </div>
+        
+        <div className="space-y-6">
+          {/* Multiple Challenges section */}
+          <div className="oni-card relative overflow-hidden">
+            <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">挑戦</div>
+            <h2 className="text-lg font-bold mb-3 flex items-center">
+              <span className="p-1 bg-gradient-to-br from-amber-400 to-amber-600 text-white rounded-md mr-2 shadow-oni">
+                <Flame className="w-3.5 h-3.5" />
+              </span>
+              <span className="bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">
+                Daily Challenges
+              </span>
+            </h2>
+            <MultiChallenge challenges={challenges} maxDisplay={3} />
+          </div>
+          
+          {/* Payment Streak section */}
+          <div className="oni-card relative overflow-hidden">
+            <div className="absolute left-5 top-5 opacity-5 text-6xl font-bold kanji-bg">連続</div>
+            <h2 className="text-lg font-bold mb-3 flex items-center">
+              <span className="p-1 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-md mr-2 shadow-oni">
+                <Flame className="w-3.5 h-3.5" />
+              </span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Your Streaks
+              </span>
+            </h2>
+            <StreakDisplay
+              streakCount={paymentStreak}
+              streakType="Payment"
+              nextReward={3}
+              rewardType="Special Move"
+            />
+          </div>
+          
+          {/* Character Growth section */}
+          <div className="oni-card relative overflow-hidden">
+            <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">成長</div>
+            <h2 className="text-lg font-bold mb-3 flex items-center">
+              <span className="p-1 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-md mr-2 shadow-oni">
+                <Zap className="w-3.5 h-3.5" />
+              </span>
+              <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                Character Growth
+              </span>
+            </h2>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className="text-blue-300">Discipline</span>
+                  <span className="text-blue-300">{playerTraits.discipline}/10</span>
+                </div>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-500" 
+                    style={{ width: `${playerTraits.discipline * 10}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className="text-amber-300">Resilience</span>
+                  <span className="text-amber-300">{playerTraits.determination}/10</span>
+                </div>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-amber-500" 
+                    style={{ width: `${playerTraits.determination * 10}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className="text-emerald-300">Focus</span>
+                  <span className="text-emerald-300">{playerTraits.financialKnowledge}/10</span>
+                </div>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-emerald-500" 
+                    style={{ width: `${playerTraits.financialKnowledge * 10}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
           </div>
-        ))}
+        </div>
       </div>
+      
+      {/* Journey Timeline Dialog */}
+      <Dialog open={showTimeline} onOpenChange={setShowTimeline}>
+        <DialogContent className="sm:max-w-[600px] p-0 bg-transparent border-none">
+          <JourneyTimeline onClose={() => setShowTimeline(false)} />
+        </DialogContent>
+      </Dialog>
+      
+      {/* Slayer Log Dialog */}
+      <Dialog open={showSlayerLog} onOpenChange={setShowSlayerLog}>
+        <DialogContent className="sm:max-w-[600px] p-0 bg-transparent border-none">
+          <SlayerLog onClose={() => setShowSlayerLog(false)} />
+        </DialogContent>
+      </Dialog>
+      
+      {selectedMonster && (
+        <MonsterBattle 
+          debtId={selectedMonster} 
+          onClose={handleCloseBattle} 
+        />
+      )}
+      
+      {currentLifeEvent && <LifeEvent />}
     </div>
   );
 };
 
-export default Shop;
+export default Dashboard;

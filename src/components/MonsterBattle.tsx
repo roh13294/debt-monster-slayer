@@ -8,7 +8,6 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
 import { Flame, Sword, Shield, Zap } from 'lucide-react';
 import NarrativeMoment from './journey/NarrativeMoment';
-import DemonCoin from '@/components/ui/DemonCoin';
 
 interface MonsterBattleProps {
   debtId: string;
@@ -62,17 +61,9 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
   };
   
   const handlePayment = () => {
-    if (!debt) return;
-    
     damageMonster(debtId, paymentAmount);
     setNarrativeType('victory');
     setShowNarrative(true);
-    
-    if (paymentAmount >= debt.amount) {
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-    }
   };
   
   const handleSpecialMove = () => {
@@ -114,9 +105,7 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
               </h2>
               <div className="text-right">
                 <p className="text-sm text-slate-300">Available Spirit Energy</p>
-                <p className="text-lg font-bold text-emerald-400">
-                  <DemonCoin amount={cash} size="md" />
-                </p>
+                <p className="text-lg font-bold text-emerald-400">{formatCurrency(cash)}</p>
               </div>
             </div>
 

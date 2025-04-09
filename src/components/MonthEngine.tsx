@@ -49,9 +49,7 @@ const MonthEngine: React.FC = () => {
   
   return (
     <>
-      {currentPhase === 'dashboard' && (
-        <Dashboard onAdvanceMonth={handleAdvanceMonth} />
-      )}
+      {currentPhase === 'dashboard' && <Dashboard onAdvanceMonth={handleAdvanceMonth} />}
       
       {currentPhase === 'cutscene' && (
         <CutsceneEventScreen 
