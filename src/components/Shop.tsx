@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
 import { ShopItem, PlayerTraits } from '../types/gameTypes';
 import DemonCoin from '@/components/ui/DemonCoin';
+import { Coins } from 'lucide-react';
 
 const shopItems: ShopItem[] = [
   {
