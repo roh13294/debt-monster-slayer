@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
-import { ShoppingCart, Tag, ShieldPlus, Sword, Zap, Shield, Battery, Briefcase, PiggyBank } from 'lucide-react';
+import { ShoppingCart, Tag, ShieldPlus, Sword, Zap, Shield, Battery, Briefcase, PiggyBank, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
 import { ShopItem, PlayerTraits } from '../types/gameTypes';
