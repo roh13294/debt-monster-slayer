@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
@@ -17,7 +16,7 @@ import SlayerLog from './journey/SlayerLog';
 import { calculatePlayerLevel, getPlayerRank } from '@/utils/gameTerms';
 
 interface DashboardProps {
-  onAdvanceMonth?: () => void;
+  onAdvanceMonth: () => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
@@ -38,17 +37,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
   const [showTimeline, setShowTimeline] = useState(false);
   const [showSlayerLog, setShowSlayerLog] = useState(false);
   
-  // Handle monster selection
   const handleMonsterClick = (id: string) => {
     setSelectedMonster(id);
   };
   
-  // Close monster battle modal
   const handleCloseBattle = () => {
     setSelectedMonster(null);
   };
   
-  // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -58,19 +54,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
     }).format(amount);
   };
   
-  // Get current player level and rank
   const playerLevel = calculatePlayerLevel(monthsPassed);
   const playerRank = getPlayerRank(playerLevel);
   
   return (
     <div className="relative space-y-6">
-      {/* Decorative background elements */}
       <div className="absolute top-20 left-40 w-40 h-40 bg-red-500/10 rounded-full mix-blend-color-dodge filter blur-3xl opacity-30 animate-pulse-subtle pointer-events-none"></div>
       <div className="absolute bottom-40 right-20 w-60 h-60 bg-purple-500/10 rounded-full mix-blend-color-dodge filter blur-3xl opacity-20 pointer-events-none"></div>
       
-      {/* Header with financial summary and advance month button */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {/* Current Cash card */}
         <FinancialSummaryCard
           type="cash"
           title="Current Cash"
@@ -83,7 +75,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
           }}
         />
         
-        {/* Total Debt card */}
         <FinancialSummaryCard
           type="debt"
           title="Total Debt"
@@ -96,7 +87,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
           }}
         />
         
-        {/* Game Progress card */}
         <FinancialSummaryCard
           type="progress"
           title="Game Progress"
@@ -119,7 +109,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
         </FinancialSummaryCard>
       </div>
       
-      {/* Journey Buttons */}
       <div className="flex space-x-4 mb-6">
         <Button
           variant="outline"
@@ -142,10 +131,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
         </Button>
       </div>
       
-      {/* Rest of dashboard content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
-          {/* Debt Monsters section */}
           <div className="oni-card relative overflow-hidden">
             <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">負債</div>
             <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -173,7 +160,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Strategy section with fixed UI */}
             <div className="oni-card relative overflow-hidden">
               <div className="absolute left-5 top-5 opacity-5 text-6xl font-bold kanji-bg">戦略</div>
               <h2 className="text-lg font-bold mb-3 flex items-center">
@@ -187,7 +173,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
               </div>
             </div>
             
-            {/* Budget section */}
             <div className="oni-card relative overflow-hidden">
               <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">予算</div>
               <h2 className="text-lg font-bold mb-3 flex items-center">
@@ -202,7 +187,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
         </div>
         
         <div className="space-y-6">
-          {/* Multiple Challenges section */}
           <div className="oni-card relative overflow-hidden">
             <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">挑戦</div>
             <h2 className="text-lg font-bold mb-3 flex items-center">
@@ -216,7 +200,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
             <MultiChallenge challenges={challenges} maxDisplay={3} />
           </div>
           
-          {/* Payment Streak section */}
           <div className="oni-card relative overflow-hidden">
             <div className="absolute left-5 top-5 opacity-5 text-6xl font-bold kanji-bg">連続</div>
             <h2 className="text-lg font-bold mb-3 flex items-center">
@@ -235,7 +218,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
             />
           </div>
           
-          {/* Character Growth section */}
           <div className="oni-card relative overflow-hidden">
             <div className="absolute right-5 top-5 opacity-5 text-6xl font-bold kanji-bg">成長</div>
             <h2 className="text-lg font-bold mb-3 flex items-center">
@@ -290,14 +272,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
         </div>
       </div>
       
-      {/* Journey Timeline Dialog */}
       <Dialog open={showTimeline} onOpenChange={setShowTimeline}>
         <DialogContent className="sm:max-w-[600px] p-0 bg-transparent border-none">
           <JourneyTimeline onClose={() => setShowTimeline(false)} />
         </DialogContent>
       </Dialog>
       
-      {/* Slayer Log Dialog */}
       <Dialog open={showSlayerLog} onOpenChange={setShowSlayerLog}>
         <DialogContent className="sm:max-w-[600px] p-0 bg-transparent border-none">
           <SlayerLog onClose={() => setShowSlayerLog(false)} />
