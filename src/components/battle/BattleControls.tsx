@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sword, ShieldAlert, Flame, Zap, Target } from 'lucide-react';
@@ -65,7 +64,6 @@ const BattleControls: React.FC<BattleControlsProps> = ({
   };
   
   const getAttackName = (): string => {
-    // Different tiers of attack names based on payment amount
     const paymentRatio = paymentAmount / debt.amount;
     
     if (paymentRatio >= 0.5) {
@@ -84,7 +82,6 @@ const BattleControls: React.FC<BattleControlsProps> = ({
     setAttackType('regular');
     const adjustedAmount = Math.round(paymentAmount * getStanceBonus());
     
-    // Random chance for critical hit with Thunder Breathing
     let isCritical = false;
     let isMiss = false;
     let isDouble = false;
@@ -101,15 +98,10 @@ const BattleControls: React.FC<BattleControlsProps> = ({
       setAttackType('double');
     }
     
-    // Trigger global function to flash the monster sprite
-    if (window && !isMiss) {
-      // @ts-ignore - This is a hacky way to call the exposed function
-      if (typeof window.hitMonster === 'function') {
-        window.hitMonster();
-      }
+    if (!isMiss && typeof window !== 'undefined' && typeof window.hitMonster === 'function') {
+      window.hitMonster();
     }
     
-    // Simulate attack animation then execute actual attack
     setTimeout(() => {
       setIsAttacking(false);
       if (!isMiss) {
@@ -123,22 +115,16 @@ const BattleControls: React.FC<BattleControlsProps> = ({
     setSpecialActive(true);
     setAttackType('special');
     
-    // Trigger global function to flash the monster sprite
-    if (window) {
-      // @ts-ignore - This is a hacky way to call the exposed function
-      if (typeof window.hitMonster === 'function') {
-        window.hitMonster();
-      }
+    if (typeof window !== 'undefined' && typeof window.hitMonster === 'function') {
+      window.hitMonster();
     }
     
-    // Simulate animation then execute
     setTimeout(() => {
       setSpecialActive(false);
       onSpecialMove();
     }, 1200);
   };
   
-  // Create an animated stagger effect for the controls
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -161,7 +147,6 @@ const BattleControls: React.FC<BattleControlsProps> = ({
       initial="hidden"
       animate="visible"
     >
-      {/* Battle effects overlays */}
       <AnimatePresence>
         {isAttacking && attackType === 'critical' && (
           <motion.div 
@@ -287,7 +272,6 @@ const BattleControls: React.FC<BattleControlsProps> = ({
                   'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500'
                 } relative overflow-hidden group`}
               >
-                {/* Glow effect on button hover */}
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
                 
                 {isAttacking ? (
@@ -325,7 +309,6 @@ const BattleControls: React.FC<BattleControlsProps> = ({
                   specialActive ? 'bg-amber-900/30' : ''
                 }`}
               >
-                {/* Animated aura around special move button */}
                 <AnimatePresence>
                   {!specialActive && specialMoves > 0 && (
                     <motion.div 

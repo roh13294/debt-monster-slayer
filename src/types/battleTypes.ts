@@ -44,3 +44,10 @@ export interface BattleContext {
   ragePhase?: boolean;
   frenzyPhase?: boolean;
 }
+
+// Add a global window interface extension
+declare global {
+  interface Window {
+    hitMonster?: () => void;
+  }
+}
