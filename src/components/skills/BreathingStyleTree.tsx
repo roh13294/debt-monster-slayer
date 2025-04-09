@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Flame, Zap, Droplet, Wind, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGameContext } from '@/context/GameContext';
 import { toast } from "@/hooks/use-toast";
+import DemonCoin from '@/components/ui/DemonCoin';
 
 export interface BreathingSkill {
   id: string;
@@ -194,7 +196,7 @@ const BreathingStyleTree: React.FC = () => {
                         : "border-red-900 text-red-400"
                       }
                     >
-                      {skill.cost} DemonCoins
+                      <DemonCoin amount={skill.cost} size="sm" />
                     </Button>
                   )}
                 </div>
@@ -245,7 +247,7 @@ const BreathingStyleTree: React.FC = () => {
                         : "border-blue-900 text-blue-400"
                       }
                     >
-                      {skill.cost} DemonCoins
+                      <DemonCoin amount={skill.cost} size="sm" />
                     </Button>
                   )}
                 </div>
@@ -296,7 +298,7 @@ const BreathingStyleTree: React.FC = () => {
                         : "border-yellow-900 text-yellow-400"
                       }
                     >
-                      {skill.cost} DemonCoins
+                      <DemonCoin amount={skill.cost} size="sm" />
                     </Button>
                   )}
                 </div>

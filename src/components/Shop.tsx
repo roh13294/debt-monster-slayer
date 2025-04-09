@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
-import { ShoppingCart, Coins, Tag, ShieldPlus, Sword, Zap, Shield, Battery, Briefcase, PiggyBank } from 'lucide-react';
+import { ShoppingCart, Tag, ShieldPlus, Sword, Zap, Shield, Battery, Briefcase, PiggyBank } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
 import { ShopItem, PlayerTraits } from '../types/gameTypes';
+import DemonCoin from '@/components/ui/DemonCoin';
 
 const shopItems: ShopItem[] = [
   {
@@ -84,8 +84,8 @@ const Shop: React.FC = () => {
   const handlePurchase = (item: ShopItem) => {
     if (cash < item.cost) {
       toast({
-        title: "Not Enough Cash",
-        description: "You don't have enough cash to purchase this item.",
+        title: "Not Enough DemonCoins",
+        description: "You don't have enough DemonCoins to purchase this item.",
         variant: "destructive",
       });
       return;
@@ -123,8 +123,7 @@ const Shop: React.FC = () => {
           </span>
         </h2>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-full">
-          <Coins size={16} />
-          <span className="font-medium">${cash.toFixed(2)}</span>
+          <DemonCoin amount={cash} size="md" />
         </div>
       </div>
 
@@ -159,8 +158,7 @@ const Shop: React.FC = () => {
                 <p className="text-sm text-gray-600 mb-2">{item.description}</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-                    <Tag size={12} />
-                    ${item.cost}
+                    <DemonCoin amount={item.cost} size="sm" />
                   </div>
                   <Button 
                     onClick={() => handlePurchase(item)} 

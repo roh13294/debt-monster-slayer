@@ -2,8 +2,9 @@
 import React from 'react';
 import { useGameContext } from '../../context/GameContext';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, TrendingUp, TrendingDown, Coins, PiggyBank } from 'lucide-react';
+import { ArrowRight, TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
 import { motion } from 'framer-motion';
+import DemonCoin from '@/components/ui/DemonCoin';
 
 interface MonthSummaryProps {
   stance: string | null;
@@ -77,12 +78,12 @@ const MonthSummary: React.FC<MonthSummaryProps> = ({ stance, onFinish }) => {
             variants={itemVariants}
           >
             <h3 className="text-xl text-white mb-4 flex items-center">
-              <Coins className="mr-2 text-yellow-400" /> Financial Status
+              <DemonCoin showIcon={true} size="lg" /> Financial Status
             </h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-2 border-b border-slate-700">
-                <span className="text-slate-300">Current Cash</span>
-                <span className="text-white font-bold">{formatCurrency(cash)}</span>
+                <span className="text-slate-300">Current DemonCoins</span>
+                <span className="text-white font-bold"><DemonCoin amount={cash} size="md" /></span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-slate-700">
                 <span className="text-slate-300">Total Debt</span>
@@ -107,18 +108,18 @@ const MonthSummary: React.FC<MonthSummaryProps> = ({ stance, onFinish }) => {
               <div className="flex justify-between items-center pb-2 border-b border-slate-700">
                 <span className="text-slate-300">Income</span>
                 <span className="text-green-400 flex items-center">
-                  <TrendingUp className="w-4 h-4 mr-1" /> {formatCurrency(budget.income)}
+                  <TrendingUp className="w-4 h-4 mr-1" /> <DemonCoin amount={budget.income} size="sm" />
                 </span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-slate-700">
                 <span className="text-slate-300">Expenses</span>
                 <span className="text-red-400 flex items-center">
-                  <TrendingDown className="w-4 h-4 mr-1" /> {formatCurrency(budget.essentials)}
+                  <TrendingDown className="w-4 h-4 mr-1" /> <DemonCoin amount={budget.essentials} size="sm" />
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-slate-300">Debt Payments</span>
-                <span className="text-amber-400">{formatCurrency(budget.debt)}</span>
+                <span className="text-amber-400"><DemonCoin amount={budget.debt} size="sm" /></span>
               </div>
             </div>
           </motion.div>

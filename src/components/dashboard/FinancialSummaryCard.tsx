@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Coins, CalendarDays, Sparkles, PiggyBank, Zap } from 'lucide-react';
+import { CalendarDays, Sparkles, PiggyBank, Zap } from 'lucide-react';
+import DemonCoin from '@/components/ui/DemonCoin';
 
 interface FinancialSummaryCardProps {
   type: 'cash' | 'debt' | 'progress';
@@ -20,18 +21,18 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
 }) => {
   const getCardIcon = () => {
     switch (type) {
-      case 'cash': return <Coins className="h-6 w-6 text-green-500" />;
+      case 'cash': return <DemonCoin size="lg" showIcon={true} />;
       case 'debt': return <CalendarDays className="h-6 w-6 text-purple-400" />;
       case 'progress': return <Sparkles className="h-6 w-6 text-amber-400" />;
-      default: return <Coins className="h-6 w-6" />;
+      default: return <DemonCoin size="lg" showIcon={true} />;
     }
   };
   
   const getGradientClasses = () => {
     switch (type) {
       case 'cash': return {
-        bg: 'from-green-500/10 to-blue-500/10',
-        text: 'text-green-400'
+        bg: 'from-amber-500/10 to-red-500/10',
+        text: 'text-amber-400'
       };
       case 'debt': return {
         bg: 'from-red-500/10 to-purple-500/10',
@@ -59,7 +60,9 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
           <div className={`p-2 bg-gradient-to-br ${bg} rounded-full mr-3`}>
             {getCardIcon()}
           </div>
-          <span className={`text-2xl font-bold ${text} oni-text-glow`}>{value}</span>
+          <span className={`text-2xl font-bold ${text} oni-text-glow`}>
+            {type === 'cash' ? <DemonCoin amount={Number(value)} size="lg" /> : value}
+          </span>
         </div>
         
         {type === 'progress' && (
@@ -80,14 +83,14 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
         <div className="bg-white/5 mt-4 p-3 rounded-b-xl flex justify-between items-center backdrop-blur-sm">
           <div>
             <p className="text-xs text-gray-400">{details.leftLabel}</p>
-            <p className={`text-sm font-medium ${type === 'cash' ? 'text-green-400' : 'text-purple-400'}`}>
-              {details.leftValue}
+            <p className={`text-sm font-medium ${type === 'cash' ? 'text-amber-400' : 'text-purple-400'}`}>
+              {type === 'cash' ? <DemonCoin amount={Number(details.leftValue.replace(/[^0-9.-]+/g, ''))} size="sm" /> : details.leftValue}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray-400">{details.rightLabel}</p>
             <p className={`text-sm font-medium ${type === 'cash' ? 'text-red-400' : 'text-amber-400'}`}>
-              {details.rightValue}
+              {type === 'cash' ? <DemonCoin amount={Number(details.rightValue.replace(/[^0-9.-]+/g, ''))} size="sm" /> : details.rightValue}
             </p>
           </div>
         </div>
