@@ -8,7 +8,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
 import { Flame, Sword, Shield, Zap } from 'lucide-react';
 import NarrativeMoment from './journey/NarrativeMoment';
-import DemonCoin from '@/components/ui/demonCoin';
+import DemonCoin from '@/components/ui/DemonCoin';
 
 interface MonsterBattleProps {
   debtId: string;
