@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
@@ -7,8 +8,10 @@ import DebtMonster from '@/components/DebtMonster';
 import { EnergyWave } from './BattleEffects';
 import BattleControls from './BattleControls';
 import BattleTips from './BattleTips';
+import BattleNarrator from './BattleNarrator';
 import NarrativeMoment from '@/components/journey/NarrativeMoment';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import LootDropCard, { LootItem } from './LootDropCard';
+import { AnimatedSlash, ElementalBurst, ScreenShake } from './BattleEffects';
 
 interface BattleArenaProps {
   stance: string | null;
@@ -19,17 +22,38 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
   const { debts, cash, damageMonster, specialMoves, useSpecialMove, playerTraits } = useGameContext();
   const [currentDebtIndex, setCurrentDebtIndex] = useState(0);
   const [paymentAmount, setPaymentAmount] = useState(0);
-  const [battlePhase, setBattlePhase] = useState<'prepare' | 'battle' | 'result'>('prepare');
+  const [battlePhase, setBattlePhase] = useState<'prepare' | 'battle' | 'result' | 'loot'>('prepare');
   const [battleResult, setBattleResult] = useState<'victory' | 'partial' | null>(null);
   const [showNarrative, setShowNarrative] = useState(true);
   const [narrativeChoice, setNarrativeChoice] = useState<string | null>(null);
   const [narrativeOptions, setNarrativeOptions] = useState<string[]>([]);
   const [showTips, setShowTips] = useState(true);
   
+  // New battle effects state
+  const [ragePhase, setRagePhase] = useState<boolean>(false);
+  const [frenzyPhase, setFrenzyPhase] = useState<boolean>(false);
+  const [narratorMessages, setNarratorMessages] = useState<string[]>([]);
+  const [showSlash, setShowSlash] = useState<boolean>(false);
+  const [showElementalBurst, setShowElementalBurst] = useState<boolean>(false);
+  const [showScreenShake, setShowScreenShake] = useState<boolean>(false);
+  const [lootDrops, setLootDrops] = useState<LootItem[]>([]);
+  
   const currentDebt = debts.length > 0 ? debts[currentDebtIndex] : null;
   
   useEffect(() => {
     if (!currentDebt) return;
+    
+    // Check health for rage/frenzy phases
+    if (currentDebt.health <= 66 && currentDebt.health > 33 && !ragePhase && !frenzyPhase) {
+      setRagePhase(true);
+      addNarratorMessage(`${currentDebt.name} enters RAGE phase! Attack power increases!`);
+      setShowScreenShake(true);
+    } else if (currentDebt.health <= 33 && !frenzyPhase) {
+      setFrenzyPhase(true);
+      setRagePhase(false);
+      addNarratorMessage(`${currentDebt.name} enters FRENZY phase! Grows desperate and dangerous!`);
+      setShowScreenShake(true);
+    }
     
     let options: string[] = [];
     
@@ -73,36 +97,77 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
     
     const shuffled = options.sort(() => 0.5 - Math.random());
     setNarrativeOptions(shuffled.slice(0, 3));
-  }, [currentDebt, stance, playerTraits]);
+  }, [currentDebt, stance, playerTraits, ragePhase, frenzyPhase]);
+  
+  const addNarratorMessage = (message: string) => {
+    setNarratorMessages(prev => [message, ...prev]);
+  };
   
   const handleDebtAttack = (amount: number) => {
     if (!currentDebt) return;
     
-    damageMonster(currentDebt.id, amount);
+    // Show attack animations
+    setShowSlash(true);
     
+    setTimeout(() => {
+      // Element burst based on stance
+      setShowElementalBurst(true);
+    }, 300);
+    
+    // Add to battle narrator
     if (amount >= currentDebt.amount) {
-      if (currentDebtIndex < debts.length - 1) {
-        setCurrentDebtIndex(currentDebtIndex + 1);
-        setBattlePhase('prepare');
-        setShowNarrative(true);
-      } else {
-        setBattleResult('victory');
-        setBattlePhase('result');
-      }
+      addNarratorMessage(`Massive strike obliterates ${currentDebt.name}!`);
+    } else if (amount > currentDebt.amount * 0.5) {
+      addNarratorMessage(`Powerful attack deals significant damage!`);
     } else {
-      setBattleResult('partial');
-      setBattlePhase('result');
+      addNarratorMessage(`Your attack strikes ${currentDebt.name}!`);
     }
+    
+    // Execute attack with delay for animations
+    setTimeout(() => {
+      damageMonster(currentDebt.id, amount);
+      
+      // Generate loot if monster defeated
+      if (amount >= currentDebt.amount) {
+        generateLootDrops();
+        
+        if (currentDebtIndex < debts.length - 1) {
+          setCurrentDebtIndex(currentDebtIndex + 1);
+          setBattlePhase('prepare');
+          setShowNarrative(true);
+          setRagePhase(false);
+          setFrenzyPhase(false);
+        } else {
+          setBattleResult('victory');
+          setBattlePhase('loot');
+        }
+      } else {
+        // Check if we should transition to result screen
+        if (amount > currentDebt.amount * 0.3) {
+          setBattleResult('partial');
+          setBattlePhase('result');
+        }
+      }
+    }, 1000);
   };
   
   const handleSpecialMove = () => {
     if (!currentDebt) return;
-    useSpecialMove(currentDebt.id);
+    
+    // Show special move animations
+    setShowElementalBurst(true);
+    addNarratorMessage(`You unleash a special technique on ${currentDebt.name}!`);
+    
+    setTimeout(() => {
+      useSpecialMove(currentDebt.id);
+      addNarratorMessage(`${currentDebt.name}'s corruption aura weakens significantly!`);
+    }, 800);
   };
   
   const handleNarrativeChoice = (choice: string) => {
     setNarrativeChoice(choice);
     setShowNarrative(false);
+    addNarratorMessage(`Inner reflection: "${choice}"`);
     
     setTimeout(() => {
       setBattlePhase('battle');
@@ -114,6 +179,8 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
       setCurrentDebtIndex(currentDebtIndex + 1);
       setBattlePhase('prepare');
       setShowNarrative(true);
+      setRagePhase(false);
+      setFrenzyPhase(false);
     } else {
       onComplete();
     }
@@ -127,6 +194,77 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
     setShowTips(false);
   };
   
+  const handleMessageProcessed = () => {
+    if (narratorMessages.length > 0) {
+      setNarratorMessages(prev => prev.slice(1));
+    }
+  };
+  
+  // Generate loot drops based on monster rank
+  const generateLootDrops = () => {
+    if (!currentDebt) return;
+    
+    const rarityRoll = Math.random();
+    let rarity: 'Common' | 'Rare' | 'Epic' = 'Common';
+    
+    if (rarityRoll > 0.95) rarity = 'Epic';
+    else if (rarityRoll > 0.75) rarity = 'Rare';
+    
+    const lootPool: LootItem[] = [
+      {
+        type: 'Demon Seal',
+        rarity,
+        name: 'Prosperity Seal',
+        description: 'Increases spirit energy by 5-15%',
+        value: Math.floor(currentDebt.amount * 0.05)
+      },
+      {
+        type: 'Spirit Fragment',
+        rarity,
+        name: 'Focus Fragment',
+        description: 'Improves attack precision',
+        value: 1
+      },
+      {
+        type: 'Skill Scroll',
+        rarity,
+        name: 'Breathing Technique',
+        description: 'Enhances your combat style',
+        value: 1,
+        effect: 'Stance power +5%'
+      }
+    ];
+    
+    // Add a rare loot for high-tier demons
+    if (currentDebt.amount > 10000) {
+      lootPool.push({
+        type: 'Skill Scroll',
+        rarity: 'Rare',
+        name: 'Demon Ward',
+        description: 'Protects against future interest increases',
+        value: 2,
+        effect: 'Interest protection'
+      });
+    }
+    
+    setLootDrops(lootPool);
+  };
+  
+  const handleCollectLoot = (selectedLoot: LootItem[]) => {
+    // Process loot benefits (this would connect to your game systems)
+    addNarratorMessage(`You collected: ${selectedLoot[0].name}!`);
+    
+    setTimeout(() => {
+      if (currentDebtIndex < debts.length - 1) {
+        setCurrentDebtIndex(currentDebtIndex + 1);
+        setBattlePhase('prepare');
+        setShowNarrative(true);
+      } else {
+        handleFinishBattle();
+      }
+    }, 1500);
+  };
+  
   if (!currentDebt) {
     return (
       <div className="text-center py-12">
@@ -137,13 +275,54 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
     );
   }
   
+  const getElementType = () => {
+    switch(stance) {
+      case 'aggressive': return 'fire';
+      case 'defensive': return 'water';
+      case 'risky': return 'lightning';
+      default: return 'earth';
+    }
+  };
+  
   return (
     <div className="min-h-[80vh] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950">
         <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-5"></div>
         <EnergyWave color="purple" duration={6} />
         <EnergyWave color="blue" duration={8} delay={2} />
+        
+        {/* Conditional rage/frenzy effects */}
+        {ragePhase && (
+          <EnergyWave color="yellow" duration={4} />
+        )}
+        
+        {frenzyPhase && (
+          <EnergyWave color="red" duration={3} />
+        )}
       </div>
+      
+      {/* Animation overlays */}
+      <AnimatedSlash 
+        isActive={showSlash} 
+        onComplete={() => setShowSlash(false)} 
+      />
+      
+      <ElementalBurst
+        element={getElementType()}
+        isActive={showElementalBurst}
+        onComplete={() => setShowElementalBurst(false)}
+      />
+      
+      <ScreenShake
+        isActive={showScreenShake}
+        onComplete={() => setShowScreenShake(false)}
+      />
+      
+      {/* Battle narrator */}
+      <BattleNarrator 
+        messageQueue={narratorMessages}
+        onMessageShown={handleMessageProcessed}
+      />
       
       <div className="relative z-10 container mx-auto py-10 px-4">
         <div className="mb-6 text-center">
@@ -162,15 +341,19 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
           
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
             {battlePhase === 'prepare' && 'Prepare for Battle'}
-            {battlePhase === 'battle' && 'Demon Encounter!'}
+            {battlePhase === 'battle' && (frenzyPhase ? '⚠️ Frenzy Phase' : ragePhase ? '⚠️ Rage Phase' : 'Demon Encounter!')}
             {battlePhase === 'result' && battleResult === 'victory' && 'Demon Defeated!'}
             {battlePhase === 'result' && battleResult === 'partial' && 'Demon Weakened'}
+            {battlePhase === 'loot' && 'Victory Rewards'}
           </h1>
           
           <p className="text-slate-300 max-w-2xl mx-auto">
             {battlePhase === 'prepare' && 'Center your focus and prepare your spirit for the coming battle.'}
-            {battlePhase === 'battle' && 'Channel your energy to strike at the demon\'s core.'}
+            {battlePhase === 'battle' && !ragePhase && !frenzyPhase && 'Channel your energy to strike at the demon\'s core.'}
+            {battlePhase === 'battle' && ragePhase && 'The demon\'s attacks grow stronger as it becomes enraged!'}
+            {battlePhase === 'battle' && frenzyPhase && 'The demon enters a desperate frenzy as its health dwindles!'}
             {battlePhase === 'result' && 'Your technique has proved effective, but the journey continues.'}
+            {battlePhase === 'loot' && 'The demon\'s defeat has yielded valuable treasures. Choose your reward.'}
           </p>
         </div>
         
@@ -247,11 +430,21 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
               <DebtMonster 
                 debt={currentDebt} 
                 isInBattle={true}
+                ragePhase={ragePhase}
+                frenzyPhase={frenzyPhase}
                 onClick={() => {}}
               />
               
               <div className="mt-4">
-                <NarrativeMoment type="battle" context={{ debt: currentDebt, stance }} />
+                <NarrativeMoment 
+                  type="battle" 
+                  context={{ 
+                    debt: currentDebt, 
+                    stance,
+                    ragePhase,
+                    frenzyPhase 
+                  }} 
+                />
               </div>
             </div>
             
@@ -341,6 +534,19 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
                 </div>
               </div>
             )}
+          </motion.div>
+        )}
+        
+        {battlePhase === 'loot' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-2xl mx-auto"
+          >
+            <LootDropCard
+              loot={lootDrops}
+              onCollect={handleCollectLoot}
+            />
           </motion.div>
         )}
       </div>

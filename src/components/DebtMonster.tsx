@@ -1,21 +1,59 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Debt } from '@/types/gameTypes';
 import { getMonsterImage, getDemonElementType, getDemonRank } from '@/utils/monsterImages';
 import { getMonsterProfile } from '@/utils/monsterProfiles';
 import { Progress } from '@/components/ui/progress';
+import { Flame, ShieldOff } from 'lucide-react';
 
 interface DebtMonsterProps {
   debt: Debt;
   onClick?: () => void;
   isInBattle?: boolean;
+  ragePhase?: boolean;
+  frenzyPhase?: boolean;
 }
 
-const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick, isInBattle = false }) => {
+const DebtMonster: React.FC<DebtMonsterProps> = ({ 
+  debt, 
+  onClick, 
+  isInBattle = false,
+  ragePhase = false,
+  frenzyPhase = false
+}) => {
   const monsterImage = getMonsterImage(debt.name);
   const elementType = getDemonElementType(debt.name);
   const monsterRank = getDemonRank(debt.amount);
   const monsterProfile = getMonsterProfile(debt.name);
+  
+  // Control visual flashing state for hit animations
+  const [isHit, setIsHit] = useState(false);
+  
+  useEffect(() => {
+    if (isHit) {
+      const timer = setTimeout(() => setIsHit(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isHit]);
+  
+  const simulateHit = () => {
+    setIsHit(true);
+  };
+  
+  // Expose the hit animation function
+  React.useEffect(() => {
+    if (window && isInBattle) {
+      // @ts-ignore - This is a hacky way to expose the function globally for demo purposes
+      window.hitMonster = simulateHit;
+    }
+    return () => {
+      if (window) {
+        // @ts-ignore
+        delete window.hitMonster;
+      }
+    };
+  }, [isInBattle]);
   
   const getElementColor = () => {
     switch (elementType) {
@@ -50,10 +88,39 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick, isInBattle = f
     }).format(amount);
   };
   
+  const getRageStyles = () => {
+    if (frenzyPhase) {
+      return {
+        containerClass: 'border-red-600 shadow-lg shadow-red-900/30',
+        pulseClass: 'animate-[pulse_0.8s_ease-in-out_infinite]',
+        glowClass: 'before:absolute before:inset-0 before:bg-gradient-to-b before:from-red-900/30 before:to-transparent before:z-0',
+        backgroundClass: 'from-red-950 to-slate-900'
+      };
+    }
+    
+    if (ragePhase) {
+      return {
+        containerClass: 'border-amber-600',
+        pulseClass: 'animate-[pulse_1.2s_ease-in-out_infinite]',
+        glowClass: 'before:absolute before:inset-0 before:bg-gradient-to-b before:from-amber-900/20 before:to-transparent before:z-0',
+        backgroundClass: 'from-amber-950 to-slate-900'
+      };
+    }
+    
+    return {
+      containerClass: '',
+      pulseClass: '',
+      glowClass: '',
+      backgroundClass: 'from-slate-900 to-slate-800'
+    };
+  };
+  
+  const rageStyles = getRageStyles();
+  
   return (
     <motion.div 
-      className={`bg-slate-800 border border-slate-700 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer group ${isInBattle ? 'scale-105' : ''}`}
-      whileHover={{ scale: 1.02 }}
+      className={`bg-slate-800 border border-slate-700 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow relative ${isInBattle ? 'scale-105' : ''} ${rageStyles.containerClass}`}
+      whileHover={{ scale: isInBattle ? 1.05 : 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       initial={{ opacity: 0, y: 10 }}
@@ -61,30 +128,64 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick, isInBattle = f
       transition={{ duration: 0.3 }}
     >
       <div className="relative">
-        <div className={`h-40 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 relative ${isInBattle ? 'animate-pulse-subtle' : ''}`}>
-          <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10"></div>
+        <div className={`h-40 overflow-hidden bg-gradient-to-br ${rageStyles.backgroundClass} relative ${isInBattle ? rageStyles.pulseClass : ''} ${rageStyles.glowClass}`}>
+          <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10 z-0"></div>
+          
+          {/* Aura effect for rage phases */}
+          {(ragePhase || frenzyPhase) && (
+            <motion.div 
+              className={`absolute inset-0 z-0 ${frenzyPhase ? 'bg-red-500/10' : 'bg-amber-500/10'}`}
+              animate={{ 
+                opacity: [0.1, 0.2, 0.1],
+                scale: [1, 1.05, 1]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          )}
+          
           <motion.div 
-            className="absolute bottom-0 left-1/2 transform -translate-x-1/2"
+            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10"
             animate={{ 
               y: [0, -5, 0],
               filter: ['drop-shadow(0 0 10px rgba(255,165,0,0.3))', 'drop-shadow(0 0 15px rgba(255,165,0,0.5))', 'drop-shadow(0 0 10px rgba(255,165,0,0.3))']
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <img 
+            <motion.img 
               src={monsterImage} 
               alt={debt.name} 
               className={`h-40 object-contain -mb-4 group-hover:-mb-6 transition-all transform group-hover:scale-110 ${isInBattle ? 'scale-110' : ''}`}
+              animate={isHit ? { 
+                x: [-5, 5, -3, 3, 0],
+                filter: ['brightness(2)', 'brightness(1)'] 
+              } : {}}
+              transition={{ duration: 0.3 }}
             />
           </motion.div>
           
-          <div className={`absolute top-2 right-2 px-2 py-1 rounded-full bg-gradient-to-r ${getElementColor()} text-white text-xs font-medium`}>
+          <div className={`absolute top-2 right-2 px-2 py-1 rounded-full bg-gradient-to-r ${getElementColor()} text-white text-xs font-medium z-10`}>
             {elementType} Type
           </div>
           
-          <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-medium border border-slate-600">
+          <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-medium border border-slate-600 z-10">
             {monsterRank}
           </div>
+          
+          {/* Rage phase indicator */}
+          {ragePhase && !frenzyPhase && (
+            <div className="absolute left-1/2 transform -translate-x-1/2 top-3 bg-amber-600 text-black font-bold text-xs px-2 py-1 rounded-full flex items-center gap-1 z-10">
+              <Flame className="w-3 h-3" />
+              RAGE
+            </div>
+          )}
+          
+          {/* Frenzy phase indicator */}
+          {frenzyPhase && (
+            <div className="absolute left-1/2 transform -translate-x-1/2 top-3 bg-red-600 text-white font-bold text-xs px-2 py-1 rounded-full flex items-center gap-1 z-10 animate-pulse">
+              <ShieldOff className="w-3 h-3" />
+              FRENZY
+            </div>
+          )}
         </div>
         
         <div className="px-3 -mt-3 relative z-10">
@@ -113,9 +214,19 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({ debt, onClick, isInBattle = f
           </div>
         </div>
         
-        <button className="w-full px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm rounded-md font-medium transition-colors">
-          Attack This Demon
-        </button>
+        {/* Display weakness and lore */}
+        {isInBattle && (
+          <div className="bg-slate-900/60 rounded p-2 mb-3 border border-slate-800">
+            <p className="text-amber-400 text-xs font-medium">WEAKNESS: {monsterProfile.weakness}</p>
+            <p className="text-slate-400 text-xs italic mt-1">{monsterProfile.backstory.substring(0, 120)}...</p>
+          </div>
+        )}
+        
+        {!isInBattle && (
+          <button className="w-full px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm rounded-md font-medium transition-colors">
+            Attack This Demon
+          </button>
+        )}
       </div>
     </motion.div>
   );
