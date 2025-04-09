@@ -5,18 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 import { LootItem } from '@/types/battleTypes';
 
-export interface LootItem {
-  type: 'Demon Seal' | 'Spirit Fragment' | 'Skill Scroll';
-  rarity: 'Common' | 'Rare' | 'Epic';
-  name: string;
-  description: string;
-  value: number;
-  effect?: string;
-}
-
 interface LootDropCardProps {
   loot: LootItem[];
-  onCollect: () => void;
+  onCollect: (selectedLoot: LootItem[]) => void;
 }
 
 const LootDropCard: React.FC<LootDropCardProps> = ({ loot, onCollect }) => {
@@ -148,7 +139,7 @@ const LootDropCard: React.FC<LootDropCardProps> = ({ loot, onCollect }) => {
             transition={{ delay: 0.5 }}
           >
             <Button 
-              onClick={onCollect}
+              onClick={() => onCollect(loot)}
               className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white px-8 py-6 h-auto"
               size="lg"
             >

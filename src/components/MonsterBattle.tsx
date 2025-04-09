@@ -23,8 +23,8 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
   const [isInBattle, setIsInBattle] = useState<boolean>(true);
   const [showNarrative, setShowNarrative] = useState<boolean>(true);
   const [narrativeType, setNarrativeType] = useState<'battle' | 'victory' | 'decision'>('battle');
+  const [selectedStance, setSelectedStance] = useState<string | null>(null);
   
-  // Update payment amount when debt changes
   useEffect(() => {
     if (debt) {
       setPaymentAmount(debt.minimumPayment);
@@ -36,7 +36,6 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
     return null;
   }
   
-  // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -46,13 +45,11 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
     }).format(amount);
   };
   
-  // Handle slider change
   const handleSliderChange = (value: number[]) => {
     setPaymentAmount(value[0]);
     setCustomAmount(value[0].toString());
   };
   
-  // Handle custom amount change
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCustomAmount(value);
@@ -63,19 +60,16 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
     }
   };
   
-  // Handle payment submission
   const handlePayment = () => {
     damageMonster(debtId, paymentAmount);
     setNarrativeType('victory');
     setShowNarrative(true);
   };
   
-  // Handle special move
   const handleSpecialMove = () => {
     useSpecialMove(debtId);
   };
   
-  // Get payment preset options
   const getPaymentOptions = () => {
     if (!debt) return [];
     
@@ -89,11 +83,14 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
   
   const paymentOptions = getPaymentOptions();
 
+  const handleNarrativeDismiss = () => {
+    setShowNarrative(false);
+  };
+
   return (
     <Dialog open={true} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-[700px] bg-night-sky p-0 border-slate-700">
         <div className="relative overflow-hidden">
-          {/* Animated background */}
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-purple-950">
             <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-5"></div>
           </div>
@@ -112,12 +109,11 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
               </div>
             </div>
 
-            {/* Narrative moment */}
             {showNarrative && (
               <NarrativeMoment 
                 type={narrativeType}
-                context={{ debt }}
-                onDismiss={() => setShowNarrative(false)}
+                context={{ debt, stance: selectedStance }}
+                onDismiss={handleNarrativeDismiss}
               />
             )}
             

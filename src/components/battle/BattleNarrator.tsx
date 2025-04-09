@@ -4,25 +4,34 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell } from 'lucide-react';
 
 interface BattleNarratorProps {
-  message: string;
-  onProcessed: () => void;
+  message?: string;
+  messageQueue?: string[];
+  onProcessed?: () => void;
+  onMessageShown?: () => void;
 }
 
 const BattleNarrator: React.FC<BattleNarratorProps> = ({ 
   message,
-  onProcessed
+  messageQueue = [],
+  onProcessed,
+  onMessageShown
 }) => {
+  const displayMessage = message || messageQueue[0] || '';
+  
   useEffect(() => {
+    if (!displayMessage) return;
+    
     const timer = setTimeout(() => {
-      onProcessed();
+      if (onProcessed) onProcessed();
+      if (onMessageShown) onMessageShown();
     }, 3000);
     
     return () => clearTimeout(timer);
-  }, [message, onProcessed]);
+  }, [displayMessage, onProcessed, onMessageShown]);
   
   return (
     <AnimatePresence>
-      {message && (
+      {displayMessage && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -33,7 +42,7 @@ const BattleNarrator: React.FC<BattleNarratorProps> = ({
           <div className="bg-amber-900/50 p-1.5 rounded-full">
             <Bell className="w-4 h-4 text-amber-400" />
           </div>
-          <p className="text-amber-200 text-sm font-medium">{message}</p>
+          <p className="text-amber-200 text-sm font-medium">{displayMessage}</p>
         </motion.div>
       )}
     </AnimatePresence>

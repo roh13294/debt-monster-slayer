@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -108,7 +107,6 @@ const NarrativeMoment: React.FC<NarrativeMomentProps> = ({
     if (onChoice) {
       onChoice(option);
     } else {
-      // If no choice handler, just dismiss after selection
       setTimeout(() => onDismiss(), 800);
     }
   };
@@ -122,7 +120,6 @@ const NarrativeMoment: React.FC<NarrativeMomentProps> = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      {/* Background design elements */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 via-blue-500 to-amber-500 opacity-80"></div>
       <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-5 z-0"></div>
       

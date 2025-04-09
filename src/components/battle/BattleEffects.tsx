@@ -1,19 +1,24 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface EnergyWaveProps {
   color?: string;
   duration?: number;
+  delay?: number;
 }
 
 export const EnergyWave: React.FC<EnergyWaveProps> = ({ 
   color = 'rgba(255, 165, 0, 0.5)', 
-  duration = 1.5 
+  duration = 1.5,
+  delay = 0
 }) => {
   return (
     <motion.div
       className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay }}
     >
       <motion.div
         className="absolute rounded-full"
@@ -23,7 +28,7 @@ export const EnergyWave: React.FC<EnergyWaveProps> = ({
           height: ["0%", "150%"], 
           opacity: [0.7, 0] 
         }}
-        transition={{ duration, ease: "easeOut" }}
+        transition={{ duration, ease: "easeOut", delay }}
         style={{ backgroundColor: color }}
       />
     </motion.div>
@@ -33,11 +38,15 @@ export const EnergyWave: React.FC<EnergyWaveProps> = ({
 interface AnimatedSlashProps {
   direction?: 'diagonal' | 'horizontal' | 'vertical';
   color?: string;
+  isActive?: boolean;
+  onComplete?: () => void;
 }
 
 export const AnimatedSlash: React.FC<AnimatedSlashProps> = ({ 
   direction = 'diagonal', 
-  color = '#fff' 
+  color = '#fff',
+  isActive = true,
+  onComplete
 }) => {
   const getPathData = () => {
     switch (direction) {
@@ -49,6 +58,17 @@ export const AnimatedSlash: React.FC<AnimatedSlashProps> = ({
         return "M10,10 L90,90";
     }
   };
+  
+  useEffect(() => {
+    if (isActive) {
+      const timer = setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isActive, onComplete]);
+  
+  if (!isActive) return null;
   
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
@@ -65,6 +85,7 @@ export const AnimatedSlash: React.FC<AnimatedSlashProps> = ({
           initial={{ pathLength: 0, opacity: 0 }}
           animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
           transition={{ duration: 0.5, times: [0, 0.2, 0.8, 1] }}
+          onAnimationComplete={() => onComplete && onComplete()}
         />
       </svg>
     </div>
@@ -72,12 +93,33 @@ export const AnimatedSlash: React.FC<AnimatedSlashProps> = ({
 };
 
 interface ElementalBurstProps {
-  elementType: 'fire' | 'water' | 'thunder' | 'wind';
+  elementType?: 'fire' | 'water' | 'thunder' | 'wind';
+  element?: string;
+  isActive?: boolean;
+  onComplete?: () => void;
 }
 
-export const ElementalBurst: React.FC<ElementalBurstProps> = ({ elementType }) => {
+export const ElementalBurst: React.FC<ElementalBurstProps> = ({ 
+  elementType, 
+  element,
+  isActive = true,
+  onComplete
+}) => {
+  const actualElement = element || elementType || 'fire';
+  
+  useEffect(() => {
+    if (isActive) {
+      const timer = setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [isActive, onComplete]);
+  
+  if (!isActive) return null;
+  
   const getElementColor = () => {
-    switch (elementType) {
+    switch (actualElement) {
       case 'fire': return 'rgba(255, 59, 48, 0.7)';
       case 'water': return 'rgba(0, 122, 255, 0.7)';
       case 'thunder': return 'rgba(255, 204, 0, 0.7)';
@@ -104,6 +146,7 @@ export const ElementalBurst: React.FC<ElementalBurstProps> = ({ elementType }) =
         variants={burstVariants}
         initial="hidden"
         animate="visible"
+        onAnimationComplete={() => onComplete && onComplete()}
         style={{ 
           backgroundColor: getElementColor(),
           width: "300px", 
@@ -151,12 +194,27 @@ export const ElementalBurst: React.FC<ElementalBurstProps> = ({ elementType }) =
 interface ScreenShakeProps {
   intensity?: number;
   duration?: number;
+  isActive?: boolean;
+  onComplete?: () => void;
 }
 
 export const ScreenShake: React.FC<ScreenShakeProps> = ({ 
   intensity = 5, 
-  duration = 0.5 
+  duration = 0.5,
+  isActive = true,
+  onComplete
 }) => {
+  useEffect(() => {
+    if (isActive) {
+      const timer = setTimeout(() => {
+        if (onComplete) onComplete();
+      }, duration * 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isActive, duration, onComplete]);
+  
+  if (!isActive) return null;
+  
   return (
     <motion.div
       className="absolute inset-0 pointer-events-none z-10"
@@ -168,6 +226,7 @@ export const ScreenShake: React.FC<ScreenShakeProps> = ({
         duration, 
         times: [0, 0.2, 0.4, 0.6, 0.8, 1] 
       }}
+      onAnimationComplete={() => onComplete && onComplete()}
     />
   );
 };

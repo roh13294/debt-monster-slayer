@@ -1,13 +1,15 @@
 
 import React from 'react';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 interface BattleTipsProps {
   stance: string | null;
+  onClose?: () => void;
 }
 
-const BattleTips: React.FC<BattleTipsProps> = ({ stance }) => {
+const BattleTips: React.FC<BattleTipsProps> = ({ stance, onClose }) => {
   const getTips = () => {
     const commonTips = [
       'Higher payments deal more damage to demons!',
@@ -45,11 +47,21 @@ const BattleTips: React.FC<BattleTipsProps> = ({ stance }) => {
   
   return (
     <motion.div 
-      className="bg-slate-800/80 border border-slate-700 rounded-lg p-4 flex items-start gap-3"
+      className="bg-slate-800/80 border border-slate-700 rounded-lg p-4 flex items-start gap-3 relative"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
+      {onClose && (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={onClose}
+          className="absolute top-2 right-2 p-1 h-auto text-slate-400 hover:text-slate-100"
+        >
+          <X className="w-4 h-4" />
+        </Button>
+      )}
       <div className="bg-amber-900/30 p-2 rounded-full text-amber-400 flex-shrink-0">
         <Lightbulb className="w-5 h-5" />
       </div>
