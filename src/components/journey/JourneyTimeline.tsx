@@ -52,7 +52,7 @@ const JourneyTimeline: React.FC<JourneyTimelineProps> = ({ onClose }) => {
       title: 'First Milestone',
       description: `You've advanced to the rank of ${getPlayerRank(calculatePlayerLevel(3))}, showing promise in your journey.`,
       month: 3,
-      type: 'rank',
+      type: 'rank' as const,
       reward: '+1 Discipline'
     }] : []),
     ...(monthsPassed >= 6 ? [{
@@ -60,7 +60,7 @@ const JourneyTimeline: React.FC<JourneyTimelineProps> = ({ onClose }) => {
       title: 'Finding Your Path',
       description: `Six months into your journey, you've learned the ways of spirit energy management and demon weaknesses.`,
       month: 6,
-      type: 'challenge',
+      type: 'challenge' as const,
       choices: [
         { text: "The patterns of these demons are becoming clear", reflection: "Understanding brings power - your insight grows." },
         { text: "Each victory brings me closer to freedom", reflection: "The path to liberation becomes visible with each step forward." },
@@ -72,7 +72,7 @@ const JourneyTimeline: React.FC<JourneyTimelineProps> = ({ onClose }) => {
       title: 'Rising Through the Ranks',
       description: `Your consistent efforts have earned you the rank of ${getPlayerRank(calculatePlayerLevel(9))}.`,
       month: 9,
-      type: 'rank',
+      type: 'rank' as const,
       reward: '+1 Focus'
     }] : []),
     ...(monthsPassed >= 12 ? [{
@@ -80,7 +80,7 @@ const JourneyTimeline: React.FC<JourneyTimelineProps> = ({ onClose }) => {
       title: 'One Year Mark',
       description: `A full cycle of seasons has passed since you began your journey to slay your demons.`,
       month: 12,
-      type: 'decision',
+      type: 'decision' as const,
       choices: [
         { text: "I've grown stronger than I ever imagined", reflection: "Your spirit burns brighter with each challenge faced." },
         { text: "This journey has taught me patience", reflection: "Steady progress over time reveals the path to victory." },

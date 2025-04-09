@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Target } from 'lucide-react';
 
 interface BattleTipsProps {
+  stance: string | null;
   onClose: () => void;
 }
 
-const BattleTips: React.FC<BattleTipsProps> = ({ onClose }) => {
+const BattleTips: React.FC<BattleTipsProps> = ({ stance, onClose }) => {
   return (
     <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-100 mb-4 animate-fade-in relative">
       <Button 
@@ -27,6 +28,15 @@ const BattleTips: React.FC<BattleTipsProps> = ({ onClose }) => {
         <li>Attack quickly in succession for <strong>bonus combo damage</strong></li>
         <li>Save <strong>Special Moves</strong> for large debts</li>
         <li>Battle all monsters in a row to earn <strong>streak bonuses</strong></li>
+        {stance === 'aggressive' && (
+          <li>Your <strong>Flame Breathing</strong> stance increases damage but reduces defense</li>
+        )}
+        {stance === 'defensive' && (
+          <li>Your <strong>Water Breathing</strong> stance improves sustainability in longer battles</li>
+        )}
+        {stance === 'risky' && (
+          <li>Your <strong>Thunder Breathing</strong> stance has a chance for critical strikes</li>
+        )}
       </ul>
     </div>
   );

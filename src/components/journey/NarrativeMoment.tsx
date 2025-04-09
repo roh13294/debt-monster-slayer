@@ -66,15 +66,56 @@ const NarrativeMoment: React.FC<NarrativeMomentProps> = ({
         "Understanding the nature of my challenges reveals paths to overcome them."
       ] : [];
       
+      // Add context-specific quotes if we have a debt context
+      const contextQuotes = [];
+      if (context?.debt) {
+        if (type === 'battle') {
+          contextQuotes.push(
+            `This ${context.debt.name} demon's power comes from binding others with its chains.`,
+            `I can sense ${context.debt.name}'s weakness - consistent attacks will overcome it.`
+          );
+        } else if (type === 'victory') {
+          contextQuotes.push(
+            `The ${context.debt.name} demon fades, its power over me weakening.`,
+            `One less chain binding my spirit. ${context.debt.name} no longer controls my path.`
+          );
+        }
+      }
+      
+      // Style-specific quotes based on stance
+      const stanceQuotes = [];
+      if (context?.stance) {
+        switch(context.stance) {
+          case 'aggressive':
+            stanceQuotes.push(
+              "My flame burns through obstacles, leaving only victory.",
+              "The hotter the flame, the quicker the battle ends."
+            );
+            break;
+          case 'defensive':
+            stanceQuotes.push(
+              "Like water, I flow around obstacles rather than forcing through them.",
+              "Patience creates openings that haste overlooks."
+            );
+            break;
+          case 'risky':
+            stanceQuotes.push(
+              "The lightning strike doesn't announce itself before impact.",
+              "Fortune favors the bold and punishes hesitation."
+            );
+            break;
+        }
+      }
+      
       // Select appropriate quote set based on narrative moment type
       let quotePool: string[] = [];
       
       switch(type) {
         case 'battle':
-          quotePool = [...battleQuotes, ...disciplineQuotes];
+          quotePool = [...battleQuotes, ...disciplineQuotes, ...contextQuotes, ...stanceQuotes];
           break;
         case 'victory':
-          quotePool = [...victoryQuotes, ...determinationQuotes];
+          quotePool = [...victoryQuotes, ...determinationQuotes, ...contextQuotes];
           break;
         case 'decision':
           quotePool = [...decisionQuotes, ...knowledgeQuotes];
@@ -102,6 +143,16 @@ const NarrativeMoment: React.FC<NarrativeMomentProps> = ({
     }
   }, [type, context, playerTraits, autoHide, onDismiss]);
   
+  // Determine the appropriate color class based on the narrative type
+  const getColorClass = () => {
+    switch(type) {
+      case 'battle': return 'text-slate-300';
+      case 'victory': return 'text-emerald-300';
+      case 'decision': return 'text-amber-300';
+      default: return 'text-slate-300';
+    }
+  };
+  
   return (
     <AnimatePresence>
       {isVisible && (
@@ -110,9 +161,9 @@ const NarrativeMoment: React.FC<NarrativeMomentProps> = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.5 }}
-          className="text-center p-4"
+          className={`text-center p-4 ${type === 'victory' ? 'shadow-glow-amber' : ''}`}
         >
-          <blockquote className="italic text-slate-300 text-lg font-medium px-6 relative">
+          <blockquote className={`italic ${getColorClass()} text-lg font-medium px-6 relative`}>
             <span className="text-3xl absolute -top-2 left-0 text-slate-500">"</span>
             {currentQuote}
             <span className="text-3xl absolute -bottom-2 right-0 text-slate-500">"</span>

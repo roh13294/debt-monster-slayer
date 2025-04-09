@@ -24,6 +24,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
   const [showNarrative, setShowNarrative] = useState(true);
   const [narrativeChoice, setNarrativeChoice] = useState<string | null>(null);
   const [narrativeOptions, setNarrativeOptions] = useState<string[]>([]);
+  const [showTips, setShowTips] = useState(true);
   
   const currentDebt = debts.length > 0 ? debts[currentDebtIndex] : null;
   
@@ -120,6 +121,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
   
   const handleFinishBattle = () => {
     onComplete();
+  };
+  
+  const handleCloseTips = () => {
+    setShowTips(false);
   };
   
   if (!currentDebt) {
@@ -228,7 +233,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
               </div>
             )}
             
-            <BattleTips stance={stance} />
+            {showTips && <BattleTips stance={stance} onClose={handleCloseTips} />}
           </motion.div>
         )}
         

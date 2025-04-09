@@ -42,7 +42,7 @@ const SlayerLog: React.FC<SlayerLogProps> = ({ onClose }) => {
       title: 'Journey Begins',
       description: 'You take your first step on the path to freedom from your demons.',
       date: new Date(Date.now() - monthsPassed * 30 * 24 * 60 * 60 * 1000),
-      type: 'insight',
+      type: 'insight' as const,
       impact: 'Your journey of a thousand miles begins with a single step.'
     },
     // Sample victory entries based on game state
@@ -51,7 +51,7 @@ const SlayerLog: React.FC<SlayerLogProps> = ({ onClose }) => {
       title: 'Consistent Technique',
       description: `You've maintained a ${paymentStreak}-month streak of consistent attacks against your demons.`,
       date: new Date(),
-      type: 'victory',
+      type: 'victory' as const,
       impact: 'Your consistency is becoming your greatest weapon.'
     }] : []),
     ...(playerTraits.financialKnowledge > 5 ? [{
@@ -59,7 +59,7 @@ const SlayerLog: React.FC<SlayerLogProps> = ({ onClose }) => {
       title: 'Growing Wisdom',
       description: 'Your understanding of demon weaknesses has grown significantly.',
       date: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
-      type: 'growth',
+      type: 'growth' as const,
       impact: 'Knowledge is a weapon that never dulls.'
     }] : []),
     ...(playerTraits.determination > 6 ? [{
@@ -67,7 +67,7 @@ const SlayerLog: React.FC<SlayerLogProps> = ({ onClose }) => {
       title: 'Unwavering Spirit',
       description: 'Your determination has reached new heights, empowering your attacks.',
       date: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
-      type: 'growth',
+      type: 'growth' as const,
       impact: 'A determined heart finds no obstacle too great.'
     }] : []),
   ];
