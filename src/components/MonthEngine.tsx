@@ -1,17 +1,39 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../context/GameContext';
 import Dashboard from './Dashboard';
 import CutsceneEventScreen from './cutscene/CutsceneEventScreen';
 import BattleArena from './battle/BattleArena';
 import MonthSummary from './summary/MonthSummary';
+import ShadowCallingModal from './shadow/ShadowCallingModal';
 
 type GamePhase = 'dashboard' | 'cutscene' | 'battle' | 'summary';
 
 const MonthEngine: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<GamePhase>('dashboard');
   const [selectedStance, setSelectedStance] = useState<string | null>(null);
-  const { processMonthlyFinancials, updatePlayerTrait } = useGameContext();
+  const [showShadowModal, setShowShadowModal] = useState(false);
+  
+  const { 
+    processMonthlyFinancials, 
+    updatePlayerTrait, 
+    monthsPassed, 
+    totalDebt,
+    paymentStreak,
+    shadowForm
+  } = useGameContext();
+  
+  // Check if shadow form should be triggered
+  useEffect(() => {
+    const shouldTriggerShadowForm = 
+      (shadowForm === null) && 
+      ((monthsPassed >= 3) || 
+      (totalDebt > 15000 && Math.max(0, 3 - paymentStreak) >= 2));
+    
+    if (shouldTriggerShadowForm && currentPhase === 'dashboard') {
+      setShowShadowModal(true);
+    }
+  }, [monthsPassed, totalDebt, paymentStreak, shadowForm, currentPhase]);
   
   const handleAdvanceMonth = () => {
     setCurrentPhase('cutscene');
@@ -74,6 +96,12 @@ const MonthEngine: React.FC = () => {
           onFinish={handleSummaryFinish}
         />
       )}
+      
+      {/* Shadow Form Modal */}
+      <ShadowCallingModal 
+        isOpen={showShadowModal}
+        onClose={() => setShowShadowModal(false)}
+      />
     </>
   );
 };

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { usePlayerState } from '../hooks/usePlayerState';
 import { useDebtState } from '../hooks/useDebtState';
@@ -7,10 +6,13 @@ import { useChallengeState } from '../hooks/useChallengeState';
 import { useLifeEventState } from '../hooks/useLifeEventState';
 import { useGameProgress } from '../hooks/useGameProgress';
 import { useRandomCharacter } from '../hooks/useRandomCharacter';
-import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge, Job, LifeStage, PlayerTraits } from '../types/gameTypes';
+import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge, Job, LifeStage, PlayerTraits, ShadowFormType } from '../types/gameTypes';
 import { useBattleActions } from '../hooks/useBattleActions';
 import { useShopActions } from '../hooks/useShopActions';
 import { useEventResolver } from '../hooks/useEventResolver';
+import { useShadowFormState } from '../hooks/useShadowFormState';
+import { useBreathingState } from '../hooks/useBreathingState';
+import { useWealthTempleState } from '../hooks/useWealthTempleState';
 import { GameContext } from './GameContextTypes';
 import { initializeGameState, resetGameState } from './GameInitialization';
 import { toast } from "@/hooks/use-toast";
@@ -139,6 +141,38 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     processMonthlyFinancials: originalProcessMonthlyFinancials
   });
 
+  const {
+    shadowForm,
+    corruptionLevel,
+    isCorruptionUnstable,
+    updateShadowForm,
+    increaseCorruption,
+    decreaseCorruption,
+    checkShadowFormEligibility
+  } = useShadowFormState();
+
+  const {
+    breathingXP,
+    unlockedSkills,
+    addBreathingXP,
+    unlockSkill,
+    isSkillUnlocked,
+    resetBreathingSkills
+  } = useBreathingState();
+
+  const {
+    templeLevel,
+    relics,
+    relicSlots,
+    equippedRelics,
+    getTemplePassiveReturnRate,
+    calculateMonthlyTempleReturn,
+    upgradeTemple: originalUpgradeTemple,
+    acquireRelic,
+    equipRelic,
+    unequipRelic
+  } = useWealthTempleState();
+
   const processMonthlyFinancials = (stance?: string | null) => {
     let stanceMultipliers = {
       debtPaymentMultiplier: 1,
@@ -173,7 +207,66 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
     
+    if (shadowForm) {
+      switch (shadowForm) {
+        case 'cursedBlade':
+          stanceMultipliers.debtPaymentMultiplier *= 1.5;
+          increaseCorruption(5);
+          break;
+        case 'leecher':
+          stanceMultipliers.savingsMultiplier = 0;
+          increaseCorruption(3);
+          break;
+        case 'whisperer':
+          increaseCorruption(2);
+          break;
+      }
+    }
+    
+    if (isCorruptionUnstable) {
+      stanceMultipliers.expensesMultiplier = 1.5;
+      increaseCorruption(1);
+    } else {
+      const templeReturn = calculateMonthlyTempleReturn(cash, shadowForm !== null);
+      if (templeReturn > 0) {
+        setCash(prev => prev + templeReturn);
+        toast({
+          title: "Temple Returns",
+          description: `Your Wealth Temple generated ${templeReturn} DemonCoins in passive returns!`,
+          variant: "default",
+        });
+      }
+    }
+    
     originalProcessMonthlyFinancials(stanceMultipliers);
+    
+    if (shadowForm && corruptionLevel < 100) {
+      decreaseCorruption(1);
+    }
+    
+    addBreathingXP(1);
+  };
+
+  const upgradeTemple = (upgradeCost: number) => {
+    if (cash < upgradeCost) {
+      toast({
+        title: "Not Enough DemonCoins",
+        description: "You don't have enough DemonCoins to upgrade your temple.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    const result = originalUpgradeTemple(cash, upgradeCost);
+    if (result !== false) {
+      setCash(prev => prev - upgradeCost);
+      return true;
+    }
+    return false;
+  };
+
+  const calculateTempleReturn = (hasShadowPenalty: boolean = shadowForm !== null) => {
+    return calculateMonthlyTempleReturn(cash, hasShadowPenalty);
   };
 
   const initializeGame = () => {
@@ -293,7 +386,21 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     lifeStage: lifeStage || { name: 'Adult', baseExpenses: 0.5 },
     circumstances: formattedCircumstances,
     characterBackground,
-    purchaseItem
+    purchaseItem,
+    
+    shadowForm,
+    corruptionLevel,
+    updateShadowForm,
+    increaseCorruption,
+    decreaseCorruption,
+    isCorruptionUnstable,
+    
+    breathingXP,
+    addBreathingXP,
+    
+    templeLevel,
+    upgradeTemple,
+    calculateTempleReturn
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

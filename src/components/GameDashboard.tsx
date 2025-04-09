@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
@@ -15,6 +14,7 @@ import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CorruptionMeter from './ui/CorruptionMeter';
 
 const GameDashboard = () => {
   const { 
@@ -28,23 +28,22 @@ const GameDashboard = () => {
     monthsPassed,
     specialMoves,
     paymentStreak,
-    playerTraits
+    playerTraits,
+    shadowForm,
+    corruptionLevel
   } = useGameContext();
   
   const [selectedMonster, setSelectedMonster] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('battle');
   
-  // Handle monster selection
   const handleMonsterClick = (id: string) => {
     setSelectedMonster(id);
   };
   
-  // Close monster battle modal
   const handleCloseBattle = () => {
     setSelectedMonster(null);
   };
   
-  // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -70,6 +69,15 @@ const GameDashboard = () => {
       <div className="absolute bottom-40 right-20 w-60 h-60 bg-purple-500/10 rounded-full mix-blend-color-dodge filter blur-3xl opacity-20 pointer-events-none"></div>
       
       {/* Header with financial summary and advance month button */}
+      <div className="flex items-center justify-between mb-6">
+        {/* Status Indicators */}
+        <div className="flex items-center space-x-3">
+          {shadowForm && (
+            <CorruptionMeter size="md" />
+          )}
+        </div>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Current Cash card */}
         <div className="oni-card flex flex-col justify-between relative overflow-hidden group">

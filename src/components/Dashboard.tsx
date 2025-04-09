@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
@@ -5,7 +6,7 @@ import MonsterBattle from './MonsterBattle';
 import MultiChallenge from './MultiChallenge';
 import LifeEvent from './LifeEvent';
 import StreakDisplay from './StreakDisplay';
-import { Shield, Sword, Flame, Trophy, Zap, BookOpen, Scroll } from 'lucide-react';
+import { Shield, Sword, Flame, Trophy, Zap, BookOpen, Scroll, Temple, Wind } from 'lucide-react';
 import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
 import FinancialSummaryCard from './dashboard/FinancialSummaryCard';
@@ -14,6 +15,9 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import JourneyTimeline from './journey/JourneyTimeline';
 import SlayerLog from './journey/SlayerLog';
 import { calculatePlayerLevel, getPlayerRank } from '@/utils/gameTerms';
+import CorruptionMeter from './ui/CorruptionMeter';
+import WealthTempleScreen from './temple/WealthTempleScreen';
+import SkillTree from './skills/SkillTree';
 
 interface DashboardProps {
   onAdvanceMonth: () => void;
@@ -30,12 +34,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
     monthsPassed,
     specialMoves,
     paymentStreak,
-    playerTraits
+    playerTraits,
+    shadowForm,
+    corruptionLevel
   } = useGameContext();
   
   const [selectedMonster, setSelectedMonster] = useState<string | null>(null);
   const [showTimeline, setShowTimeline] = useState(false);
   const [showSlayerLog, setShowSlayerLog] = useState(false);
+  const [showWealthTemple, setShowWealthTemple] = useState(false);
+  const [showSkillTree, setShowSkillTree] = useState(false);
   
   const handleMonsterClick = (id: string) => {
     setSelectedMonster(id);
@@ -62,10 +70,19 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
       <div className="absolute top-20 left-40 w-40 h-40 bg-red-500/10 rounded-full mix-blend-color-dodge filter blur-3xl opacity-30 animate-pulse-subtle pointer-events-none"></div>
       <div className="absolute bottom-40 right-20 w-60 h-60 bg-purple-500/10 rounded-full mix-blend-color-dodge filter blur-3xl opacity-20 pointer-events-none"></div>
       
+      <div className="flex items-center justify-between mb-2">
+        {/* Status Indicators */}
+        <div className="flex items-center space-x-3">
+          {shadowForm && (
+            <CorruptionMeter size="md" />
+          )}
+        </div>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <FinancialSummaryCard
           type="cash"
-          title="Current Cash"
+          title="DemonCoins"
           value={formatCurrency(cash)}
           details={{
             leftLabel: "Monthly Income",
@@ -128,6 +145,26 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
         >
           <BookOpen className="w-4 h-4 text-emerald-400" />
           <span>Book of the Slayer</span>
+        </Button>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowWealthTemple(true)}
+          className="border-slate-700 bg-slate-800/50 hover:bg-slate-800 flex items-center gap-2"
+        >
+          <Temple className="w-4 h-4 text-amber-400" />
+          <span>Wealth Temple</span>
+        </Button>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowSkillTree(true)}
+          className="border-slate-700 bg-slate-800/50 hover:bg-slate-800 flex items-center gap-2"
+        >
+          <Wind className="w-4 h-4 text-blue-400" />
+          <span>Breathing Techniques</span>
         </Button>
       </div>
       
@@ -283,6 +320,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
           <SlayerLog onClose={() => setShowSlayerLog(false)} />
         </DialogContent>
       </Dialog>
+      
+      <WealthTempleScreen isOpen={showWealthTemple} onClose={() => setShowWealthTemple(false)} />
+      
+      <SkillTree isOpen={showSkillTree} onClose={() => setShowSkillTree(false)} />
       
       {selectedMonster && (
         <MonsterBattle 

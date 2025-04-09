@@ -1,4 +1,3 @@
-
 import { Dispatch, SetStateAction } from 'react';
 import { ReactNode } from 'react';
 
@@ -158,6 +157,23 @@ export interface GameContextType {
   circumstances: string[];
   characterBackground: string;
   purchaseItem: (item: ShopItem) => void;
+  
+  // Shadow Form data
+  shadowForm: ShadowFormType;
+  corruptionLevel: number;
+  updateShadowForm: (form: ShadowFormType, corruption?: number) => void;
+  increaseCorruption: (amount: number) => void;
+  decreaseCorruption: (amount: number) => void;
+  isCorruptionUnstable: boolean;
+  
+  // Breathing Skills data
+  breathingXP: number;
+  addBreathingXP: (amount: number) => void;
+  
+  // Wealth Temple data
+  templeLevel: number;
+  upgradeTemple: (upgradeCost: number) => boolean;
+  calculateTempleReturn: (hasShadowPenalty?: boolean) => number;
 }
 
 export interface PlayerStateType {
@@ -194,3 +210,5 @@ export type JobType = {
 };
 
 export type CircumstanceType = string;
+
+export type ShadowFormType = null | 'cursedBlade' | 'leecher' | 'whisperer';
