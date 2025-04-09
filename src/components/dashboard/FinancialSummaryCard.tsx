@@ -51,6 +51,11 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
   
   const { bg, text } = getGradientClasses();
   
+  // Convert value to number if it's a numerical string
+  const numericValue = typeof value === 'string' ? 
+    parseFloat(value.replace(/[^0-9.-]+/g, '')) : 
+    value;
+  
   return (
     <div className="oni-card flex flex-col justify-between relative overflow-hidden group">
       <div className={`absolute -right-10 top-0 h-40 w-40 bg-gradient-to-br ${bg} rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity`}></div>
@@ -60,9 +65,13 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
           <div className={`p-2 bg-gradient-to-br ${bg} rounded-full mr-3`}>
             {getCardIcon()}
           </div>
-          <span className={`text-2xl font-bold ${text} oni-text-glow`}>
-            {type === 'cash' ? <DemonCoin amount={Number(value)} size="lg" /> : value}
-          </span>
+          <div className={`text-2xl font-bold ${text} oni-text-glow`}>
+            {type === 'cash' ? (
+              <DemonCoin amount={!isNaN(numericValue) ? Number(numericValue) : 0} size="lg" />
+            ) : (
+              value
+            )}
+          </div>
         </div>
         
         {type === 'progress' && (
@@ -83,15 +92,31 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
         <div className="bg-white/5 mt-4 p-3 rounded-b-xl flex justify-between items-center backdrop-blur-sm">
           <div>
             <p className="text-xs text-gray-400">{details.leftLabel}</p>
-            <p className={`text-sm font-medium ${type === 'cash' ? 'text-amber-400' : 'text-purple-400'}`}>
-              {type === 'cash' ? <DemonCoin amount={Number(details.leftValue.replace(/[^0-9.-]+/g, ''))} size="sm" /> : details.leftValue}
-            </p>
+            <div className={`text-sm font-medium ${type === 'cash' ? 'text-amber-400' : 'text-purple-400'}`}>
+              {type === 'cash' ? (
+                <DemonCoin 
+                  amount={!isNaN(parseFloat(details.leftValue.replace(/[^0-9.-]+/g, ''))) ? 
+                    parseFloat(details.leftValue.replace(/[^0-9.-]+/g, '')) : 0} 
+                  size="sm" 
+                />
+              ) : (
+                details.leftValue
+              )}
+            </div>
           </div>
           <div>
             <p className="text-xs text-gray-400">{details.rightLabel}</p>
-            <p className={`text-sm font-medium ${type === 'cash' ? 'text-red-400' : 'text-amber-400'}`}>
-              {type === 'cash' ? <DemonCoin amount={Number(details.rightValue.replace(/[^0-9.-]+/g, ''))} size="sm" /> : details.rightValue}
-            </p>
+            <div className={`text-sm font-medium ${type === 'cash' ? 'text-red-400' : 'text-amber-400'}`}>
+              {type === 'cash' ? (
+                <DemonCoin 
+                  amount={!isNaN(parseFloat(details.rightValue.replace(/[^0-9.-]+/g, ''))) ? 
+                    parseFloat(details.rightValue.replace(/[^0-9.-]+/g, '')) : 0} 
+                  size="sm" 
+                />
+              ) : (
+                details.rightValue
+              )}
+            </div>
           </div>
         </div>
       )}
