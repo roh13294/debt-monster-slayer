@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Award, Heart, Book } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { LootItem } from '@/types/battleTypes';
 
 export interface LootItem {
   type: 'Demon Seal' | 'Spirit Fragment' | 'Skill Scroll';
@@ -15,165 +16,147 @@ export interface LootItem {
 
 interface LootDropCardProps {
   loot: LootItem[];
-  onCollect: (loot: LootItem[]) => void;
+  onCollect: () => void;
 }
 
 const LootDropCard: React.FC<LootDropCardProps> = ({ loot, onCollect }) => {
-  const [isRevealing, setIsRevealing] = useState<boolean>(false);
-  const [revealed, setRevealed] = useState<boolean>(false);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [flipping, setFlipping] = useState<Record<string, boolean>>({});
+  const [allRevealed, setAllRevealed] = useState(false);
   
-  const handleReveal = (index: number) => {
-    setSelectedIndex(index);
-    setIsRevealing(true);
+  const flipCard = (index: number) => {
+    setFlipping(prev => ({ ...prev, [index]: true }));
     
-    // Simulating card flip animation
-    setTimeout(() => {
-      setIsRevealing(false);
-      setRevealed(true);
-    }, 1000);
-  };
-  
-  const handleCollect = () => {
-    if (selectedIndex !== null) {
-      onCollect([loot[selectedIndex]]);
+    // Check if all cards are now flipped
+    const newFlipping = { ...flipping, [index]: true };
+    if (Object.values(newFlipping).filter(Boolean).length === loot.length) {
+      setAllRevealed(true);
     }
   };
   
-  const getRarityColors = (rarity: string) => {
+  const getRarityStyles = (rarity: string) => {
     switch (rarity) {
-      case 'Common': 
+      case 'Epic':
         return {
-          bg: 'from-slate-700 to-slate-800',
-          border: 'border-slate-600',
-          text: 'text-white',
-          glow: ''
+          bg: 'bg-gradient-to-b from-purple-600 to-purple-900',
+          border: 'border-purple-500',
+          glow: 'shadow-glow-purple',
+          text: 'text-purple-300'
         };
       case 'Rare':
         return {
-          bg: 'from-blue-700 to-indigo-800',
+          bg: 'bg-gradient-to-b from-blue-600 to-blue-900',
           border: 'border-blue-500',
-          text: 'text-blue-300',
-          glow: 'shadow-blue-500/30 shadow-lg'
-        };
-      case 'Epic':
-        return {
-          bg: 'from-purple-700 to-pink-800',
-          border: 'border-purple-500',
-          text: 'text-purple-300',
-          glow: 'shadow-purple-500/30 shadow-lg'
+          glow: 'shadow-glow-blue',
+          text: 'text-blue-300'
         };
       default:
         return {
-          bg: 'from-slate-700 to-slate-800',
-          border: 'border-slate-600',
-          text: 'text-white',
-          glow: ''
+          bg: 'bg-gradient-to-b from-green-600 to-green-900',
+          border: 'border-green-700',
+          glow: '',
+          text: 'text-green-300'
         };
     }
   };
   
-  const getLootIcon = (type: string) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'Demon Seal': return <Award className="w-6 h-6 text-amber-300" />;
-      case 'Spirit Fragment': return <Heart className="w-6 h-6 text-red-400" />;
-      case 'Skill Scroll': return <Book className="w-6 h-6 text-blue-300" />;
-      default: return <Sparkles className="w-6 h-6 text-purple-300" />;
+      case 'Demon Seal':
+        return '💰';
+      case 'Spirit Fragment':
+        return '✨';
+      case 'Skill Scroll':
+        return '📜';
+      default:
+        return '🎁';
     }
   };
   
   return (
-    <div className="bg-slate-900/90 rounded-lg border border-slate-700 p-6">
-      <div className="text-center mb-6">
-        <h2 className="text-xl font-bold text-amber-400 mb-2 flex items-center justify-center gap-2">
-          <Sparkles className="w-5 h-5" />
-          Demon's Treasure
-        </h2>
-        <p className="text-slate-300 text-sm">Choose one reward from your victory</p>
-      </div>
+    <div className="p-6 bg-slate-900/95 border border-slate-700 rounded-lg max-w-xl mx-auto text-center">
+      <h2 className="text-xl font-bold text-amber-400 mb-2 flex items-center justify-center gap-2">
+        <Sparkles className="w-5 h-5" />
+        Victory Rewards
+      </h2>
       
-      <div className="grid grid-cols-3 gap-4">
+      <p className="text-slate-400 mb-6 text-sm">Click on the cards to reveal your rewards!</p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {loot.map((item, index) => {
-          const rarityColors = getRarityColors(item.rarity);
+          const isFlipped = flipping[index];
+          const styles = getRarityStyles(item.rarity);
           
           return (
-            <AnimatePresence key={`loot-${index}`} mode="wait">
-              {(!revealed || selectedIndex === index) ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  transition={{ duration: 0.3 }}
+            <div key={index} className="h-60 perspective-1000">
+              <motion.div 
+                className="relative w-full h-full transition-transform duration-500"
+                animate={{ rotateY: isFlipped ? 180 : 0 }}
+                onClick={() => !isFlipped && flipCard(index)}
+              >
+                {/* Card Back */}
+                <div 
+                  className={`absolute inset-0 backface-hidden bg-slate-800 border-2 border-amber-600 rounded-lg flex flex-col items-center justify-center cursor-pointer ${
+                    isFlipped ? 'hidden' : ''
+                  }`}
                 >
-                  {!isRevealing && !revealed ? (
-                    <motion.button
-                      className="w-full aspect-square bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg border-2 border-amber-600/30 flex items-center justify-center hover:border-amber-500 transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleReveal(index)}
-                    >
-                      <div className="text-center">
-                        <Sparkles className="w-8 h-8 text-amber-500/60 mx-auto mb-2" />
-                        <span className="text-amber-500/80 text-sm font-medium">Click to Reveal</span>
-                      </div>
-                    </motion.button>
-                  ) : isRevealing ? (
-                    <motion.div
-                      className="w-full aspect-square bg-gradient-to-br from-amber-700 to-amber-900 rounded-lg border-2 border-amber-500 flex items-center justify-center"
-                      animate={{ 
-                        rotateY: [0, 90, 0],
-                        scale: [1, 1.1, 1]
-                      }}
-                      transition={{ duration: 1 }}
-                    >
-                      <Sparkles className="w-10 h-10 text-amber-300 animate-pulse" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      className={`w-full aspect-square bg-gradient-to-br ${rarityColors.bg} rounded-lg border-2 ${rarityColors.border} p-3 flex flex-col ${rarityColors.glow}`}
-                      initial={{ rotateY: 90 }}
-                      animate={{ rotateY: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-full bg-slate-800/70">
-                          {getLootIcon(item.type)}
-                        </div>
-                        <div className="px-2 py-0.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium">
-                          {item.rarity}
-                        </div>
-                      </div>
-                      
-                      <div className="mt-auto text-center">
-                        <h4 className={`font-bold ${rarityColors.text}`}>{item.name}</h4>
-                        <p className="text-xs text-slate-300 mt-1">{item.description}</p>
-                      </div>
-                      
-                      {revealed && selectedIndex === index && (
-                        <motion.div
-                          className="mt-3"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.3 }}
-                        >
-                          <Button 
-                            onClick={handleCollect}
-                            className="w-full bg-amber-600 hover:bg-amber-500 text-white"
-                          >
-                            Collect
-                          </Button>
-                        </motion.div>
-                      )}
-                    </motion.div>
+                  <div className="text-5xl mb-2">🎁</div>
+                  <p className="text-amber-400 font-medium">Click to Reveal</p>
+                </div>
+                
+                {/* Card Front */}
+                <div 
+                  className={`absolute inset-0 backface-hidden ${styles.bg} border-2 ${styles.border} rounded-lg flex flex-col p-4 ${styles.glow} ${
+                    !isFlipped ? 'hidden' : 'rotateY-180'
+                  }`}
+                >
+                  <div className="bg-black/20 rounded-full w-10 h-10 flex items-center justify-center mb-2 mx-auto">
+                    <span className="text-xl">{getTypeIcon(item.type)}</span>
+                  </div>
+                  
+                  <div className="mb-1">
+                    <span className={`text-xs font-bold ${styles.text} bg-black/30 px-2 py-0.5 rounded-full`}>
+                      {item.rarity}
+                    </span>
+                  </div>
+                  
+                  <h3 className="font-bold text-white mb-1">{item.name}</h3>
+                  <p className="text-xs text-slate-300 mb-3">{item.description}</p>
+                  
+                  {item.effect && (
+                    <div className="bg-black/30 rounded p-2 mt-auto mb-2">
+                      <p className="text-xs italic text-slate-300">{item.effect}</p>
+                    </div>
                   )}
-                </motion.div>
-              ) : (
-                <div className="w-full aspect-square bg-slate-800/40 rounded-lg border border-slate-700/30" />
-              )}
-            </AnimatePresence>
+                  
+                  {item.value > 0 && (
+                    <div className="text-sm font-medium text-amber-400 mt-auto">
+                      Value: {item.value} DemonCoins
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </div>
           );
         })}
       </div>
+      
+      <AnimatePresence>
+        {allRevealed && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Button 
+              onClick={onCollect}
+              className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white px-8 py-6 h-auto"
+              size="lg"
+            >
+              Collect All Rewards
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
