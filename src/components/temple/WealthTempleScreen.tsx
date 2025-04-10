@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useGameContext } from '../../context/GameContext';
-import { Temple, PiggyBank, CrownIcon, Sparkles, Coins } from 'lucide-react';
+import { Home, PiggyBank, CrownIcon, Sparkles, Coins } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
@@ -78,7 +77,6 @@ const WealthTempleScreen: React.FC<WealthTempleScreenProps> = ({ isOpen, onClose
   const tierInfo = getTempleTierInfo();
   
   const handleOpenGamblersShrine = () => {
-    // This would be implemented in the full version
     toast({
       title: "Coming Soon",
       description: "The Gambler's Shrine will be available in the next update!",
@@ -87,7 +85,6 @@ const WealthTempleScreen: React.FC<WealthTempleScreenProps> = ({ isOpen, onClose
   };
   
   const handleUpgradeTemple = () => {
-    // This would be implemented in the full version
     toast({
       title: "Coming Soon",
       description: "Temple upgrades will be available in the next update!",
@@ -101,7 +98,7 @@ const WealthTempleScreen: React.FC<WealthTempleScreenProps> = ({ isOpen, onClose
         <div className="bg-gradient-to-br from-indigo-950 to-blue-900 rounded-lg border border-blue-500/30 shadow-xl shadow-blue-500/20">
           <DialogHeader className="p-6 border-b border-blue-500/20">
             <DialogTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
-              <Temple className="h-6 w-6 text-amber-400" />
+              <Home className="h-6 w-6 text-amber-400" />
               <span className="bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Wealth Temple</span>
             </DialogTitle>
           </DialogHeader>
@@ -110,7 +107,7 @@ const WealthTempleScreen: React.FC<WealthTempleScreenProps> = ({ isOpen, onClose
             {isTempleBlocked ? (
               <div className="text-center p-10 space-y-4">
                 <div className="w-20 h-20 bg-red-900/30 rounded-full flex items-center justify-center mx-auto">
-                  <Temple className="h-10 w-10 text-red-400 opacity-50" />
+                  <Home className="h-10 w-10 text-red-400 opacity-50" />
                 </div>
                 <h3 className="text-xl font-bold text-red-400">Temple Blocked</h3>
                 <p className="text-gray-400">
@@ -124,7 +121,7 @@ const WealthTempleScreen: React.FC<WealthTempleScreenProps> = ({ isOpen, onClose
                 <div className="space-y-4">
                   <div className="bg-blue-950/50 p-4 rounded-lg border border-blue-500/30">
                     <h3 className="text-lg font-bold text-blue-300 mb-2 flex items-center gap-2">
-                      <Temple className="h-5 w-5 text-blue-400" />
+                      <Home className="h-5 w-5 text-blue-400" />
                       {tierInfo.name}
                     </h3>
                     <p className="text-sm text-gray-300">{tierInfo.description}</p>
@@ -190,7 +187,7 @@ const WealthTempleScreen: React.FC<WealthTempleScreenProps> = ({ isOpen, onClose
                       {/* Temple illustration would go here - placeholder for now */}
                       <div className="relative">
                         <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
-                        <Temple className="h-16 w-16 text-blue-300" />
+                        <Home className="h-16 w-16 text-blue-300" />
                       </div>
                     </div>
                     <div className="mt-4">

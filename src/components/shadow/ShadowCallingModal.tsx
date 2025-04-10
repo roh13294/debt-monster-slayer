@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Eye, Sword, Droplets, Brain } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
+import { ShadowFormType } from '../../types/gameTypes';
 
 interface ShadowCallingModalProps {
   isOpen: boolean;
@@ -17,7 +18,7 @@ const ShadowCallingModal: React.FC<ShadowCallingModalProps> = ({
 }) => {
   const { updatePlayerTrait, setCash, setSpecialMoves, updateShadowForm } = useGameContext();
   
-  const handleChooseShadowForm = (form: string) => {
+  const handleChooseShadowForm = (form: ShadowFormType) => {
     updateShadowForm(form, 15); // Set initial corruption level to 15
     
     switch(form) {

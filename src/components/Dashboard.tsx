@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
@@ -6,7 +5,7 @@ import MonsterBattle from './MonsterBattle';
 import MultiChallenge from './MultiChallenge';
 import LifeEvent from './LifeEvent';
 import StreakDisplay from './StreakDisplay';
-import { Shield, Sword, Flame, Trophy, Zap, BookOpen, Scroll, Temple, Wind } from 'lucide-react';
+import { Shield, Sword, Flame, Trophy, Zap, BookOpen, Scroll, Home, Wind } from 'lucide-react';
 import StrategySelector from './StrategySelector';
 import BudgetAllocator from './BudgetAllocator';
 import FinancialSummaryCard from './dashboard/FinancialSummaryCard';
@@ -153,8 +152,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
           onClick={() => setShowWealthTemple(true)}
           className="border-slate-700 bg-slate-800/50 hover:bg-slate-800 flex items-center gap-2"
         >
-          <Temple className="w-4 h-4 text-amber-400" />
-          <span>Wealth Temple</span>
+          <Home className="w-4 h-4 text-amber-400" />
+          <span>Home</span>
         </Button>
         
         <Button
