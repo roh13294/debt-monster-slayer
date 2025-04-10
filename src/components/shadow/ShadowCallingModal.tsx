@@ -16,7 +16,7 @@ const ShadowCallingModal: React.FC<ShadowCallingModalProps> = ({
   isOpen, 
   onClose 
 }) => {
-  const { updatePlayerTrait, setCash, setSpecialMoves, updateShadowForm } = useGameContext();
+  const { cash, updatePlayerTrait, setCash, setSpecialMoves, updateShadowForm, specialMoves } = useGameContext();
   
   const handleChooseShadowForm = (form: ShadowFormType) => {
     updateShadowForm(form, 15); // Set initial corruption level to 15
@@ -59,8 +59,8 @@ const ShadowCallingModal: React.FC<ShadowCallingModalProps> = ({
     });
     
     // Small reward for resisting
-    setCash(prev => prev + 100);
-    setSpecialMoves(prev => prev + 1);
+    setCash(cash + 100); // Fix: use direct value instead of callback
+    setSpecialMoves(specialMoves + 1); // Fix: use direct value instead of callback
     
     onClose();
   };
