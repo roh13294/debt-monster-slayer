@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .shadow-demon-aura {
+    box-shadow: 0 0 15px rgba(255, 45, 85, 0.3);
+  }
+  
+  .shadow-flame-breathing {
+    box-shadow: 0 0 10px rgba(255, 87, 51, 0.4);
+  }
+  
+  .shadow-water-breathing {
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+  }
+  
+  .shadow-thunder-breathing {
+    box-shadow: 0 0 10px rgba(94, 23, 235, 0.4);
+  }
+}
+
 @layer base {
   :root {
     --background: 240 10% 3.9%;
@@ -309,70 +327,31 @@
 }
 
 /* Card Styles */
-.card-elegant {
-  @apply p-6 bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-red/30 shadow-demon-aura hover:shadow-xl hover:border-demon-red/50 transition-all;
-}
+@layer components {
+  .card-elegant {
+    @apply p-6 bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-red/30 shadow-demon-aura hover:shadow-xl hover:border-demon-red/50 transition-all;
+  }
 
-.card-fun {
-  @apply p-6 bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-purple/30 shadow-thunder-breathing hover:shadow-xl hover:border-demon-purple/50 transition-all relative overflow-hidden;
-}
+  .card-fun {
+    @apply p-6 bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-purple/30 shadow-thunder-breathing hover:shadow-xl hover:border-demon-purple/50 transition-all relative overflow-hidden;
+  }
 
-.btn-elegant {
-  @apply px-4 py-2 bg-demon-gradient text-white rounded-lg transition-all hover:opacity-90 shadow-md relative overflow-hidden;
-}
+  .btn-elegant {
+    @apply px-4 py-2 bg-demon-gradient text-white rounded-lg transition-all hover:opacity-90 shadow-md relative overflow-hidden;
+  }
 
-/* Anime Theme UI classes */
-.demon-card {
-  @apply p-6 bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-red/30 shadow-demon-aura hover:shadow-xl hover:border-demon-red/50 transition-all;
-}
+  /* Anime Theme UI classes */
+  .demon-card {
+    @apply p-6 bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md rounded-xl border border-demon-red/30 shadow-demon-aura hover:shadow-xl hover:border-demon-red/50 transition-all;
+  }
 
-.demon-button {
-  @apply px-4 py-2 bg-demon-gradient text-white rounded-lg transition-all hover:opacity-90 shadow-md relative overflow-hidden;
-}
+  .demon-button {
+    @apply px-4 py-2 bg-demon-gradient text-white rounded-lg transition-all hover:opacity-90 shadow-md relative overflow-hidden;
+  }
 
-.demon-button::before {
-  @apply content-[''] absolute inset-0 bg-white/20 transform -translate-x-full transition-transform duration-300;
-}
-
-.demon-button:hover::before {
-  @apply translate-x-0;
-}
-
-.demon-text-glow {
-  @apply text-white drop-shadow-[0_0_5px_rgba(255,45,85,0.5)];
-}
-
-.demon-text-fire {
-  @apply bg-flame-gradient bg-clip-text text-transparent;
-}
-
-.demon-border {
-  @apply border-2 border-demon-red/50 hover:border-demon-red/80 transition-all;
-}
-
-.demon-bg-dark {
-  @apply bg-night-sky backdrop-blur-md;
-}
-
-.demon-input {
-  @apply bg-demon-black/50 border border-demon-red/20 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-demon-red/50 focus:border-demon-red/50 outline-none;
-}
-
-/* Breathing Styles */
-.flame-breathing {
-  @apply bg-flame-gradient bg-clip-text text-transparent shadow-flame-breathing;
-}
-
-.water-breathing {
-  @apply bg-water-gradient bg-clip-text text-transparent shadow-water-breathing;
-}
-
-.thunder-breathing {
-  @apply bg-thunder-gradient bg-clip-text text-transparent shadow-thunder-breathing;
-}
-
-.wind-breathing {
-  @apply bg-wind-gradient bg-clip-text text-transparent;
+  .demon-portal {
+    @apply relative rounded-xl overflow-hidden border border-demon-red/30 hover:border-demon-red/70 transition-all shadow-demon-aura hover:shadow-lg bg-gradient-to-br from-[#121212] to-[#1f1f3a] backdrop-blur-md;
+  }
 }
 
 /* Additional styles for responsive design */

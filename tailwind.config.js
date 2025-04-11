@@ -102,6 +102,22 @@ module.exports = {
         "float": "float 3s ease-in-out infinite",
         "pulse": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
+      boxShadow: {
+        "demon-aura": "0 0 15px rgba(255, 45, 85, 0.3)",
+        "flame-breathing": "0 0 10px rgba(255, 87, 51, 0.4)",
+        "water-breathing": "0 0 10px rgba(14, 165, 233, 0.4)",
+        "thunder-breathing": "0 0 10px rgba(94, 23, 235, 0.4)",
+      },
+      backgroundImage: {
+        "night-sky": "linear-gradient(to bottom, #121212, #1f1f3a)",
+        "shrine-glow": "radial-gradient(circle at center, rgba(255,45,85,0.15) 0%, rgba(255,45,85,0.05) 40%, rgba(0,0,0,0) 70%)",
+        "misty-mountains": "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 30%, rgba(0,0,0,0) 60%)",
+        "demon-gradient": "linear-gradient(to right, #FF2D55, #FF9500)",
+        "flame-gradient": "linear-gradient(to right, #FF2D55, #FF5733, #FF9500)",
+        "water-gradient": "linear-gradient(to right, #00D4B1, #0EA5E9)",
+        "thunder-gradient": "linear-gradient(to right, #5E17EB, #6366F1)",
+        "wind-gradient": "linear-gradient(to right, #10B981, #6EE7B7)",
+      },
       fontSize: {
         "xxs": "0.65rem",
       },
