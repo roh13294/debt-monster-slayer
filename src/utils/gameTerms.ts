@@ -16,6 +16,8 @@ const baseTerms = {
   savings: 'Power Seal',
   interest: 'Corruption Aura',
   streak: 'Flame Aura Combo',
+  'total debt': 'Demon HP',
+  'mental damage': 'Willpower Strain',
   
   // Actions
   pay: 'strike',
@@ -46,6 +48,8 @@ const translateTerm = (term: string): string => {
   if (lowerTerm.includes('debt')) return lowerTerm.replace('debt', 'Curse Bind');
   if (lowerTerm.includes('save')) return lowerTerm.replace('save', 'seal');
   if (lowerTerm.includes('cash')) return lowerTerm.replace('cash', 'Spirit Energy');
+  if (lowerTerm.includes('mental damage')) return lowerTerm.replace('mental damage', 'Willpower Strain');
+  if (lowerTerm.includes('total debt')) return lowerTerm.replace('total debt', 'Demon HP');
   
   // Return original if no match
   return term;

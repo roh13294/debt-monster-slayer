@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Debt } from '@/types/gameTypes';
@@ -27,7 +26,6 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
   const monsterRank = getDemonRank(debt.amount);
   const monsterProfile = getMonsterProfile(debt.name);
   
-  // Control visual flashing state for hit animations
   const [isHit, setIsHit] = useState(false);
   
   useEffect(() => {
@@ -41,15 +39,12 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
     setIsHit(true);
   };
   
-  // Expose the hit animation function
   React.useEffect(() => {
     if (window && isInBattle) {
-      // @ts-ignore - This is a hacky way to expose the function globally for demo purposes
       window.hitMonster = simulateHit;
     }
     return () => {
       if (window) {
-        // @ts-ignore
         delete window.hitMonster;
       }
     };
@@ -80,12 +75,11 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
     return 'Low';
   };
   
-  const formatCurrency = (amount: number) => {
+  const formatValue = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+      style: 'decimal',
       maximumFractionDigits: 0
-    }).format(amount);
+    }).format(amount) + " HP";
   };
   
   const getRageStyles = () => {
@@ -131,7 +125,6 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
         <div className={`h-40 overflow-hidden bg-gradient-to-br ${rageStyles.backgroundClass} relative ${isInBattle ? rageStyles.pulseClass : ''} ${rageStyles.glowClass}`}>
           <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10 z-0"></div>
           
-          {/* Aura effect for rage phases */}
           {(ragePhase || frenzyPhase) && (
             <motion.div 
               className={`absolute inset-0 z-0 ${frenzyPhase ? 'bg-red-500/10' : 'bg-amber-500/10'}`}
@@ -171,7 +164,6 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
             {monsterRank}
           </div>
           
-          {/* Rage phase indicator */}
           {ragePhase && !frenzyPhase && (
             <div className="absolute left-1/2 transform -translate-x-1/2 top-3 bg-amber-600 text-black font-bold text-xs px-2 py-1 rounded-full flex items-center gap-1 z-10">
               <Flame className="w-3 h-3" />
@@ -179,7 +171,6 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
             </div>
           )}
           
-          {/* Frenzy phase indicator */}
           {frenzyPhase && (
             <div className="absolute left-1/2 transform -translate-x-1/2 top-3 bg-red-600 text-white font-bold text-xs px-2 py-1 rounded-full flex items-center gap-1 z-10 animate-pulse">
               <ShieldOff className="w-3 h-3" />
@@ -201,20 +192,19 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
         
         <div className="grid grid-cols-2 gap-2 text-xs text-slate-300 mb-3">
           <div>
-            <span className="text-slate-400">Curse Power:</span> {formatCurrency(debt.amount)}
+            <span className="text-slate-400">Curse Power:</span> {formatValue(debt.amount)}
           </div>
           <div>
-            <span className="text-slate-400">Min Attack:</span> {formatCurrency(debt.minimumPayment)}
+            <span className="text-slate-400">Min Attack:</span> {formatValue(debt.minimumPayment)}
           </div>
           <div>
             <span className="text-slate-400">Corruption:</span> {getInterestDescription()}
           </div>
           <div>
-            <span className="text-slate-400">Mental Damage:</span> {debt.psychologicalImpact}/10
+            <span className="text-slate-400">Willpower Strain:</span> {debt.psychologicalImpact}/10
           </div>
         </div>
         
-        {/* Display weakness and lore */}
         {isInBattle && (
           <div className="bg-slate-900/60 rounded p-2 mb-3 border border-slate-800">
             <p className="text-amber-400 text-xs font-medium">WEAKNESS: {monsterProfile.weakness}</p>

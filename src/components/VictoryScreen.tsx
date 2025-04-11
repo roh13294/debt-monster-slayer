@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -19,28 +18,20 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
   const [unlockedReward, setUnlockedReward] = useState<string | null>(null);
   const [showSwordAnimation, setShowSwordAnimation] = useState(false);
   
-  // Calculate XP based on payment amount and debt type
   useEffect(() => {
-    // Base XP calculation
     const baseXp = Math.floor(paymentAmount / 10);
-    // Bonus XP for higher interest debts
     const interestMultiplier = debt.interest > 10 ? 1.5 : 1.2;
-    // Final XP calculation
     const finalXp = Math.floor(baseXp * interestMultiplier);
     
-    // Show the sword drawing animation first
     setShowSwordAnimation(true);
     
-    // Delay the XP animation for dramatic effect after sword animation
     setTimeout(() => {
       setShowSwordAnimation(false);
       setXpGained(finalXp);
       setShowXpAnimation(true);
     }, 1800);
     
-    // Determine if a reward should be unlocked based on payment
     if (paymentAmount >= debt.amount * 0.5) {
-      // Significant payment unlocks a reward
       const rewards = [
         "Frugality Boost",
         "No-Spend Aura",
@@ -53,12 +44,17 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
     }
   }, [paymentAmount, debt]);
   
+  const formatValue = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'decimal',
+      maximumFractionDigits: 0
+    }).format(amount) + " HP";
+  };
+  
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="bg-gradient-to-br from-black to-gray-900 border-2 border-red-600 shadow-xl max-w-lg overflow-hidden">
-        {/* Anime-inspired background effects */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          {/* Flame effect background */}
           <div className="bg-red-600/10 absolute inset-0"></div>
           <div className="flame-container">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -75,11 +71,9 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
             ))}
           </div>
           
-          {/* Ink splatter effects */}
           <div className="ink-splatter" style={{ top: '10%', right: '5%' }}></div>
           <div className="ink-splatter" style={{ bottom: '15%', left: '8%' }}></div>
           
-          {/* Sword animation overlay */}
           {showSwordAnimation && (
             <div className="sword-slash-animation z-30"></div>
           )}
@@ -107,16 +101,15 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="bg-indigo-900/40 p-3 rounded-lg text-center border border-indigo-700/50 shadow-[0_0_10px_rgba(79,70,229,0.3)]">
               <p className="text-sm text-indigo-300">Damage Dealt</p>
-              <p className="text-2xl font-bold text-indigo-100">${paymentAmount}</p>
+              <p className="text-2xl font-bold text-indigo-100">{formatValue(paymentAmount)}</p>
             </div>
             
             <div className="bg-purple-900/40 p-3 rounded-lg text-center border border-purple-700/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]">
               <p className="text-sm text-purple-300">Demon Slain</p>
-              <p className="text-2xl font-bold text-purple-100">${debt.amount.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-purple-100">{formatValue(debt.amount)}</p>
             </div>
           </div>
           
-          {/* XP reward section with anime-inspired animation */}
           <div className={`bg-gradient-to-r from-blue-900/40 to-cyan-900/40 p-3 rounded-lg text-center mt-3 border border-cyan-700/50 shadow-[0_0_15px_rgba(8,145,178,0.2)] 
             ${showXpAnimation ? 'animate-pulse' : ''}`}>
             <p className="text-sm text-cyan-300 flex items-center justify-center">
@@ -131,7 +124,6 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
             </p>
           </div>
           
-          {/* Unlocked reward section */}
           {unlockedReward && (
             <div className="bg-gradient-to-r from-amber-900/40 to-orange-900/40 p-3 rounded-lg text-center mt-3 border border-amber-700/50 shadow-[0_0_15px_rgba(251,191,36,0.2)] animate-fade-in">
               <div className="flex items-center justify-center mb-1">
@@ -170,7 +162,6 @@ const VictoryScreen: React.FC<VictoryScreenProps> = ({ debt, paymentAmount, onCl
         </DialogFooter>
       </DialogContent>
       
-      {/* Add CSS using style tag */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }

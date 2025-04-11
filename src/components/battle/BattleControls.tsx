@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sword, ShieldAlert, Flame, Zap, Target } from 'lucide-react';
@@ -76,6 +75,13 @@ const BattleControls: React.FC<BattleControlsProps> = ({
     } else {
       return 'Swift Cut';
     }
+  };
+  
+  const formatValue = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'decimal',
+      maximumFractionDigits: 0
+    }).format(amount) + " HP";
   };
   
   const handleAttack = () => {
@@ -195,7 +201,7 @@ const BattleControls: React.FC<BattleControlsProps> = ({
         >
           <div className="flex justify-between text-sm mb-1">
             <span className="text-slate-400">Attack Strength</span>
-            <span className="text-amber-400 font-medium">${paymentAmount}</span>
+            <span className="text-amber-400 font-medium">{formatValue(paymentAmount)}</span>
           </div>
           
           <Slider
@@ -208,18 +214,18 @@ const BattleControls: React.FC<BattleControlsProps> = ({
           />
           
           <div className="flex justify-between text-xs text-slate-500">
-            <span>Min: ${debt.minimumPayment > maxPayment ? maxPayment : debt.minimumPayment}</span>
-            <span>Max: ${maxPayment}</span>
+            <span>Min: {formatValue(debt.minimumPayment > maxPayment ? maxPayment : debt.minimumPayment)}</span>
+            <span>Max: {formatValue(maxPayment)}</span>
           </div>
           
           <div className="mt-3 text-sm">
             <div className="flex justify-between mb-1">
               <span className="text-slate-400">Available Spirit Energy</span>
-              <span className="text-slate-300">${cash}</span>
+              <span className="text-slate-300">{formatValue(cash).replace(" HP", "")}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Enemy Health</span>
-              <span className="text-slate-300">${debt.amount}</span>
+              <span className="text-slate-300">{formatValue(debt.amount)}</span>
             </div>
           </div>
         </motion.div>

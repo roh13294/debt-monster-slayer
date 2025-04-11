@@ -38,11 +38,10 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+      style: 'decimal',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    }).format(amount);
+    }).format(amount) + " HP";
   };
   
   const handleSliderChange = (value: number[]) => {
@@ -105,7 +104,7 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
               </h2>
               <div className="text-right">
                 <p className="text-sm text-slate-300">Available Spirit Energy</p>
-                <p className="text-lg font-bold text-emerald-400">{formatCurrency(cash)}</p>
+                <p className="text-lg font-bold text-emerald-400">{formatCurrency(cash).replace(" HP", "")}</p>
               </div>
             </div>
 
@@ -217,7 +216,7 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
                           </div>
                           <div>
                             <span className="text-slate-400">Spirit Cost:</span>{' '}
-                            <span className="text-emerald-400">-{formatCurrency(paymentAmount)}</span>
+                            <span className="text-emerald-400">-{formatCurrency(paymentAmount).replace(" HP", "")}</span>
                           </div>
                           <div>
                             <span className="text-slate-400">Health Reduction:</span>{' '}
