@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { useGameContext } from '../../context/GameContext';
-import { Eye } from 'lucide-react';
+import { Skull, Sword, Droplets, Brain } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface CorruptionMeterProps {
   size?: 'sm' | 'md' | 'lg'; 
@@ -25,13 +26,13 @@ const CorruptionMeter: React.FC<CorruptionMeterProps> = ({ size = 'md' }) => {
   const getShadowFormIcon = () => {
     switch(shadowForm) {
       case 'cursedBlade':
-        return <div className="text-red-400">🔪</div>;
+        return <Sword className="h-4 w-4 text-red-400" />;
       case 'leecher':
-        return <div className="text-purple-400">💀</div>;
+        return <Droplets className="h-4 w-4 text-purple-400" />;
       case 'whisperer':
-        return <div className="text-blue-400">👁️</div>;
+        return <Brain className="h-4 w-4 text-blue-400" />;
       default:
-        return <Eye className="h-4 w-4 text-red-400" />;
+        return <Skull className="h-4 w-4 text-red-400" />;
     }
   };
   
@@ -44,26 +45,54 @@ const CorruptionMeter: React.FC<CorruptionMeterProps> = ({ size = 'md' }) => {
   };
   
   const isPulsing = corruptionLevel >= 75;
+  const isGlitching = corruptionLevel >= 75;
   
   return (
     <div className="flex items-center space-x-1 relative">
-      <div className={`${isPulsing ? 'animate-pulse' : ''}`}>
+      <motion.div 
+        animate={isPulsing ? { scale: [1, 1.15, 1] } : {}}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className={`${isPulsing ? 'drop-shadow-lg' : ''}`}
+      >
         {getShadowFormIcon()}
-      </div>
+      </motion.div>
       
       <div className="bg-slate-800/80 rounded-full overflow-hidden relative">
-        <div 
-          className={`${getSizeClasses()} bg-gradient-to-r ${getCorruptionColor()} ${isPulsing ? 'animate-pulse' : ''}`}
-          style={{ width: `${Math.min(100, corruptionLevel)}%` }}
-        ></div>
+        <motion.div 
+          className={`${getSizeClasses()} bg-gradient-to-r ${getCorruptionColor()}`}
+          style={{ 
+            width: `${Math.min(100, corruptionLevel)}%`,
+          }}
+          animate={isPulsing ? { opacity: [0.8, 1, 0.8] } : {}}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+        ></motion.div>
         
         {isPulsing && (
           <div className="absolute inset-0 bg-red-500/20 animate-ping rounded-full"></div>
         )}
       </div>
       
+      {/* Add corruption value as number */}
+      <div className="text-xs font-mono text-red-400">
+        {Math.round(corruptionLevel)}%
+      </div>
+      
+      {/* Glitch effect for high corruption */}
+      {isGlitching && (
+        <motion.div 
+          className="absolute inset-0 mix-blend-overlay pointer-events-none z-10"
+          animate={{ opacity: [0, 0.1, 0, 0.05, 0] }}
+          transition={{ repeat: Infinity, duration: 2, repeatType: 'loop', times: [0, 0.1, 0.2, 0.3, 1] }}
+        >
+          <div className="absolute inset-0 bg-red-500/30"></div>
+        </motion.div>
+      )}
+      
       {corruptionLevel >= 100 && (
-        <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
+        <>
+          <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
+          <div className="absolute -top-2 -right-2 w-3 h-3 bg-red-600 rounded-full"></div>
+        </>
       )}
     </div>
   );

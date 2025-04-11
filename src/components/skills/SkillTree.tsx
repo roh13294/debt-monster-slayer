@@ -4,8 +4,9 @@ import { useGameContext } from '../../context/GameContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Flame, Droplets, Zap, Wind, Eye } from 'lucide-react';
+import { Flame, Droplets, Zap, Wind, Skull, Star, Lock } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SkillTreeProps {
   isOpen: boolean;
@@ -13,11 +14,9 @@ interface SkillTreeProps {
 }
 
 const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
-  const { shadowForm } = useGameContext();
+  const { shadowForm, breathingXP } = useGameContext();
   const [activeTab, setActiveTab] = useState('flame');
-  
-  // Would be maintained in context in full implementation
-  const [breathingXP] = useState(5);
+  const [showSkillDetails, setShowSkillDetails] = useState<string | null>(null);
   
   const getTabIcon = (type: string) => {
     switch(type) {
@@ -25,7 +24,7 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
       case 'water': return <Droplets className="h-4 w-4" />;
       case 'thunder': return <Zap className="h-4 w-4" />;
       case 'wind': return <Wind className="h-4 w-4" />;
-      case 'shadow': return <Eye className="h-4 w-4" />;
+      case 'shadow': return <Skull className="h-4 w-4" />;
       default: return <Flame className="h-4 w-4" />;
     }
   };
@@ -68,6 +67,43 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
   // Show shadow breathing tab only if the player has a shadow form
   const showShadowTab = shadowForm !== null;
   
+  // Skill unlocking sound effect
+  const playUnlockSound = () => {
+    const audio = new Audio('/sounds/skill-unlock.mp3');
+    audio.volume = 0.5;
+    audio.play().catch(e => console.error("Audio playback error:", e));
+  };
+
+  const handleUnlockSkill = (type: string, tier: number, name: string, xpCost: number) => {
+    if (breathingXP < xpCost) {
+      toast({
+        title: "Not Enough XP",
+        description: `You need ${xpCost} Breathing XP to unlock this skill.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Play unlock sound
+    playUnlockSound();
+    
+    // Animation and feedback
+    toast({
+      title: `${name} Unlocked!`,
+      description: `You've mastered the ${type} breathing technique.`,
+      variant: "default",
+    });
+    
+    // Show special animation for combo unlocks
+    if (name.includes("Combo")) {
+      // Special combo animation would go here
+    }
+  };
+  
+  const handleViewSkillDetails = (skillId: string) => {
+    setShowSkillDetails(skillId === showSkillDetails ? null : skillId);
+  };
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl p-0 bg-transparent border-0 overflow-hidden">
@@ -80,10 +116,18 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
           
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
-              <div className="bg-slate-800/70 px-4 py-2 rounded-lg border border-slate-600/30">
-                <span className="text-gray-400 text-sm">Breathing XP: </span>
-                <span className="text-blue-400 font-bold">{breathingXP}</span>
-              </div>
+              <motion.div 
+                className="bg-slate-800/70 px-4 py-2 rounded-lg border border-slate-600/30 flex items-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <Star className="h-5 w-5 text-yellow-500" />
+                <div>
+                  <span className="text-gray-400 text-sm">Breathing XP: </span>
+                  <span className="text-blue-400 font-bold">{breathingXP}</span>
+                </div>
+              </motion.div>
               
               <div className="flex gap-2">
                 <Button variant="outline" onClick={onClose}>Close</Button>
@@ -129,27 +173,62 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
               <div className="h-[500px] overflow-auto p-4 bg-slate-800/20 rounded-lg border border-slate-700/30">
                 {/* Flame Breathing Tree */}
                 <TabsContent value="flame" className="h-full">
-                  <BreathingTreeContent type="flame" breathingXP={breathingXP} />
+                  <BreathingTreeContent 
+                    type="flame" 
+                    breathingXP={breathingXP}
+                    shadowForm={shadowForm}
+                    onUnlock={handleUnlockSkill}
+                    showSkillDetails={showSkillDetails}
+                    onViewDetails={handleViewSkillDetails}
+                  />
                 </TabsContent>
                 
                 {/* Water Breathing Tree */}
                 <TabsContent value="water" className="h-full">
-                  <BreathingTreeContent type="water" breathingXP={breathingXP} />
+                  <BreathingTreeContent 
+                    type="water" 
+                    breathingXP={breathingXP} 
+                    shadowForm={shadowForm}
+                    onUnlock={handleUnlockSkill}
+                    showSkillDetails={showSkillDetails}
+                    onViewDetails={handleViewSkillDetails}
+                  />
                 </TabsContent>
                 
                 {/* Thunder Breathing Tree */}
                 <TabsContent value="thunder" className="h-full">
-                  <BreathingTreeContent type="thunder" breathingXP={breathingXP} />
+                  <BreathingTreeContent 
+                    type="thunder" 
+                    breathingXP={breathingXP} 
+                    shadowForm={shadowForm}
+                    onUnlock={handleUnlockSkill}
+                    showSkillDetails={showSkillDetails}
+                    onViewDetails={handleViewSkillDetails}
+                  />
                 </TabsContent>
                 
                 {/* Wind Breathing Tree */}
                 <TabsContent value="wind" className="h-full">
-                  <BreathingTreeContent type="wind" breathingXP={breathingXP} />
+                  <BreathingTreeContent 
+                    type="wind" 
+                    breathingXP={breathingXP} 
+                    shadowForm={shadowForm}
+                    onUnlock={handleUnlockSkill}
+                    showSkillDetails={showSkillDetails}
+                    onViewDetails={handleViewSkillDetails}
+                  />
                 </TabsContent>
                 
                 {/* Shadow Breathing Tree */}
                 <TabsContent value="shadow" className="h-full">
-                  <BreathingTreeContent type="shadow" breathingXP={breathingXP} />
+                  <BreathingTreeContent 
+                    type="shadow" 
+                    breathingXP={breathingXP} 
+                    shadowForm={shadowForm}
+                    onUnlock={handleUnlockSkill}
+                    showSkillDetails={showSkillDetails}
+                    onViewDetails={handleViewSkillDetails}
+                  />
                 </TabsContent>
               </div>
             </Tabs>
@@ -163,146 +242,388 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
 interface BreathingTreeContentProps {
   type: 'flame' | 'water' | 'thunder' | 'wind' | 'shadow';
   breathingXP: number;
+  shadowForm: string | null;
+  onUnlock: (type: string, tier: number, name: string, xpCost: number) => void;
+  showSkillDetails: string | null;
+  onViewDetails: (skillId: string) => void;
 }
 
-const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({ type, breathingXP }) => {
+const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({ 
+  type, 
+  breathingXP, 
+  shadowForm,
+  onUnlock,
+  showSkillDetails,
+  onViewDetails
+}) => {
   const colors = getTypeColors(type);
+  const isCorrupted = shadowForm !== null && type !== 'shadow';
   
-  // Simplified tree structure - in full implementation this would be more complex and interactive
+  const getSkillTree = () => {
+    // Basic skills for each type
+    const basicSkills = [
+      {
+        id: `${type}_basic`,
+        tier: 1,
+        name: `Basic ${capitalizeFirst(type)} Breathing`,
+        description: `Master the fundamentals of ${type} breathing techniques.`,
+        xpCost: 3,
+        unlockable: breathingXP >= 3,
+        unlocked: false,
+        passiveEffects: [`+10% ${type} damage`, '+5% spirit regeneration']
+      },
+      {
+        id: `${type}_burst`,
+        tier: 2,
+        name: `${capitalizeFirst(type)} Burst`,
+        description: `Channel ${type} energy in a powerful direct attack.`,
+        xpCost: 6,
+        unlockable: breathingXP >= 6,
+        unlocked: false,
+        requires: [`${type}_basic`],
+        passiveEffects: [`+15% ${type} damage`, '-5% debt interest']
+      },
+      {
+        id: `${type}_aura`,
+        tier: 2,
+        name: `${capitalizeFirst(type)} Aura`,
+        description: `Create a protective ${type} aura around yourself.`,
+        xpCost: 6,
+        unlockable: breathingXP >= 6,
+        unlocked: false,
+        requires: [`${type}_basic`],
+        passiveEffects: ['+15% spirit defense', '+10% savings protection']
+      },
+      {
+        id: `${type}_ultimate`,
+        tier: 3,
+        name: `Ultimate ${capitalizeFirst(type)} Technique`,
+        description: `A legendary breathing technique of immense power.`,
+        xpCost: 12,
+        unlockable: breathingXP >= 12,
+        unlocked: false,
+        requires: [`${type}_burst`, `${type}_aura`],
+        passiveEffects: ['Special move regeneration +1', '+20% payment effectiveness'],
+        isUltimate: true
+      }
+    ];
+    
+    // Add corrupted variants if player has shadow form
+    if (isCorrupted) {
+      return [
+        ...basicSkills,
+        {
+          id: `${type}_blood`,
+          tier: 2,
+          name: `Blood ${capitalizeFirst(type)}`,
+          description: `A forbidden technique that harnesses the shadow's power through your ${type} breathing.`,
+          xpCost: 5,
+          unlockable: breathingXP >= 5 && shadowForm !== null,
+          unlocked: false,
+          requires: [`${type}_basic`],
+          passiveEffects: ['+25% damage', '-10% DemonCoins per use'],
+          isCorrupted: true
+        },
+        {
+          id: `${type}_void`,
+          tier: 3,
+          name: `Void ${capitalizeFirst(type)} Annihilation`,
+          description: `A devastating technique that sacrifices your spirit for immense power.`,
+          xpCost: 10,
+          unlockable: breathingXP >= 10 && shadowForm !== null,
+          unlocked: false,
+          requires: [`${type}_blood`],
+          passiveEffects: ['One-shot any debt under 25% health', '+15 corruption per use'],
+          isCorrupted: true,
+          isUltimate: true
+        }
+      ];
+    }
+    
+    // Special case for shadow tree
+    if (type === 'shadow') {
+      return [
+        {
+          id: 'shadow_embrace',
+          tier: 1,
+          name: 'Shadow Embrace',
+          description: 'Embrace the darkness within, gaining power from your corruption.',
+          xpCost: 3,
+          unlockable: breathingXP >= 3 && shadowForm !== null,
+          unlocked: false,
+          passiveEffects: ['Convert 10% corruption to attack power', '-5% interest rate']
+        },
+        {
+          id: 'shadow_drain',
+          tier: 2,
+          name: 'Void Drain',
+          description: 'Channel the void to drain energy from your debts.',
+          xpCost: 6,
+          unlockable: breathingXP >= 6 && shadowForm !== null,
+          unlocked: false,
+          requires: ['shadow_embrace'],
+          passiveEffects: ['Heal 5% spirit on debt payment', '+10% corruption per use']
+        },
+        {
+          id: 'shadow_form',
+          tier: 2,
+          name: 'Shadow Form',
+          description: 'Transform into pure shadow, gaining temporary invulnerability.',
+          xpCost: 6,
+          unlockable: breathingXP >= 6 && shadowForm !== null,
+          unlocked: false,
+          requires: ['shadow_embrace'],
+          passiveEffects: ['No interest for 1 month', '+15% corruption per use']
+        },
+        {
+          id: 'shadow_ultimate',
+          tier: 3,
+          name: 'Abyss Incarnation',
+          description: 'Become one with the abyss, unlocking your full potential.',
+          xpCost: 15,
+          unlockable: breathingXP >= 15 && shadowForm !== null,
+          unlocked: false,
+          requires: ['shadow_drain', 'shadow_form'],
+          passiveEffects: ['Convert all savings to debt payment power', 'Max corruption for 1 month'],
+          isUltimate: true
+        }
+      ];
+    }
+    
+    return basicSkills;
+  };
+  
+  const skills = getSkillTree();
+  
+  // Simplified tree structure with SVG connections
   return (
     <div className="relative h-full w-full">
-      {/* Tree structure with SVG lines would go here */}
       <svg className="absolute top-0 left-0 h-full w-full" style={{ zIndex: 1 }}>
         <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill={colors.line} />
+          <marker id={`arrowhead-${type}`} markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill={isCorrupted ? '#ef4444' : colors.line} />
           </marker>
+          
+          {isCorrupted && (
+            <filter id="distortion">
+              <feTurbulence baseFrequency="0.05" numOctaves="2" result="turbulence" />
+              <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="5" />
+            </filter>
+          )}
         </defs>
         
-        {/* Tier 1 to Tier 2 */}
-        <line x1="50%" y1="110" x2="25%" y2="230" stroke={colors.line} strokeWidth="2" markerEnd="url(#arrowhead)" />
-        <line x1="50%" y1="110" x2="75%" y2="230" stroke={colors.line} strokeWidth="2" markerEnd="url(#arrowhead)" />
-        
-        {/* Tier 2 to Tier 3 */}
-        <line x1="25%" y1="310" x2="50%" y2="430" stroke={colors.line} strokeWidth="2" markerEnd="url(#arrowhead)" />
-        <line x1="75%" y1="310" x2="50%" y2="430" stroke={colors.line} strokeWidth="2" markerEnd="url(#arrowhead)" />
+        {/* Connection lines between skills */}
+        {skills.map(skill => {
+          if (!skill.requires) return null;
+          
+          // Find parent skill positions
+          return skill.requires.map(reqId => {
+            const parentSkill = skills.find(s => s.id === reqId);
+            if (!parentSkill) return null;
+            
+            // Calculate positions
+            const fromTier = parentSkill.tier;
+            const toTier = skill.tier;
+            
+            // Simple positioning logic - can be enhanced
+            const fromY = fromTier * 180 - 80;
+            const toY = toTier * 180 - 80;
+            
+            // Position X based on skill index within tier
+            const tierSkills = skills.filter(s => s.tier === fromTier);
+            const fromX = (tierSkills.indexOf(parentSkill) + 0.5) * (100 / (tierSkills.length + 1)) + '%';
+            
+            const toTierSkills = skills.filter(s => s.tier === toTier);
+            const toX = (toTierSkills.indexOf(skill) + 0.5) * (100 / (toTierSkills.length + 1)) + '%';
+            
+            return (
+              <line 
+                key={`${reqId}-to-${skill.id}`}
+                x1={fromX} 
+                y1={fromY} 
+                x2={toX} 
+                y2={toY} 
+                stroke={skill.isCorrupted ? '#ef4444' : colors.line} 
+                strokeWidth="2" 
+                strokeDasharray={skill.isCorrupted ? "5,5" : ""} 
+                markerEnd={`url(#arrowhead-${type})`} 
+                filter={skill.isCorrupted ? "url(#distortion)" : ""}
+              />
+            );
+          });
+        }).flat().filter(Boolean)}
       </svg>
       
-      {/* Tier 1 Node */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 top-10" style={{ zIndex: 2 }}>
-        <SkillNode 
-          type={type} 
-          tier={1} 
-          name={`Basic ${capitalizeFirst(type)} Breathing`}
-          description={`Master the fundamentals of ${type} breathing techniques.`}
-          xpCost={3}
-          unlocked={breathingXP >= 3}
-        />
-      </div>
+      {/* Render skill nodes by tier */}
+      {[1, 2, 3].map(tier => {
+        const tierSkills = skills.filter(skill => skill.tier === tier);
+        return (
+          <div key={`tier-${tier}`} className="absolute w-full" style={{ top: `${tier * 180 - 100}px` }}>
+            <div className="flex justify-evenly">
+              {tierSkills.map(skill => (
+                <div key={skill.id} className="relative z-10 transform -translate-x-1/2" style={{ left: `${(tierSkills.indexOf(skill) + 0.5) * (100 / (tierSkills.length + 1))}%` }}>
+                  <SkillNode 
+                    type={type} 
+                    tier={tier}
+                    skill={skill}
+                    isCorrupted={skill.isCorrupted}
+                    onUnlock={() => onUnlock(type, tier, skill.name, skill.xpCost)}
+                    onViewDetails={() => onViewDetails(skill.id)}
+                    isExpanded={showSkillDetails === skill.id}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
       
-      {/* Tier 2 Nodes */}
-      <div className="absolute left-1/4 transform -translate-x-1/2 top-[230px]" style={{ zIndex: 2 }}>
-        <SkillNode 
-          type={type} 
-          tier={2} 
-          name={`${capitalizeFirst(type)} Burst`}
-          description={`Channel ${type} energy in a powerful direct attack.`}
-          xpCost={6}
-          unlocked={breathingXP >= 6}
-        />
-      </div>
-      
-      <div className="absolute left-3/4 transform -translate-x-1/2 top-[230px]" style={{ zIndex: 2 }}>
-        <SkillNode 
-          type={type} 
-          tier={2} 
-          name={`${capitalizeFirst(type)} Aura`}
-          description={`Create a protective ${type} aura around yourself.`}
-          xpCost={6}
-          unlocked={breathingXP >= 6}
-        />
-      </div>
-      
-      {/* Tier 3 Node */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 top-[430px]" style={{ zIndex: 2 }}>
-        <SkillNode 
-          type={type} 
-          tier={3} 
-          name={`Ultimate ${capitalizeFirst(type)} Technique`}
-          description={`A legendary breathing technique of immense power.`}
-          xpCost={12}
-          unlocked={breathingXP >= 12}
-          isUltimate
-        />
-      </div>
+      {/* Combo zone for special combinations */}
+      {type === 'thunder' && (
+        <div className="absolute bottom-10 right-10 p-3 bg-slate-800/80 border border-amber-500/30 rounded-lg">
+          <div className="text-xs text-amber-400 font-semibold mb-1 flex items-center">
+            <Star className="w-3 h-3 mr-1" />
+            <span>Special Combo Available</span>
+          </div>
+          <div className="text-xxs text-gray-400">
+            Unlock Thunder + Wind trees for<br />
+            <span className="text-green-400">Shock Cyclone Style</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 interface SkillNodeProps {
-  type: 'flame' | 'water' | 'thunder' | 'wind' | 'shadow';
-  tier: 1 | 2 | 3;
-  name: string;
-  description: string;
-  xpCost: number;
-  unlocked: boolean;
-  isUltimate?: boolean;
+  type: string;
+  tier: number;
+  skill: any;
+  isCorrupted?: boolean;
+  onUnlock: () => void;
+  onViewDetails: () => void;
+  isExpanded: boolean;
 }
 
 const SkillNode: React.FC<SkillNodeProps> = ({ 
   type, 
   tier, 
-  name, 
-  description, 
-  xpCost,
-  unlocked,
-  isUltimate
+  skill,
+  isCorrupted = false,
+  onUnlock,
+  onViewDetails,
+  isExpanded
 }) => {
   const colors = getTypeColors(type);
+  const baseColors = isCorrupted ? 
+    { bg: 'bg-gradient-to-br from-red-900/70 to-black/70', text: 'text-red-400', border: 'border-red-500/30' } : 
+    colors;
   
-  const handleUnlockSkill = () => {
-    // This would be implemented in the full version
-    toast({
-      title: "Coming Soon",
-      description: "Skill unlocking will be available in the next update!",
-      variant: "default",
-    });
+  const nodeWrapperVariants = {
+    default: { scale: 1 },
+    hover: { scale: 1.05 }
   };
   
   return (
-    <div className={`
-      w-56 p-4 rounded-lg border ${unlocked ? colors.border : 'border-gray-700'} 
-      ${unlocked ? colors.bg : 'bg-gray-800/80'} 
-      ${isUltimate && unlocked ? 'animate-pulse shadow-lg' : ''}
-      transition-all hover:shadow-md
-    `}>
-      <div className="flex justify-between items-start mb-2">
-        <h3 className={`font-bold ${unlocked ? colors.text : 'text-gray-400'}`}>{name}</h3>
-        <div className={`px-2 py-0.5 rounded text-xs font-medium ${unlocked ? 'bg-blue-900/30 text-blue-400' : 'bg-gray-700 text-gray-400'}`}>
-          Tier {tier}
+    <motion.div
+      initial="default"
+      whileHover="hover"
+      variants={nodeWrapperVariants}
+      className="relative"
+    >
+      {/* Skill node */}
+      <motion.div
+        onClick={onViewDetails}
+        className={`
+          w-56 p-4 rounded-lg border ${skill.unlockable ? baseColors.border : 'border-gray-700'} 
+          ${skill.unlockable ? baseColors.bg : 'bg-gray-800/80'} 
+          ${skill.isUltimate && skill.unlockable ? 'animate-pulse shadow-lg' : ''}
+          transition-all hover:shadow-md cursor-pointer
+          ${isCorrupted ? 'shadow-red-900/30' : ''}
+        `}
+      >
+        <div className="flex justify-between items-start mb-2">
+          <h3 className={`font-bold ${skill.unlockable ? baseColors.text : 'text-gray-400'}`}>
+            {skill.name}
+            {isCorrupted && <span className="text-red-500 text-xs ml-1">🔥</span>}
+          </h3>
+          <div className={`px-2 py-0.5 rounded text-xs font-medium ${skill.unlockable ? 'bg-blue-900/30 text-blue-400' : 'bg-gray-700 text-gray-400'}`}>
+            Tier {tier}
+          </div>
         </div>
-      </div>
-      
-      <p className={`text-xs mb-3 ${unlocked ? 'text-gray-300' : 'text-gray-500'}`}>
-        {description}
-      </p>
-      
-      <div className="flex justify-between items-center">
-        <span className={`text-xs ${unlocked ? 'text-amber-400' : 'text-gray-500'}`}>
-          {xpCost} XP
-        </span>
         
-        <Button 
-          variant={unlocked ? "default" : "outline"}
-          size="sm"
-          disabled={!unlocked}
-          onClick={handleUnlockSkill}
-          className={`text-xs ${!unlocked ? 'opacity-50' : ''}`}
-        >
-          {unlocked ? 'Learn' : 'Locked'}
-        </Button>
-      </div>
-    </div>
+        <p className={`text-xs mb-3 ${skill.unlockable ? 'text-gray-300' : 'text-gray-500'}`}>
+          {skill.description}
+        </p>
+        
+        <div className="flex justify-between items-center">
+          <span className={`text-xs ${skill.unlockable ? 'text-amber-400' : 'text-gray-500'}`}>
+            {skill.xpCost} XP
+          </span>
+          
+          <Button 
+            variant={skill.unlockable ? "default" : "outline"}
+            size="sm"
+            disabled={!skill.unlockable}
+            onClick={(e) => { 
+              e.stopPropagation();
+              onUnlock();
+            }}
+            className={`text-xs ${!skill.unlockable ? 'opacity-50' : ''} ${isCorrupted ? 'bg-red-900 hover:bg-red-800' : ''}`}
+          >
+            {skill.unlockable ? (
+              <>
+                Learn
+                {isCorrupted && <span className="ml-1">⚠️</span>}
+              </>
+            ) : (
+              <div className="flex items-center gap-1">
+                <Lock className="h-3 w-3" />
+                <span>Locked</span>
+              </div>
+            )}
+          </Button>
+        </div>
+        
+        {/* Glow effect for ultimate skills */}
+        {skill.isUltimate && skill.unlockable && (
+          <div className="absolute inset-0 -z-10 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20 blur-md"></div>
+        )}
+        
+        {/* Corruption effect */}
+        {isCorrupted && (
+          <div className="absolute inset-0 -z-10 rounded-lg bg-red-900/10 animate-pulse"></div>
+        )}
+      </motion.div>
+      
+      {/* Expanded details */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: 10, height: 0 }}
+            className="mt-2 bg-slate-800 rounded-lg border border-slate-700 p-3 overflow-hidden"
+          >
+            <h4 className="text-sm font-semibold mb-2">Passive Effects:</h4>
+            <ul className="text-xs text-gray-300 space-y-1">
+              {skill.passiveEffects.map((effect, i) => (
+                <li key={i} className="flex items-center">
+                  <Star className="h-3 w-3 text-amber-400 mr-1 flex-shrink-0" />
+                  <span>{effect}</span>
+                </li>
+              ))}
+            </ul>
+            
+            {skill.isCorrupted && (
+              <div className="mt-2 p-2 bg-red-900/20 border border-red-500/20 rounded text-xs text-red-400">
+                <span className="font-semibold">Warning:</span> This skill draws on corrupted power and may have unexpected consequences.
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

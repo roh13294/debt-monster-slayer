@@ -21,7 +21,8 @@ export const useShadowFormState = () => {
   const checkShadowFormEligibility = (
     monthsPassed: number, 
     totalDebt: number, 
-    missedPayments: number
+    missedPayments: number,
+    demonStress: number = 0
   ): boolean => {
     // Already has shadow form
     if (shadowForm !== null) return false;
@@ -31,6 +32,12 @@ export const useShadowFormState = () => {
     
     // Trigger shadow form if debt > $15,000 and 2+ missed payments
     if (totalDebt > 15000 && missedPayments >= 2) return true;
+    
+    // Trigger shadow form if demon stress exceeds 75%
+    if (demonStress >= 75) return true;
+    
+    // Trigger shadow form if corruption level > 30
+    if (corruptionLevel > 30) return true;
     
     return false;
   };
@@ -56,6 +63,21 @@ export const useShadowFormState = () => {
         choice: true
       }));
     }
+    
+    // Special form setup effects
+    if (form) {
+      // Create a dark impact sound effect
+      const audio = new Audio('/sounds/shadow-embrace.mp3');
+      audio.volume = 0.5;
+      audio.play().catch(e => console.error("Audio playback error:", e));
+      
+      // Add a form-specific glitch effect to the UI (in a real game)
+      const body = document.querySelector('body');
+      if (body) {
+        body.classList.add('shadow-transition');
+        setTimeout(() => body.classList.remove('shadow-transition'), 2000);
+      }
+    }
   };
   
   // Increase corruption
@@ -78,6 +100,27 @@ export const useShadowFormState = () => {
         description: "The shadow has consumed you! Your powers are at their peak, but at a terrible cost...",
         variant: "destructive",
       });
+      
+      // Create a corruption overload sound effect
+      const audio = new Audio('/sounds/corruption-max.mp3');
+      audio.volume = 0.7;
+      audio.play().catch(e => console.error("Audio playback error:", e));
+      
+      // Trigger a UI effect for max corruption
+      const body = document.querySelector('body');
+      if (body) {
+        body.classList.add('corruption-overload');
+        setTimeout(() => body.classList.remove('corruption-overload'), 3000);
+      }
+    } else if (newLevel >= 75 && newLevel < 100) {
+      // Warning at high corruption
+      if (Math.floor(newLevel / 5) !== Math.floor((newLevel - amount) / 5)) {
+        toast({
+          title: "Corruption Rising",
+          description: "The shadow's influence grows stronger. Your powers increase, but at what cost?",
+          variant: "default",
+        });
+      }
     }
   };
   
@@ -111,6 +154,43 @@ export const useShadowFormState = () => {
         description: "You've resisted the shadow's influence completely! Though your powers diminish, your spirit grows stronger.",
         variant: "default",
       });
+      
+      // Create a redemption sound effect
+      const audio = new Audio('/sounds/redemption.mp3');
+      audio.volume = 0.5;
+      audio.play().catch(e => console.error("Audio playback error:", e));
+    }
+  };
+  
+  // Get shadow form benefits
+  const getShadowFormBenefits = () => {
+    switch(shadowForm) {
+      case 'cursedBlade':
+        return {
+          attackMultiplier: 1.5,
+          interestReduction: 0.5,
+          savingsLoss: 0.1,
+          corruptionPerBattle: 5
+        };
+      
+      case 'leecher':
+        return {
+          killReward: true,
+          doublePaymentChance: 0.25,
+          canSave: false,
+          passiveCorruption: 10
+        };
+      
+      case 'whisperer':
+        return {
+          previewEvents: 2,
+          xpGainBonus: 0.3,
+          specialMoveRegen: 0,
+          combatXpReduction: 0.5
+        };
+        
+      default:
+        return null;
     }
   };
   
@@ -121,6 +201,7 @@ export const useShadowFormState = () => {
     updateShadowForm,
     increaseCorruption,
     decreaseCorruption,
-    checkShadowFormEligibility
+    checkShadowFormEligibility,
+    getShadowFormBenefits
   };
 };

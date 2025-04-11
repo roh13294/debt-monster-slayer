@@ -1,0 +1,187 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Shadow Form Transitions */
+.shadow-transition {
+  animation: shadow-glitch 2s ease-in-out;
+}
+
+@keyframes shadow-glitch {
+  0% {
+    filter: none;
+  }
+  10% {
+    filter: hue-rotate(-30deg) contrast(1.5);
+  }
+  15% {
+    filter: none;
+  }
+  20% {
+    filter: hue-rotate(-70deg) contrast(2) brightness(0.7);
+  }
+  25% {
+    filter: none;
+  }
+  30% {
+    filter: saturate(1.5) contrast(1.2) brightness(0.8);
+  }
+  100% {
+    filter: none;
+  }
+}
+
+/* Corruption Overload Effect */
+.corruption-overload {
+  animation: corruption-pulse 3s ease-in-out;
+}
+
+@keyframes corruption-pulse {
+  0% {
+    filter: none;
+  }
+  10% {
+    filter: contrast(1.5) brightness(0.7) saturate(1.5);
+  }
+  20% {
+    filter: hue-rotate(-30deg) contrast(2) brightness(0.5);
+  }
+  30% {
+    filter: sepia(0.7) contrast(1.5) brightness(0.7);
+  }
+  40% {
+    filter: hue-rotate(-50deg) saturate(1.7) brightness(0.6);
+  }
+  50% {
+    filter: contrast(1.8) brightness(0.6) sepia(0.8);
+  }
+  100% {
+    filter: none;
+  }
+}
+
+/* Animated particles for Temple */
+@keyframes float-particle-1 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-15px) translateX(5px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.3;
+  }
+}
+
+@keyframes float-particle-2 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-10px) translateX(-7px);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.4;
+  }
+}
+
+@keyframes float-particle-3 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-20px) translateX(3px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.5;
+  }
+}
+
+.animate-float-particle-1 {
+  animation: float-particle-1 3s infinite ease-in-out;
+}
+
+.animate-float-particle-2 {
+  animation: float-particle-2 4s infinite ease-in-out;
+}
+
+.animate-float-particle-3 {
+  animation: float-particle-3 5s infinite ease-in-out;
+}
+
+/* Slow pulse animation for temple effects */
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Kanji background styles */
+.kanji-bg {
+  font-family: "Noto Sans JP", sans-serif;
+  opacity: 0.1;
+  user-select: none;
+}
+
+/* Oni-themed styling */
+.oni-card {
+  @apply bg-slate-900/80 border border-slate-700/50 rounded-lg p-5 shadow-lg;
+  backdrop-filter: blur(8px);
+}
+
+.oni-text-fire {
+  @apply bg-gradient-to-r from-amber-400 via-red-500 to-amber-400 bg-clip-text text-transparent font-bold;
+}
+
+.shadow-oni {
+  box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.4);
+}
