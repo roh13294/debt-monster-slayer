@@ -3,6 +3,7 @@ import React from 'react';
 import { useGameContext } from '../../context/GameContext';
 import { Skull, Sword, Droplets, Brain } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { ShadowFormType } from '../../types/gameTypes';
 
 interface CorruptionMeterProps {
   size?: 'sm' | 'md' | 'lg'; 

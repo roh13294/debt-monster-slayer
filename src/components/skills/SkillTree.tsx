@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useGameContext } from '../../context/GameContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -11,6 +10,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface SkillTreeProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+interface Skill {
+  id: string;
+  tier: number;
+  name: string;
+  description: string;
+  xpCost: number;
+  unlockable: boolean;
+  unlocked: boolean;
+  passiveEffects: string[];
+  requires?: string[];
+  isUltimate?: boolean;
+  isCorrupted?: boolean;
 }
 
 const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
@@ -64,10 +77,8 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
     }
   };
   
-  // Show shadow breathing tab only if the player has a shadow form
   const showShadowTab = shadowForm !== null;
   
-  // Skill unlocking sound effect
   const playUnlockSound = () => {
     const audio = new Audio('/sounds/skill-unlock.mp3');
     audio.volume = 0.5;
@@ -84,17 +95,14 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
       return;
     }
     
-    // Play unlock sound
     playUnlockSound();
     
-    // Animation and feedback
     toast({
       title: `${name} Unlocked!`,
       description: `You've mastered the ${type} breathing technique.`,
       variant: "default",
     });
     
-    // Show special animation for combo unlocks
     if (name.includes("Combo")) {
       // Special combo animation would go here
     }
@@ -171,7 +179,6 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
               </TabsList>
               
               <div className="h-[500px] overflow-auto p-4 bg-slate-800/20 rounded-lg border border-slate-700/30">
-                {/* Flame Breathing Tree */}
                 <TabsContent value="flame" className="h-full">
                   <BreathingTreeContent 
                     type="flame" 
@@ -183,7 +190,6 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
                   />
                 </TabsContent>
                 
-                {/* Water Breathing Tree */}
                 <TabsContent value="water" className="h-full">
                   <BreathingTreeContent 
                     type="water" 
@@ -195,7 +201,6 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
                   />
                 </TabsContent>
                 
-                {/* Thunder Breathing Tree */}
                 <TabsContent value="thunder" className="h-full">
                   <BreathingTreeContent 
                     type="thunder" 
@@ -207,7 +212,6 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
                   />
                 </TabsContent>
                 
-                {/* Wind Breathing Tree */}
                 <TabsContent value="wind" className="h-full">
                   <BreathingTreeContent 
                     type="wind" 
@@ -219,7 +223,6 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
                   />
                 </TabsContent>
                 
-                {/* Shadow Breathing Tree */}
                 <TabsContent value="shadow" className="h-full">
                   <BreathingTreeContent 
                     type="shadow" 
@@ -259,9 +262,8 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
   const colors = getTypeColors(type);
   const isCorrupted = shadowForm !== null && type !== 'shadow';
   
-  const getSkillTree = () => {
-    // Basic skills for each type
-    const basicSkills = [
+  const getSkillTree = (): Skill[] => {
+    const basicSkills: Skill[] = [
       {
         id: `${type}_basic`,
         tier: 1,
@@ -270,7 +272,8 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
         xpCost: 3,
         unlockable: breathingXP >= 3,
         unlocked: false,
-        passiveEffects: [`+10% ${type} damage`, '+5% spirit regeneration']
+        passiveEffects: [`+10% ${type} damage`, '+5% spirit regeneration'],
+        isCorrupted: false
       },
       {
         id: `${type}_burst`,
@@ -281,7 +284,8 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
         unlockable: breathingXP >= 6,
         unlocked: false,
         requires: [`${type}_basic`],
-        passiveEffects: [`+15% ${type} damage`, '-5% debt interest']
+        passiveEffects: [`+15% ${type} damage`, '-5% debt interest'],
+        isCorrupted: false
       },
       {
         id: `${type}_aura`,
@@ -292,7 +296,8 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
         unlockable: breathingXP >= 6,
         unlocked: false,
         requires: [`${type}_basic`],
-        passiveEffects: ['+15% spirit defense', '+10% savings protection']
+        passiveEffects: ['+15% spirit defense', '+10% savings protection'],
+        isCorrupted: false
       },
       {
         id: `${type}_ultimate`,
@@ -304,11 +309,11 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
         unlocked: false,
         requires: [`${type}_burst`, `${type}_aura`],
         passiveEffects: ['Special move regeneration +1', '+20% payment effectiveness'],
-        isUltimate: true
+        isUltimate: true,
+        isCorrupted: false
       }
     ];
     
-    // Add corrupted variants if player has shadow form
     if (isCorrupted) {
       return [
         ...basicSkills,
@@ -340,7 +345,6 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
       ];
     }
     
-    // Special case for shadow tree
     if (type === 'shadow') {
       return [
         {
@@ -351,7 +355,8 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
           xpCost: 3,
           unlockable: breathingXP >= 3 && shadowForm !== null,
           unlocked: false,
-          passiveEffects: ['Convert 10% corruption to attack power', '-5% interest rate']
+          passiveEffects: ['Convert 10% corruption to attack power', '-5% interest rate'],
+          isCorrupted: true
         },
         {
           id: 'shadow_drain',
@@ -362,7 +367,8 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
           unlockable: breathingXP >= 6 && shadowForm !== null,
           unlocked: false,
           requires: ['shadow_embrace'],
-          passiveEffects: ['Heal 5% spirit on debt payment', '+10% corruption per use']
+          passiveEffects: ['Heal 5% spirit on debt payment', '+10% corruption per use'],
+          isCorrupted: true
         },
         {
           id: 'shadow_form',
@@ -373,7 +379,8 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
           unlockable: breathingXP >= 6 && shadowForm !== null,
           unlocked: false,
           requires: ['shadow_embrace'],
-          passiveEffects: ['No interest for 1 month', '+15% corruption per use']
+          passiveEffects: ['No interest for 1 month', '+15% corruption per use'],
+          isCorrupted: true
         },
         {
           id: 'shadow_ultimate',
@@ -385,7 +392,8 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
           unlocked: false,
           requires: ['shadow_drain', 'shadow_form'],
           passiveEffects: ['Convert all savings to debt payment power', 'Max corruption for 1 month'],
-          isUltimate: true
+          isUltimate: true,
+          isCorrupted: true
         }
       ];
     }
@@ -395,7 +403,11 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
   
   const skills = getSkillTree();
   
-  // Simplified tree structure with SVG connections
+  const nodeWrapperVariants = {
+    default: { scale: 1 },
+    hover: { scale: 1.05 }
+  };
+  
   return (
     <div className="relative h-full w-full">
       <svg className="absolute top-0 left-0 h-full w-full" style={{ zIndex: 1 }}>
@@ -412,24 +424,19 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
           )}
         </defs>
         
-        {/* Connection lines between skills */}
         {skills.map(skill => {
           if (!skill.requires) return null;
           
-          // Find parent skill positions
           return skill.requires.map(reqId => {
             const parentSkill = skills.find(s => s.id === reqId);
             if (!parentSkill) return null;
             
-            // Calculate positions
             const fromTier = parentSkill.tier;
             const toTier = skill.tier;
             
-            // Simple positioning logic - can be enhanced
             const fromY = fromTier * 180 - 80;
             const toY = toTier * 180 - 80;
             
-            // Position X based on skill index within tier
             const tierSkills = skills.filter(s => s.tier === fromTier);
             const fromX = (tierSkills.indexOf(parentSkill) + 0.5) * (100 / (tierSkills.length + 1)) + '%';
             
@@ -454,7 +461,6 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
         }).flat().filter(Boolean)}
       </svg>
       
-      {/* Render skill nodes by tier */}
       {[1, 2, 3].map(tier => {
         const tierSkills = skills.filter(skill => skill.tier === tier);
         return (
@@ -466,7 +472,7 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
                     type={type} 
                     tier={tier}
                     skill={skill}
-                    isCorrupted={skill.isCorrupted}
+                    isCorrupted={!!skill.isCorrupted}
                     onUnlock={() => onUnlock(type, tier, skill.name, skill.xpCost)}
                     onViewDetails={() => onViewDetails(skill.id)}
                     isExpanded={showSkillDetails === skill.id}
@@ -478,7 +484,6 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
         );
       })}
       
-      {/* Combo zone for special combinations */}
       {type === 'thunder' && (
         <div className="absolute bottom-10 right-10 p-3 bg-slate-800/80 border border-amber-500/30 rounded-lg">
           <div className="text-xs text-amber-400 font-semibold mb-1 flex items-center">
@@ -498,7 +503,7 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
 interface SkillNodeProps {
   type: string;
   tier: number;
-  skill: any;
+  skill: Skill;
   isCorrupted?: boolean;
   onUnlock: () => void;
   onViewDetails: () => void;
@@ -531,7 +536,6 @@ const SkillNode: React.FC<SkillNodeProps> = ({
       variants={nodeWrapperVariants}
       className="relative"
     >
-      {/* Skill node */}
       <motion.div
         onClick={onViewDetails}
         className={`
@@ -585,18 +589,15 @@ const SkillNode: React.FC<SkillNodeProps> = ({
           </Button>
         </div>
         
-        {/* Glow effect for ultimate skills */}
         {skill.isUltimate && skill.unlockable && (
           <div className="absolute inset-0 -z-10 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20 blur-md"></div>
         )}
         
-        {/* Corruption effect */}
         {isCorrupted && (
           <div className="absolute inset-0 -z-10 rounded-lg bg-red-900/10 animate-pulse"></div>
         )}
       </motion.div>
       
-      {/* Expanded details */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div 
@@ -626,8 +627,6 @@ const SkillNode: React.FC<SkillNodeProps> = ({
     </motion.div>
   );
 };
-
-// Helper functions
 
 const capitalizeFirst = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -678,6 +677,11 @@ const getTypeColors = (type: string) => {
         line: '#ef4444'
       };
   }
+};
+
+const nodeWrapperVariants = {
+  default: { scale: 1 },
+  hover: { scale: 1.05 }
 };
 
 export default SkillTree;
