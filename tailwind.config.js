@@ -1,4 +1,3 @@
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -51,6 +50,17 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        demon: {
+          red: "#FF2D55",
+          ember: "#FF5733",
+          orange: "#FF9500",
+          gold: "#FFCC00",
+          teal: "#00D4B1",
+          blue: "#0EA5E9",
+          indigo: "#6366F1",
+          purple: "#5E17EB",
+          black: "#121212"
+        }
       },
       borderRadius: {
         lg: "var(--radius)",
