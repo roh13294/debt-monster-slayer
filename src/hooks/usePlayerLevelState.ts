@@ -113,7 +113,7 @@ export function usePlayerLevelState() {
     
     // Show level up notification
     toast({
-      title: gameTerms.translate("Level Up!"),
+      title: "Level Up!",
       description: `You've reached Level ${newLevel}! Your powers grow stronger.`,
       variant: "default",
     });

@@ -112,6 +112,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     () => generatePersonalizedChallenges(playerTraits)
   );
 
+  const {
+    playerXP,
+    playerLevel,
+    playerTitle,
+    playerPerk,
+    gainXP,
+    getXPThreshold,
+    getNextTitle,
+    initPlayerLevelState,
+    resetPlayerLevelState
+  } = usePlayerLevelState();
+
   const { damageMonster, useSpecialMove } = useBattleActions({
     cash,
     setCash,
@@ -135,12 +147,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updatePlayerTrait,
     playerTraits,
     debts
-  });
-
-  const { resolveLifeEvent } = useEventResolver({
-    updatePlayerTrait,
-    playerTraits,
-    processMonthlyFinancials: originalProcessMonthlyFinancials
   });
 
   const {
@@ -174,18 +180,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     equipRelic,
     unequipRelic
   } = useWealthTempleState();
-
-  const {
-    playerXP,
-    playerLevel,
-    playerTitle,
-    playerPerk,
-    gainXP,
-    getXPThreshold,
-    getNextTitle,
-    initPlayerLevelState,
-    resetPlayerLevelState
-  } = usePlayerLevelState();
 
   const processMonthlyFinancials = (stance?: string | null) => {
     let stanceMultipliers = {
