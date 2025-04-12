@@ -88,7 +88,14 @@ export interface LifeStage {
   };
 }
 
-// Define ShopItem interface for the Shop component
+export interface TitleTier {
+  level: number;
+  title: string;
+  perk: string | null;
+  description?: string;
+  aura?: string;
+}
+
 export interface ShopItem {
   id: string;
   name: string;
@@ -103,10 +110,8 @@ export interface ShopItem {
   category?: string;
 }
 
-// Define Strategy type for debt repayment strategies
 export type Strategy = 'avalanche' | 'snowball' | 'highImpact' | 'proportional';
 
-// Define BudgetPreset type
 export type BudgetPreset = 'balanced' | 'aggressive' | 'conservative' | 'custom' | 'frugal';
 
 export interface StanceMultipliers {
@@ -174,6 +179,15 @@ export interface GameContextType {
   templeLevel: number;
   upgradeTemple: (upgradeCost: number) => boolean;
   calculateTempleReturn: (hasShadowPenalty?: boolean) => number;
+  
+  // XP and Title System
+  playerXP: number;
+  gainXP: (amount: number) => void;
+  playerLevel: number;
+  playerTitle: string;
+  playerPerk: string | null;
+  getXPThreshold: (level: number) => number;
+  getNextTitle: (level: number) => TitleTier | null;
 }
 
 export interface PlayerStateType {
@@ -201,7 +215,6 @@ export interface PlayerStateType {
   resetPlayerState: () => void;
 }
 
-// Add utility type for the hooks/useRandomCharacter.ts compatibility
 export type JobType = {
   title: string;
   baseIncome: number;

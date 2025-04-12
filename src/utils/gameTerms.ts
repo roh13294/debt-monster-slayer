@@ -18,6 +18,10 @@ const baseTerms = {
   streak: 'Flame Aura Combo',
   'total debt': 'Demon HP',
   'mental damage': 'Willpower Strain',
+  'experience points': 'Soul Resonance',
+  'xp': 'Soul Resonance',
+  'level': 'Slayer Rank',
+  'level up': 'Rank Ascension',
   
   // Actions
   pay: 'strike',
@@ -50,6 +54,8 @@ const translateTerm = (term: string): string => {
   if (lowerTerm.includes('cash')) return lowerTerm.replace('cash', 'Spirit Energy');
   if (lowerTerm.includes('mental damage')) return lowerTerm.replace('mental damage', 'Willpower Strain');
   if (lowerTerm.includes('total debt')) return lowerTerm.replace('total debt', 'Demon HP');
+  if (lowerTerm.includes('xp')) return lowerTerm.replace('xp', 'Soul Resonance');
+  if (lowerTerm.includes('level up')) return lowerTerm.replace('level up', 'Rank Ascension');
   
   // Return original if no match
   return term;
@@ -90,17 +96,31 @@ export const battleStances = [
   }
 ];
 
-// Player level progression system
-export const calculatePlayerLevel = (monthsPassed: number): number => {
-  return Math.max(1, Math.floor(monthsPassed / 3) + 1);
+// Player level progression system - updated to use the new XP-based system
+export const calculatePlayerLevel = (xp: number): number => {
+  if (xp < 100) return 1;
+  
+  let level = 1;
+  let threshold = 100;
+  let totalXP = 0;
+  
+  while (totalXP <= xp) {
+    level++;
+    totalXP += threshold;
+    threshold = 100 + (level - 1) * 50;
+  }
+  
+  return Math.max(1, level - 1);
 };
 
-// Player rank based on level
+// Player rank based on level - preserved for backward compatibility
 export const getPlayerRank = (level: number): string => {
-  if (level >= 10) return 'Hashira';
-  if (level >= 7) return 'Kinoe';
-  if (level >= 5) return 'Kanoe';
-  if (level >= 3) return 'Kanoto';
-  if (level >= 2) return 'Mizunoto';
-  return 'Initiate';
+  if (level >= 30) return 'Ascendant';
+  if (level >= 20) return 'Bladelord Magnate';
+  if (level >= 15) return 'Demon Slayer';
+  if (level >= 12) return 'Relic Hunter';
+  if (level >= 8) return 'Breathing Adept';
+  if (level >= 5) return 'Shadow Initiate';
+  if (level >= 3) return 'Debt Brawler';
+  return 'Wandering Soul';
 };

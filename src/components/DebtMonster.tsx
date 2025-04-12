@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Debt } from '@/types/gameTypes';
 import { getMonsterImage, getDemonElementType, getDemonRank } from '@/utils/monsterImages';
 import { getMonsterProfile } from '@/utils/monsterProfiles';
 import { Progress } from '@/components/ui/progress';
-import { Flame, ShieldOff } from 'lucide-react';
+import { Flame, ShieldOff, Star } from 'lucide-react';
 
 interface DebtMonsterProps {
   debt: Debt;
@@ -80,6 +81,15 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
       style: 'decimal',
       maximumFractionDigits: 0
     }).format(amount) + " HP";
+  };
+
+  // Calculate potential XP reward based on debt amount
+  const calculatePotentialXP = () => {
+    // Base XP for a standard attack (approximate)
+    const baseXP = Math.ceil(debt.minimumPayment / debt.amount * 20);
+    // XP for defeating the demon
+    const defeatBonus = Math.ceil(debt.amount / 100);
+    return `~${baseXP} per attack, +${defeatBonus} bonus`;
   };
   
   const getRageStyles = () => {
@@ -209,6 +219,10 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
           <div className="bg-slate-900/60 rounded p-2 mb-3 border border-slate-800">
             <p className="text-amber-400 text-xs font-medium">WEAKNESS: {monsterProfile.weakness}</p>
             <p className="text-slate-400 text-xs italic mt-1">{monsterProfile.backstory.substring(0, 120)}...</p>
+            <div className="mt-2 flex items-center text-xs">
+              <Star className="w-3 h-3 text-demon-gold mr-1" /> 
+              <span className="text-demon-gold">XP Reward: {calculatePotentialXP()}</span>
+            </div>
           </div>
         )}
         

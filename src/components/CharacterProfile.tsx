@@ -2,8 +2,10 @@
 import React from 'react';
 import { useGameContext } from '@/context/GameContext';
 import AnimeAvatar from './AnimeAvatar';
-import { Sword, Shield, Book, Zap, PiggyBank, TrendingUp, Flame, Trophy } from 'lucide-react';
+import { Sword, Shield, Book, Zap, PiggyBank, TrendingUp, Flame, Trophy, Star } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import XPBar from './ui/XPBar';
+import { motion } from 'framer-motion';
 
 const CharacterProfile: React.FC = () => {
   const { 
@@ -15,30 +17,17 @@ const CharacterProfile: React.FC = () => {
     lifeStage,
     paymentStreak,
     debts,
-    totalDebt
+    totalDebt,
+    playerLevel,
+    playerTitle,
+    playerPerk
   } = useGameContext();
   
-  // Calculate level based on traits
-  const calculateLevel = () => {
-    const { financialKnowledge, discipline, courage, wisdom } = playerTraits;
-    const baseLevel = Math.floor((financialKnowledge + discipline + courage + wisdom) / 4);
-    return Math.max(1, baseLevel);
-  };
-  
-  // Calculate wealth percentage for level progress
+  // Calculate wealth percentage for progress
   const calculateWealthProgress = () => {
     if (totalDebt === 0) return 100;
     const wealthRatio = Math.min(cash / (totalDebt || 1), 1);
     return Math.floor(wealthRatio * 100);
-  };
-  
-  // Calculate next title based on level
-  const getNextTitle = () => {
-    const level = calculateLevel();
-    if (level < 5) return 'Adept Slayer';
-    if (level < 10) return 'Master Slayer';
-    if (level < 15) return 'Hashira';
-    return 'Demon Slayer Legend';
   };
   
   // Format currency
@@ -65,24 +54,26 @@ const CharacterProfile: React.FC = () => {
             <h2 className="text-lg font-bold flame-breathing-text">{playerName || 'Slayer'}</h2>
             <div className="flex items-center gap-1">
               <Trophy className="w-3 h-3 text-demon-gold" />
-              <span className="text-sm text-demon-gold">{lifeStage?.name || 'Young'} {job?.title || 'Slayer'}</span>
+              <span className="text-sm text-demon-gold">{lifeStage?.name || 'Young'} {playerTitle}</span>
             </div>
           </div>
           
           {/* Level & Progress */}
           <div>
-            <div className="flex justify-between items-center text-xs mb-1">
-              <span className="text-white/80">Level {calculateLevel()}</span>
-              <span className="text-demon-gold">{calculateWealthProgress()}%</span>
-            </div>
-            <Progress value={calculateWealthProgress()} className="h-2 bg-demon-black/60">
-              <div className="absolute inset-0 bg-demon-gradient animate-energy-flow"></div>
-            </Progress>
-            <div className="mt-1 text-xs text-white/60 flex items-center gap-1">
-              <Flame className="w-3 h-3 text-demon-ember" />
-              <span>Next title: {getNextTitle()}</span>
-            </div>
+            <XPBar size="md" />
           </div>
+          
+          {/* Player Perk */}
+          {playerPerk && (
+            <motion.div 
+              className="text-xs bg-demon-black/30 px-2 py-1 rounded border border-demon-red/20 inline-flex items-center"
+              animate={{ opacity: [0.8, 1, 0.8] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Star className="w-3 h-3 text-demon-gold mr-1" />
+              <span className="text-demon-gold">{playerPerk}</span>
+            </motion.div>
+          )}
         </div>
       </div>
       
@@ -146,12 +137,12 @@ const CharacterProfile: React.FC = () => {
             <div className="bg-demon-black/30 rounded-md p-2 text-xs">
               <div className="flex justify-between">
                 <span className="text-white/70">Cash</span>
-                <span className="text-demon-gold">{formatCurrency(cash)}</span>
+                <span className="text-demon-gold">{cash} SC</span>
               </div>
               
               <div className="flex justify-between mt-1">
                 <span className="text-white/70">Debt</span>
-                <span className="text-demon-red">{formatCurrency(totalDebt)}</span>
+                <span className="text-demon-red">{totalDebt} HP</span>
               </div>
               
               <div className="flex justify-between mt-1">

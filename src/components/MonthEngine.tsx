@@ -6,6 +6,7 @@ import CutsceneEventScreen from './cutscene/CutsceneEventScreen';
 import BattleArena from './battle/BattleArena';
 import MonthSummary from './summary/MonthSummary';
 import ShadowCallingModal from './shadow/ShadowCallingModal';
+import LevelUpAnimation from './ui/LevelUpAnimation';
 
 type GamePhase = 'dashboard' | 'cutscene' | 'battle' | 'summary';
 
@@ -13,6 +14,8 @@ const MonthEngine: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<GamePhase>('dashboard');
   const [selectedStance, setSelectedStance] = useState<string | null>(null);
   const [showShadowModal, setShowShadowModal] = useState(false);
+  const [showLevelUpAnimation, setShowLevelUpAnimation] = useState(false);
+  const [prevPlayerLevel, setPrevPlayerLevel] = useState(1);
   
   const { 
     processMonthlyFinancials, 
@@ -20,7 +23,8 @@ const MonthEngine: React.FC = () => {
     monthsPassed, 
     totalDebt,
     paymentStreak,
-    shadowForm
+    shadowForm,
+    playerLevel
   } = useGameContext();
   
   // Check if shadow form should be triggered
@@ -34,6 +38,15 @@ const MonthEngine: React.FC = () => {
       setShowShadowModal(true);
     }
   }, [monthsPassed, totalDebt, paymentStreak, shadowForm, currentPhase]);
+  
+  // Track player level changes to trigger animation
+  useEffect(() => {
+    if (playerLevel > 1 && playerLevel !== prevPlayerLevel) {
+      setShowLevelUpAnimation(true);
+    }
+    
+    setPrevPlayerLevel(playerLevel);
+  }, [playerLevel, prevPlayerLevel]);
   
   const handleAdvanceMonth = () => {
     setCurrentPhase('cutscene');
@@ -101,6 +114,12 @@ const MonthEngine: React.FC = () => {
       <ShadowCallingModal 
         isOpen={showShadowModal}
         onClose={() => setShowShadowModal(false)}
+      />
+      
+      {/* Level Up Animation */}
+      <LevelUpAnimation
+        isOpen={showLevelUpAnimation}
+        onClose={() => setShowLevelUpAnimation(false)}
       />
     </>
   );

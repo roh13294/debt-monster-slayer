@@ -13,6 +13,7 @@ import { useEventResolver } from '../hooks/useEventResolver';
 import { useShadowFormState } from '../hooks/useShadowFormState';
 import { useBreathingState } from '../hooks/useBreathingState';
 import { useWealthTempleState } from '../hooks/useWealthTempleState';
+import { usePlayerLevelState } from '../hooks/usePlayerLevelState';
 import { GameContext } from './GameContextTypes';
 import { initializeGameState, resetGameState } from './GameInitialization';
 import { toast } from "@/hooks/use-toast";
@@ -121,7 +122,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     playerTraits,
     debts,
     specialMoves,
-    setSpecialMoves
+    setSpecialMoves,
+    gainXP
   });
 
   const { purchaseItem } = useShopActions({
@@ -172,6 +174,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     equipRelic,
     unequipRelic
   } = useWealthTempleState();
+
+  const {
+    playerXP,
+    playerLevel,
+    playerTitle,
+    playerPerk,
+    gainXP,
+    getXPThreshold,
+    getNextTitle,
+    initPlayerLevelState,
+    resetPlayerLevelState
+  } = usePlayerLevelState();
 
   const processMonthlyFinancials = (stance?: string | null) => {
     let stanceMultipliers = {
@@ -318,6 +332,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (setCharacterBackground) {
       setCharacterBackground(background);
     }
+    
+    initPlayerLevelState();
   };
 
   const resetGame = () => {
@@ -330,6 +346,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setGameStarted,
       setCurrentLifeEvent
     );
+    
+    resetPlayerLevelState();
   };
 
   const handleResolveLifeEvent = (optionIndex: number) => {
@@ -400,7 +418,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     templeLevel,
     upgradeTemple,
-    calculateTempleReturn
+    calculateTempleReturn,
+    
+    playerXP,
+    gainXP,
+    playerLevel,
+    playerTitle,
+    playerPerk,
+    getXPThreshold,
+    getNextTitle
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

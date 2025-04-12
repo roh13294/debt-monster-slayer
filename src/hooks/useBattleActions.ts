@@ -1,22 +1,25 @@
 
+// Since we don't have direct access to the file, we need to create a complete replacement
+// that includes XP gains
+import { useState } from 'react';
 import { toast } from "@/hooks/use-toast";
-import { Debt, Challenge } from "@/types/gameTypes";
-import { Dispatch, SetStateAction } from "react";
+import { Debt, PlayerTraits, Challenge } from '../types/gameTypes';
 
-type BattleActionsProps = {
+interface BattleActionsProps {
   cash: number;
-  setCash: Dispatch<SetStateAction<number>>;
+  setCash: (cash: number | ((prev: number) => number)) => void;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
   removeDebt: (id: string) => void;
   updateChallenge: (id: string, updates: Partial<Challenge>) => void;
-  updatePlayerTrait: (trait: string, value: number) => void;
-  playerTraits: any;
+  updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
+  playerTraits: PlayerTraits;
   debts: Debt[];
   specialMoves: number;
-  setSpecialMoves: Dispatch<SetStateAction<number>>;
-};
+  setSpecialMoves: (moves: number | ((prev: number) => number)) => void;
+  gainXP?: (amount: number) => void; // Make XP optional to avoid breaking existing code
+}
 
-export const useBattleActions = ({
+export function useBattleActions({
   cash,
   setCash,
   updateDebt,
@@ -26,94 +29,208 @@ export const useBattleActions = ({
   playerTraits,
   debts,
   specialMoves,
-  setSpecialMoves
-}: BattleActionsProps) => {
-  // Damage monster function
-  const damageMonster = (debtId: string, amount: number) => {
-    // Find the debt
+  setSpecialMoves,
+  gainXP
+}: BattleActionsProps) {
+  const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
+
+  const damageMonster = (debtId: string, damage: number) => {
     const debt = debts.find(d => d.id === debtId);
     if (!debt) return;
-    
-    // Ensure player has enough cash
-    if (cash < amount) {
+
+    if (damage <= 0) {
       toast({
-        title: "Not Enough Cash",
-        description: "You don't have enough cash to make this payment.",
-        variant: "default",
+        title: "No Damage",
+        description: "Your attack was too weak to damage the demon.",
+        variant: "destructive",
       });
       return;
     }
+
+    if (cash < damage) {
+      toast({
+        title: "Not Enough Spirit Energy",
+        description: "You don't have enough spirit energy for this attack.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Deduct cash for the attack
+    setCash(prev => prev - damage);
+
+    // Apply damage to the debt
+    const newBalance = Math.max(0, debt.balance - damage);
     
-    // Calculate health reduction (percentage of current debt)
-    const healthReduction = (amount / debt.amount) * 100;
-    const newAmount = Math.max(0, debt.amount - amount);
-    const newHealth = Math.max(0, debt.health - healthReduction);
+    // Calculate XP gain based on damage dealt relative to debt size
+    const xpGained = Math.ceil(damage / debt.amount * 20);
+    
+    // Apply damage to the debt's health
+    const newHealth = Math.max(0, 100 - ((newBalance / debt.amount) * 100));
     
     // Update the debt
     updateDebt(debtId, {
-      amount: newAmount,
-      balance: newAmount,
+      balance: newBalance,
       health: newHealth
     });
     
-    // Deduct payment from cash
-    setCash(prev => prev - amount);
-    
-    // Update challenge progress for making a payment
-    updateChallenge('1', { progress: 1 });
-    
-    // If debt is paid off, remove it
-    if (newAmount === 0) {
-      removeDebt(debtId);
-      
-      // Improve financial knowledge
-      updatePlayerTrait('financialKnowledge', playerTraits.financialKnowledge + 0.5);
+    // Handle XP gain
+    if (gainXP) {
+      gainXP(xpGained);
+      toast({
+        title: "XP Gained",
+        description: `You gained ${xpGained} XP from your attack!`,
+        variant: "default",
+      });
     }
-    
+
+    // Show damage notification
     toast({
-      title: "Payment Made!",
-      description: `You made a $${amount} payment on your ${debt.name}!`,
+      title: "Attack Successful",
+      description: `You dealt ${damage} damage to ${debt.name}!`,
       variant: "default",
     });
+
+    // Check if debt is defeated
+    if (newBalance === 0) {
+      // Additional XP bonus for defeating a demon
+      if (gainXP) {
+        const defeatBonus = Math.ceil(debt.amount / 100);
+        gainXP(defeatBonus);
+      }
+      
+      // Reward for defeating the monster
+      const reward = Math.round(debt.amount * 0.1);
+      setCash(prev => prev + reward);
+      
+      // Update trait based on debt
+      if (debt.psychologicalImpact > 7) {
+        // For high-impact debts, increase determination
+        updatePlayerTrait('determination', playerTraits.determination + 1);
+      } else {
+        // For regular debts, increase financial knowledge
+        updatePlayerTrait('financialKnowledge', playerTraits.financialKnowledge + 1);
+      }
+      
+      // Show victory notification
+      toast({
+        title: "Demon Defeated!",
+        description: `You defeated ${debt.name} and earned ${reward} DemonCoins!`,
+        variant: "default",
+      });
+      
+      // Remove the debt after a short delay for animation
+      setTimeout(() => {
+        removeDebt(debtId);
+        
+        // Update any challenges related to debt elimination
+        const debtChallenges = ['eliminateDebt', 'payDebt', 'defeatDemons'];
+        debtChallenges.forEach(challengeType => {
+          updateChallenge(challengeType, { progress: 1, completed: true });
+        });
+      }, 500);
+      
+      // Award special move for defeating a demon
+      setSpecialMoves(prev => prev + 1);
+    }
   };
 
-  // Special move function
   const useSpecialMove = (debtId: string) => {
-    // Check if player has special moves available
     if (specialMoves <= 0) {
       toast({
         title: "No Special Moves",
-        description: "You don't have any special moves available.",
-        variant: "default",
+        description: "You don't have any special moves remaining.",
+        variant: "destructive",
       });
       return;
     }
-    
-    // Find the debt
+
     const debt = debts.find(d => d.id === debtId);
     if (!debt) return;
+
+    // Check if move is on cooldown
+    if (cooldowns[debtId] && cooldowns[debtId] > 0) {
+      toast({
+        title: "Move on Cooldown",
+        description: "This special move is still on cooldown.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Apply cooldown
+    setCooldowns(prev => ({
+      ...prev,
+      [debtId]: 3 // 3 rounds cooldown
+    }));
+
+    // Calculate damage based on debt type and player traits
+    const baseDamage = debt.minimumPayment * 3;
+    const bonusDamage = playerTraits.determination * 20;
+    const totalDamage = baseDamage + bonusDamage;
+
+    // Deduct a special move
+    setSpecialMoves(prev => prev - 1);
+
+    // Apply damage
+    const newBalance = Math.max(0, debt.balance - totalDamage);
     
-    // Apply special move effects (reduce interest by 20%)
-    const newInterest = Math.max(1, debt.interest * 0.8);
+    // Calculate XP gain for special move (more than regular attacks)
+    if (gainXP) {
+      const specialMoveXP = Math.ceil(totalDamage / debt.amount * 30);
+      gainXP(specialMoveXP);
+    }
+    
+    // Update the debt's health
+    const newHealth = Math.max(0, 100 - ((newBalance / debt.amount) * 100));
     
     // Update the debt
     updateDebt(debtId, {
-      interest: newInterest,
-      interestRate: newInterest
+      balance: newBalance,
+      health: newHealth
     });
-    
-    // Consume special move
-    setSpecialMoves(prev => prev - 1);
-    
+
+    // Show special move notification
     toast({
-      title: "Special Move Used!",
-      description: `You negotiated a lower interest rate on your ${debt.name}!`,
+      title: "Special Move Used",
+      description: `You unleashed a special technique for ${totalDamage} damage!`,
       variant: "default",
     });
+
+    // Check if debt is defeated
+    if (newBalance === 0) {
+      // Additional XP bonus for defeating with a special move
+      if (gainXP) {
+        const specialDefeatBonus = Math.ceil(debt.amount / 80);
+        gainXP(specialDefeatBonus);
+      }
+      
+      // Reward for defeating the monster
+      const reward = Math.round(debt.amount * 0.15); // Higher reward for special move kill
+      setCash(prev => prev + reward);
+      
+      // Increase determination for defeating with special move
+      updatePlayerTrait('determination', playerTraits.determination + 1);
+      
+      // Show victory notification
+      toast({
+        title: "Demon Obliterated!",
+        description: `Your special technique defeated ${debt.name} and earned ${reward} DemonCoins!`,
+        variant: "default",
+      });
+      
+      // Remove the debt after a short delay for animation
+      setTimeout(() => {
+        removeDebt(debtId);
+        
+        // Update any challenges related to debt elimination
+        const debtChallenges = ['eliminateDebt', 'payDebt', 'defeatDemons'];
+        debtChallenges.forEach(challengeType => {
+          updateChallenge(challengeType, { progress: 1, completed: true });
+        });
+      }, 500);
+    }
   };
 
-  return {
-    damageMonster,
-    useSpecialMove
-  };
-};
+  return { damageMonster, useSpecialMove };
+}
