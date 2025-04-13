@@ -1,6 +1,5 @@
 
-import React, { useState } from 'react';
-import { useGameContext } from '@/context/GameContext';
+import React from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import BattleArenaEnhanced from './battle/BattleArenaEnhanced';
 

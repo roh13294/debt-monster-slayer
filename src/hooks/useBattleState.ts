@@ -529,7 +529,7 @@ export function useBattleState() {
     } else if (debt.amount > 5000 || rarityRoll > 0.7) {
       lootPool.push({
         type: 'Skill Scroll',
-        rarity: 'Uncommon',
+        rarity: 'Common',
         name: 'Fire Scroll',
         description: 'Ancient knowledge of combat techniques',
         value: 1,
