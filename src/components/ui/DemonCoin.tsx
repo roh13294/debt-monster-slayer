@@ -25,6 +25,11 @@ const DemonCoin: React.FC<DemonCoinProps> = ({
     lg: 20
   };
 
+  // Format the amount if it exists, otherwise just show the label
+  const displayText = amount !== undefined && !isNaN(amount) 
+    ? `${amount.toLocaleString()} DemonCoins` 
+    : showIcon ? 'DemonCoins' : '';
+
   return (
     <div className="inline-flex items-center gap-1 font-medium">
       {showIcon && (
@@ -37,7 +42,7 @@ const DemonCoin: React.FC<DemonCoinProps> = ({
         </div>
       )}
       <span className={`${sizeClasses[size]} bg-gradient-to-br from-yellow-400 to-amber-500 bg-clip-text text-transparent font-bold`}>
-        {amount !== undefined ? amount.toLocaleString() : ''} DemonCoins
+        {displayText}
       </span>
     </div>
   );
