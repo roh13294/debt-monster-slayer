@@ -23,7 +23,14 @@ const BattleAttackControls: React.FC<BattleAttackControlsProps> = ({
   onAttack,
   onSpecialMove
 }) => {
-  const [paymentAmount, setPaymentAmount] = useState<number>(debt?.minimumPayment || 0);
+  const [paymentAmount, setPaymentAmount] = useState<number>(
+    Math.min(debt?.minimumPayment || 0, cash)
+  );
+
+  // Ensure payment amount is always within valid range when cash changes
+  React.useEffect(() => {
+    setPaymentAmount(prev => Math.min(prev, cash));
+  }, [cash]);
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -45,22 +52,25 @@ const BattleAttackControls: React.FC<BattleAttackControlsProps> = ({
         
         <Slider
           value={[paymentAmount]}
-          min={debt.minimumPayment > cash ? cash : debt.minimumPayment}
+          min={Math.min(debt.minimumPayment, cash, 1)}
           max={Math.min(cash, debt.amount)}
           step={5}
           onValueChange={(value) => setPaymentAmount(value[0])}
           className="my-4"
+          disabled={cash <= 0}
         />
         
         <div className="flex justify-between text-xs text-slate-500">
-          <span>Min: {formatCurrency(debt.minimumPayment > cash ? cash : debt.minimumPayment)}</span>
+          <span>Min: {formatCurrency(Math.min(debt.minimumPayment, cash, 1))}</span>
           <span>Max: {formatCurrency(Math.min(cash, debt.amount))}</span>
         </div>
         
         <div className="mt-3 text-sm">
           <div className="flex justify-between mb-1">
             <span className="text-slate-400">Available Spirit Energy</span>
-            <span className="text-slate-300">{formatCurrency(cash)}</span>
+            <span className={`${cash <= 0 ? 'text-red-400' : 'text-slate-300'}`}>
+              {formatCurrency(cash)}
+            </span>
           </div>
         </div>
       </div>
@@ -68,8 +78,8 @@ const BattleAttackControls: React.FC<BattleAttackControlsProps> = ({
       {/* Attack buttons */}
       <div className="grid grid-cols-2 gap-4 mt-4">
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: cash > 0 ? 1.02 : 1 }}
+          whileTap={{ scale: cash > 0 ? 0.98 : 1 }}
         >
           <Button
             onClick={() => onAttack(paymentAmount)}
@@ -79,7 +89,7 @@ const BattleAttackControls: React.FC<BattleAttackControlsProps> = ({
               currentStance === 'defensive' ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500' :
               currentStance === 'risky' ? 'bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500' :
               'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500'
-            }`}
+            } ${cash <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Sword className="w-5 h-5 mr-2" />
             Attack ({formatCurrency(paymentAmount)})
@@ -87,8 +97,8 @@ const BattleAttackControls: React.FC<BattleAttackControlsProps> = ({
         </motion.div>
         
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: specialMoves > 0 ? 1.02 : 1 }}
+          whileTap={{ scale: specialMoves > 0 ? 0.98 : 1 }}
         >
           <Button
             onClick={onSpecialMove}

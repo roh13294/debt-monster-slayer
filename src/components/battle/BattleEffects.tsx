@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -394,7 +393,7 @@ export const EnergyWave: React.FC<{
 
   return (
     <motion.div
-      className="absolute bottom-0 left-0 w-full h-[150%]"
+      className={`absolute bottom-0 left-0 w-full h-[150%] bg-gradient-to-t ${getWaveColor()}`}
       style={{
         backgroundSize: '200% 200%',
         backgroundPosition: '0% 0%',
@@ -410,7 +409,6 @@ export const EnergyWave: React.FC<{
         repeatType: "reverse",
         ease: "easeInOut",
       }}
-      className={`bg-gradient-to-t ${getWaveColor()}`}
     />
   );
 };

@@ -1,4 +1,3 @@
-
 // Since we don't have direct access to the file, we need to create a complete replacement
 // that includes XP gains
 import { useState } from 'react';
@@ -47,17 +46,18 @@ export function useBattleActions({
       return;
     }
 
+    // Check if the player has enough spirit energy
     if (cash < damage) {
       toast({
         title: "Not Enough Spirit Energy",
         description: "You don't have enough spirit energy for this attack.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
 
     // Deduct cash for the attack
-    setCash(prev => prev - damage);
+    setCash((prev: number) => prev - damage);
 
     // Apply damage to the debt
     const newBalance = Math.max(0, debt.balance - damage);
@@ -101,7 +101,7 @@ export function useBattleActions({
       
       // Reward for defeating the monster
       const reward = Math.round(debt.amount * 0.1);
-      setCash(prev => prev + reward);
+      setCash((prev: number) => prev + reward);
       
       // Update trait based on debt
       if (debt.psychologicalImpact > 7) {
@@ -131,8 +131,10 @@ export function useBattleActions({
       }, 500);
       
       // Award special move for defeating a demon
-      setSpecialMoves(prev => prev + 1);
+      setSpecialMoves((prev: number) => prev + 1);
     }
+    
+    return true;
   };
 
   const useSpecialMove = (debtId: string) => {
@@ -207,7 +209,7 @@ export function useBattleActions({
       
       // Reward for defeating the monster
       const reward = Math.round(debt.amount * 0.15); // Higher reward for special move kill
-      setCash(prev => prev + reward);
+      setCash((prev: number) => prev + reward);
       
       // Increase determination for defeating with special move
       updatePlayerTrait('determination', playerTraits.determination + 1);

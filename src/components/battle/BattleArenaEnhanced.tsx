@@ -174,7 +174,17 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete })
   };
   
   const handleAttack = (attackAmount: number) => {
-    if (!debt || attackAmount <= 0 || attackAmount > cash) {
+    if (!debt || attackAmount <= 0) {
+      return;
+    }
+    
+    // Check if player has enough spirit energy
+    if (attackAmount > cash) {
+      toast({
+        title: "Not Enough Spirit Energy",
+        description: "You don't have enough spirit energy for this attack.",
+        variant: "destructive",
+      });
       return;
     }
     
@@ -206,9 +216,10 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete })
       }
       
       setTimeout(() => {
-        damageMonster(debtId, attackResult.damage);
+        // Use the damageMonster function which now has validation
+        const success = damageMonster(debtId, attackResult.damage);
         
-        if (attackResult.damage >= debt.amount) {
+        if (success !== false && attackResult.damage >= debt.balance) {
           handleVictory();
         }
       }, 800);
