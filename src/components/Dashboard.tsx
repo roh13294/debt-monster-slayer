@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
-import MonsterBattle from './MonsterBattle';
+import EnhancedMonsterBattle from './EnhancedMonsterBattle';
 import MultiChallenge from './MultiChallenge';
 import LifeEvent from './LifeEvent';
 import StreakDisplay from './StreakDisplay';
@@ -15,8 +16,11 @@ import JourneyTimeline from './journey/JourneyTimeline';
 import SlayerLog from './journey/SlayerLog';
 import { calculatePlayerLevel, getPlayerRank } from '@/utils/gameTerms';
 import CorruptionMeter from './ui/CorruptionMeter';
-import WealthTempleScreen from './temple/WealthTempleScreen';
-import SkillTree from './skills/SkillTree';
+import WealthTempleInterface from './temple/WealthTempleInterface';
+import BreathingSkillsPanel from './skills/BreathingSkillsPanel';
+import ShadowFormSelectionModal from './shadow/ShadowFormSelectionModal';
+import PlayerTitleDisplay from './ui/PlayerTitleDisplay';
+import QuestSystem from './quests/QuestSystem';
 
 interface DashboardProps {
   onAdvanceMonth: () => void;
@@ -35,7 +39,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
     paymentStreak,
     playerTraits,
     shadowForm,
-    corruptionLevel
+    corruptionLevel,
+    playerLevel,
+    playerTitle
   } = useGameContext();
   
   const [selectedMonster, setSelectedMonster] = useState<string | null>(null);
@@ -43,6 +49,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
   const [showSlayerLog, setShowSlayerLog] = useState(false);
   const [showWealthTemple, setShowWealthTemple] = useState(false);
   const [showSkillTree, setShowSkillTree] = useState(false);
+  const [showQuestSystem, setShowQuestSystem] = useState(false);
+  const [showShadowModal, setShowShadowModal] = useState(false);
   
   const handleMonsterClick = (id: string) => {
     setSelectedMonster(id);
@@ -61,8 +69,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
     }).format(amount);
   };
   
-  const playerLevel = calculatePlayerLevel(monthsPassed);
-  const playerRank = getPlayerRank(playerLevel);
+  // Check if we should show shadow form selection modal
+  // In a real implementation, this would be based on game state
+  const shouldShowShadowFormModal = () => {
+    return !shadowForm && (
+      monthsPassed >= 3 || 
+      (totalDebt > 15000 && Math.max(0, 3 - paymentStreak) >= 2)
+    );
+  };
   
   return (
     <div className="relative space-y-6">
@@ -72,10 +86,23 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
       <div className="flex items-center justify-between mb-2">
         {/* Status Indicators */}
         <div className="flex items-center space-x-3">
+          <PlayerTitleDisplay showLevel={true} showPerk={false} size="md" />
+          
           {shadowForm && (
             <CorruptionMeter size="md" />
           )}
         </div>
+        
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setShowQuestSystem(true)}
+          className="border-amber-700/30 bg-amber-900/10 hover:bg-amber-900/20 flex items-center gap-1.5"
+        >
+          <Scroll className="w-3.5 h-3.5 text-amber-500" />
+          <span className="text-amber-300">Quests</span>
+          <span className="bg-amber-800/50 text-amber-300 rounded-full px-1.5 text-xs">3</span>
+        </Button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -108,7 +135,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
           title="Game Progress"
           value={`${specialMoves} Special Moves`}
           details={{
-            leftLabel: playerRank,
+            leftLabel: playerTitle,
             leftValue: `Level ${playerLevel}`,
             rightLabel: "Growth",
             rightValue: `${playerTraits.determination + playerTraits.discipline + playerTraits.financialKnowledge}/30`
@@ -153,7 +180,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
           className="border-slate-700 bg-slate-800/50 hover:bg-slate-800 flex items-center gap-2"
         >
           <Home className="w-4 h-4 text-amber-400" />
-          <span>Home</span>
+          <span>Wealth Temple</span>
         </Button>
         
         <Button
@@ -191,6 +218,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
                     onClick={() => handleMonsterClick(debt.id)}
                   />
                 ))}
+              </div>
+            )}
+            
+            {debts.length > 1 && (
+              <div className="flex justify-center mt-5">
+                <Button
+                  onClick={() => handleMonsterClick(debts[0].id)}
+                  className="bg-gradient-to-r from-purple-700 to-amber-700 hover:from-purple-600 hover:to-amber-600 flex items-center gap-2"
+                >
+                  <Sword className="w-4 h-4" />
+                  <span>Launch Tactical Raid</span>
+                </Button>
               </div>
             )}
           </div>
@@ -308,6 +347,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
         </div>
       </div>
       
+      {/* Modals and Dialogs */}
       <Dialog open={showTimeline} onOpenChange={setShowTimeline}>
         <DialogContent className="sm:max-w-[600px] p-0 bg-transparent border-none">
           <JourneyTimeline onClose={() => setShowTimeline(false)} />
@@ -320,12 +360,32 @@ const Dashboard: React.FC<DashboardProps> = ({ onAdvanceMonth }) => {
         </DialogContent>
       </Dialog>
       
-      <WealthTempleScreen isOpen={showWealthTemple} onClose={() => setShowWealthTemple(false)} />
+      <Dialog open={showWealthTemple} onOpenChange={setShowWealthTemple}>
+        <DialogContent className="sm:max-w-[700px] p-0 bg-transparent border-none">
+          <WealthTempleInterface onClose={() => setShowWealthTemple(false)} />
+        </DialogContent>
+      </Dialog>
       
-      <SkillTree isOpen={showSkillTree} onClose={() => setShowSkillTree(false)} />
+      <Dialog open={showSkillTree} onOpenChange={setShowSkillTree}>
+        <DialogContent className="sm:max-w-[700px] p-0 bg-transparent border-none">
+          <BreathingSkillsPanel onClose={() => setShowSkillTree(false)} />
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={showQuestSystem} onOpenChange={setShowQuestSystem}>
+        <DialogContent className="sm:max-w-[700px] p-0 bg-transparent border-none">
+          <QuestSystem onClose={() => setShowQuestSystem(false)} />
+        </DialogContent>
+      </Dialog>
+      
+      {/* Shadow Form Selection Modal */}
+      <ShadowFormSelectionModal
+        isOpen={shouldShowShadowFormModal()}
+        onClose={() => setShowShadowModal(false)}
+      />
       
       {selectedMonster && (
-        <MonsterBattle 
+        <EnhancedMonsterBattle 
           debtId={selectedMonster} 
           onClose={handleCloseBattle} 
         />

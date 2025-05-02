@@ -1,0 +1,188 @@
+
+/* Battle animations and effects */
+.attack-slash {
+  position: absolute;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
+  transform-origin: center;
+  z-index: 20;
+  overflow: visible;
+}
+
+.attack-slash::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 107, 107, 0.3);
+  filter: blur(4px);
+}
+
+.critical-slash {
+  position: absolute;
+  width: 0;
+  height: 5px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  transform-origin: center;
+  z-index: 20;
+}
+
+.critical-slash::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 215, 0, 0.4);
+  filter: blur(6px);
+}
+
+.elemental-aura {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+.flame-aura {
+  background: radial-gradient(circle at center, rgba(255, 69, 0, 0.3), transparent 70%);
+  animation: pulse-flame 2s infinite alternate;
+}
+
+.water-aura {
+  background: radial-gradient(circle at center, rgba(0, 128, 255, 0.3), transparent 70%);
+  animation: pulse-water 3s infinite alternate;
+}
+
+.thunder-aura {
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.3), transparent 70%);
+  animation: pulse-thunder 1s infinite alternate;
+}
+
+.wind-aura {
+  background: radial-gradient(circle at center, rgba(50, 205, 50, 0.3), transparent 70%);
+  animation: pulse-wind 4s infinite alternate;
+}
+
+.shadow-aura {
+  background: radial-gradient(circle at center, rgba(128, 0, 128, 0.3), transparent 70%);
+  animation: pulse-shadow 3s infinite alternate;
+}
+
+@keyframes pulse-flame {
+  0% { opacity: 0.5; }
+  100% { opacity: 0.8; }
+}
+
+@keyframes pulse-water {
+  0% { opacity: 0.5; transform: scale(0.98); }
+  100% { opacity: 0.7; transform: scale(1.02); }
+}
+
+@keyframes pulse-thunder {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  51% { opacity: 0.3; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes pulse-wind {
+  0% { opacity: 0.4; transform: rotate(0deg); }
+  100% { opacity: 0.6; transform: rotate(5deg); }
+}
+
+@keyframes pulse-shadow {
+  0% { opacity: 0.4; filter: blur(5px); }
+  100% { opacity: 0.7; filter: blur(8px); }
+}
+
+/* Shadow form visual effects */
+.corruption-pulse {
+  animation: corruption-flash 1s ease-out;
+  position: relative;
+}
+
+.corruption-pulse::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(128, 0, 0, 0.3), transparent 70%);
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  animation: corruption-overlay 1s ease-out;
+}
+
+@keyframes corruption-flash {
+  0% { filter: none; }
+  10% { filter: brightness(1.2) saturate(1.2); }
+  20% { filter: brightness(0.8) saturate(0.8); }
+  30% { filter: brightness(1.3) saturate(1.3); }
+  100% { filter: none; }
+}
+
+@keyframes corruption-overlay {
+  0% { opacity: 0; }
+  20% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* Shadow transition effect */
+.shadow-transition {
+  animation: shadow-embrace 2s ease-out;
+}
+
+@keyframes shadow-embrace {
+  0% { filter: none; }
+  20% { filter: brightness(0.7) saturate(0.5) contrast(1.3); }
+  40% { filter: brightness(0.5) saturate(0.2) contrast(1.5); }
+  60% { filter: brightness(1.3) saturate(1.5) contrast(1.3); }
+  80% { filter: brightness(0.8) saturate(1.2) contrast(1.2); }
+  100% { filter: none; }
+}
+
+/* Corruption overload effect */
+.corruption-overload {
+  animation: corruption-overload 3s ease-out;
+}
+
+@keyframes corruption-overload {
+  0% { filter: none; }
+  10% { filter: brightness(1.5) saturate(1.5) hue-rotate(30deg); }
+  20% { filter: brightness(0.5) saturate(0.5); }
+  30% { filter: brightness(1.5) saturate(1.5) hue-rotate(-30deg); }
+  40% { filter: brightness(0.7) saturate(0.7); }
+  50% { filter: brightness(1.3) saturate(1.3); }
+  60% { filter: brightness(0.8) saturate(0.8) hue-rotate(15deg); }
+  100% { filter: none; }
+}
+
+/* Breathing Style effects */
+.breathing-trail {
+  position: absolute;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  z-index: -1;
+  opacity: 0.7;
+  filter: blur(1px);
+}
+
+.flame-trail {
+  background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
+}
+
+.water-trail {
+  background: linear-gradient(90deg, transparent, #4fc3f7, transparent);
+}
+
+.thunder-trail {
+  background: linear-gradient(90deg, transparent, #ffd54f, transparent);
+}
+
+.wind-trail {
+  background: linear-gradient(90deg, transparent, #81c784, transparent);
+}
+
+.shadow-trail {
+  background: linear-gradient(90deg, transparent, #ce93d8, transparent);
+}
