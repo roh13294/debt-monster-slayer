@@ -15,10 +15,12 @@ import BattleMissionTracker from './BattleMissionTracker';
 import BattleEvents from './BattleEvents';
 import BattleLootStage from './BattleLootStage';
 import BattlePrepStage from './BattlePrepStage';
+import { toast } from '@/hooks/use-toast';
+import { LootItem } from '@/types/battleTypes';
 
 interface BattleArenaProps {
   debtId: string;
-  onComplete: (loot: any[]) => void;
+  onComplete: (loot: LootItem[]) => void;
   onSwitchToRaid?: () => void;
 }
 
@@ -217,10 +219,10 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
       }
       
       setTimeout(() => {
-        // Use the damageMonster function which now has validation
+        // Fix the comparison between damageMonster result and boolean
         const success = damageMonster(debtId, attackResult.damage);
         
-        if (success !== false && attackResult.damage >= debt.balance) {
+        if (success && attackResult.damage >= debt.balance) {
           handleVictory();
         }
       }, 800);
@@ -302,7 +304,8 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
     setBattleStage('loot');
   };
   
-  const handleCollectLoot = (selectedItems: any[]) => {
+  // Fix the handleCollectLoot function to handle the MouseEvent properly
+  const handleCollectLoot = (selectedItems: LootItem[]) => {
     addNarratorMessage(`You collected: ${selectedItems[0]?.name || 'rewards'}!`);
     
     setTimeout(() => {

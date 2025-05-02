@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Flame, Shield, Zap } from 'lucide-react';
+import { Flame, Shield, Zap, Users } from 'lucide-react';
 import DebtMonster from '@/components/DebtMonster';
 import BattleTips from './BattleTips';
 import { Debt } from '@/types/gameTypes';
@@ -16,6 +16,7 @@ interface BattlePrepStageProps {
   onNarrativeChoice: (choice: string) => void;
   onStartBattle: () => void;
   onCloseTips: () => void;
+  onSwitchToRaid?: () => void;
 }
 
 const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
@@ -26,7 +27,8 @@ const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
   currentStance,
   onNarrativeChoice,
   onStartBattle,
-  onCloseTips
+  onCloseTips,
+  onSwitchToRaid
 }) => {
   return (
     <motion.div
@@ -86,16 +88,29 @@ const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
                 Your mindset shapes your approach to this battle, influencing your technique and effectiveness.
               </p>
               
-              <Button 
-                onClick={onStartBattle}
-                className={`mt-4 ${
-                  currentStance === 'aggressive' ? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600' : 
-                  currentStance === 'defensive' ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600' : 
-                  'bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600'
-                }`}
-              >
-                Begin Battle
-              </Button>
+              <div className="flex flex-wrap gap-3 mt-4">
+                <Button 
+                  onClick={onStartBattle}
+                  className={`${
+                    currentStance === 'aggressive' ? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600' : 
+                    currentStance === 'defensive' ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600' : 
+                    'bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600'
+                  }`}
+                >
+                  Begin Battle
+                </Button>
+                
+                {onSwitchToRaid && (
+                  <Button
+                    variant="outline"
+                    onClick={onSwitchToRaid}
+                    className="border-slate-600 hover:bg-slate-700/50 text-slate-300"
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    Tactical Raid
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
