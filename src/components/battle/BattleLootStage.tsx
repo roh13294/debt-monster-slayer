@@ -27,29 +27,7 @@ const BattleLootStage: React.FC<BattleLootStageProps> = ({ loot, onCollectLoot }
         <p className="text-slate-300 mb-8">Select your rewards from the demon's defeated form</p>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        {loot.map((item, index) => (
-          <LootDropCard 
-            key={index}
-            item={{
-              name: item.name,
-              description: item.description,
-              rarity: item.rarity,
-              effect: item.effect
-            }}
-            onSelect={() => {}} // Selection is handled by the LootDropCard component
-          />
-        ))}
-      </div>
-      
-      <div className="text-center">
-        <Button 
-          onClick={() => onCollectLoot(loot)}
-          className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white px-8 py-3"
-        >
-          Collect Rewards & Continue
-        </Button>
-      </div>
+      <LootDropCard loot={loot} onCollect={onCollectLoot} />
     </div>
   );
 };
