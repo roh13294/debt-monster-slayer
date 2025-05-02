@@ -13,6 +13,9 @@ interface EnhancedMonsterBattleProps {
   onClose: () => void;
 }
 
+// Define a more specific battle mode type to include 'raid-results'
+type BattleMode = 'single' | 'raid' | 'raid-results';
+
 const EnhancedMonsterBattle: React.FC<EnhancedMonsterBattleProps> = ({ debtId, onClose }) => {
   const { debts, updateDebt, damageMonster, gainXP, setCash } = useGameContext();
   
@@ -20,7 +23,7 @@ const EnhancedMonsterBattle: React.FC<EnhancedMonsterBattleProps> = ({ debtId, o
   const currentDebt = debts.find(debt => debt.id === debtId);
   
   // Battle states
-  const [battleMode, setBattleMode] = useState<'single' | 'raid'>('single');
+  const [battleMode, setBattleMode] = useState<BattleMode>('single');
   const [raidResults, setRaidResults] = useState<RaidResult[]>([]);
   const [raidDebts, setRaidDebts] = useState<typeof debts>([]);
   
@@ -36,7 +39,8 @@ const EnhancedMonsterBattle: React.FC<EnhancedMonsterBattleProps> = ({ debtId, o
     // Apply rewards from battle
     loot.forEach(item => {
       if (item.type === 'Spirit Fragment') {
-        setCash(prev => prev + item.value);
+        // Correctly modify setCash to use a number instead of a function
+        setCash(item.value + (isNaN(Number(setCash)) ? 0 : Number(setCash)));
         toast({
           title: "Rewards Collected",
           description: `You've received ${item.value} DemonCoins.`,
@@ -90,7 +94,8 @@ const EnhancedMonsterBattle: React.FC<EnhancedMonsterBattleProps> = ({ debtId, o
     // Process loot items (similar to handleBattleComplete)
     loot.forEach(item => {
       if (item.type === 'Spirit Fragment') {
-        setCash(prev => prev + item.value);
+        // Correctly modify setCash to use a number instead of a function
+        setCash(item.value + (isNaN(Number(setCash)) ? 0 : Number(setCash)));
       }
       // Process other item types as needed
     });

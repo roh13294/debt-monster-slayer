@@ -394,7 +394,7 @@ export const EnergyWave: React.FC<{
 
   return (
     <motion.div
-      className="absolute bottom-0 left-0 w-full h-[150%] bg-gradient-to-t opacity-50"
+      className="absolute bottom-0 left-0 w-full h-[150%]"
       style={{
         backgroundSize: '200% 200%',
         backgroundPosition: '0% 0%',
