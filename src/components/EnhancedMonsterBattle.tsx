@@ -39,8 +39,8 @@ const EnhancedMonsterBattle: React.FC<EnhancedMonsterBattleProps> = ({ debtId, o
     // Apply rewards from battle
     loot.forEach(item => {
       if (item.type === 'Spirit Fragment') {
-        // Correctly modify setCash to use a number instead of a function
-        setCash(item.value + (isNaN(Number(setCash)) ? 0 : Number(setCash)));
+        // Use a numeric value directly
+        setCash(item.value + (typeof setCash === 'number' ? setCash : 0));
         toast({
           title: "Rewards Collected",
           description: `You've received ${item.value} DemonCoins.`,
@@ -94,8 +94,8 @@ const EnhancedMonsterBattle: React.FC<EnhancedMonsterBattleProps> = ({ debtId, o
     // Process loot items (similar to handleBattleComplete)
     loot.forEach(item => {
       if (item.type === 'Spirit Fragment') {
-        // Correctly modify setCash to use a number instead of a function
-        setCash(item.value + (isNaN(Number(setCash)) ? 0 : Number(setCash)));
+        // Use a numeric value directly
+        setCash(item.value + (typeof setCash === 'number' ? setCash : 0));
       }
       // Process other item types as needed
     });

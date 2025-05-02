@@ -18,10 +18,11 @@ import BattlePrepStage from './BattlePrepStage';
 
 interface BattleArenaProps {
   debtId: string;
-  onComplete: () => void;
+  onComplete: (loot: any[]) => void;
+  onSwitchToRaid?: () => void;
 }
 
-const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete }) => {
+const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, onSwitchToRaid }) => {
   const { 
     debts, 
     cash, 
@@ -305,7 +306,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete })
     addNarratorMessage(`You collected: ${selectedItems[0]?.name || 'rewards'}!`);
     
     setTimeout(() => {
-      onComplete();
+      onComplete(selectedItems);
     }, 1000);
   };
   
@@ -418,6 +419,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete })
             onNarrativeChoice={handleNarrativeChoice}
             onStartBattle={handleStartBattle}
             onCloseTips={() => setShowTips(false)}
+            onSwitchToRaid={onSwitchToRaid}
           />
         )}
         
