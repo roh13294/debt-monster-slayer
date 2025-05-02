@@ -63,6 +63,11 @@ const LootDropCard: React.FC<LootDropCardProps> = ({ loot, onCollect }) => {
     }
   };
   
+  // Wrap the onCollect function to handle mouse event 
+  const handleCollectClick = () => {
+    onCollect(loot);
+  };
+  
   return (
     <div className="p-6 bg-slate-900/95 border border-slate-700 rounded-lg max-w-xl mx-auto text-center">
       <h2 className="text-xl font-bold text-amber-400 mb-2 flex items-center justify-center gap-2">
@@ -139,7 +144,7 @@ const LootDropCard: React.FC<LootDropCardProps> = ({ loot, onCollect }) => {
             transition={{ delay: 0.5 }}
           >
             <Button 
-              onClick={() => onCollect(loot)}
+              onClick={handleCollectClick}
               className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white px-8 py-6 h-auto"
               size="lg"
             >

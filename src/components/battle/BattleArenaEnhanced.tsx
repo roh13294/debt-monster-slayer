@@ -47,7 +47,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
   const [showSlash, setShowSlash] = useState<boolean>(false);
   const [showBurst, setShowBurst] = useState<boolean>(false);
   const [showShake, setShowShake] = useState<boolean>(false);
-  const [selectedLoot, setSelectedLoot] = useState<any[]>([]);
+  const [selectedLoot, setSelectedLoot] = useState<LootItem[]>([]);
   const [comboDisplayActive, setComboDisplayActive] = useState<boolean>(false);
   const [lastDamageInfo, setLastDamageInfo] = useState<any>(null);
   const [battleEvents, setBattleEvents] = useState<any[]>([]);
@@ -124,7 +124,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
       <div className="text-center py-12">
         <h2 className="text-xl font-bold text-slate-300">No demons to battle</h2>
         <p className="text-slate-400 mb-6">You have no debts to battle against. Well done!</p>
-        <button onClick={onComplete} className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded">Continue Journey</button>
+        <button onClick={() => onComplete([])} className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded">Continue Journey</button>
       </div>
     );
   }
@@ -219,10 +219,11 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
       }
       
       setTimeout(() => {
-        // Fix the comparison between damageMonster result and boolean
-        const success = damageMonster(debtId, attackResult.damage);
+        // Fix the damageMonster return type issue
+        damageMonster(debtId, attackResult.damage);
         
-        if (success && attackResult.damage >= debt.balance) {
+        // We need to check the damage against the debt balance directly
+        if (attackResult.damage >= debt.balance) {
           handleVictory();
         }
       }, 800);
@@ -304,7 +305,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
     setBattleStage('loot');
   };
   
-  // Fix the handleCollectLoot function to handle the MouseEvent properly
+  // Fix the handleCollectLoot function to work with LootDropCard component
   const handleCollectLoot = (selectedItems: LootItem[]) => {
     addNarratorMessage(`You collected: ${selectedItems[0]?.name || 'rewards'}!`);
     
