@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -220,7 +221,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
       
       setTimeout(() => {
         // Fix the damageMonster return type issue
-        damageMonster(debtId, attackResult.damage);
+        const damageResult = damageMonster(debtId, attackResult.damage);
         
         // We need to check the damage against the debt balance directly
         if (attackResult.damage >= debt.balance) {
