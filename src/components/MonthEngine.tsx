@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../context/GameContext';
 import Dashboard from './Dashboard';
 import CutsceneEventScreen from './cutscene/CutsceneEventScreen';
-import BattleArena from './battle/BattleArena';
 import MonthSummary from './summary/MonthSummary';
 import ShadowCallingModal from './shadow/ShadowCallingModal';
 import LevelUpAnimation from './ui/LevelUpAnimation';
+import MonthlyMissionCampaign from './battle/MonthlyMissionCampaign';
 
 type GamePhase = 'dashboard' | 'cutscene' | 'battle' | 'summary';
 
@@ -97,8 +97,7 @@ const MonthEngine: React.FC = () => {
       )}
       
       {currentPhase === 'battle' && (
-        <BattleArena 
-          stance={selectedStance}
+        <MonthlyMissionCampaign 
           onComplete={handleBattleComplete}
         />
       )}
