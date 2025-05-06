@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Flame, Shield, Zap, Users } from 'lucide-react';
+import { Shield, Sword } from 'lucide-react';
 import DebtMonster from '@/components/DebtMonster';
 import BattleTips from './BattleTips';
 import { Debt } from '@/types/gameTypes';
@@ -16,7 +16,7 @@ interface BattlePrepStageProps {
   onNarrativeChoice: (choice: string) => void;
   onStartBattle: () => void;
   onCloseTips: () => void;
-  onSwitchToRaid?: () => void;
+  onSwitchToRaid?: () => void; // Add this optional prop
 }
 
 const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
@@ -30,6 +30,38 @@ const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
   onCloseTips,
   onSwitchToRaid
 }) => {
+  // Generate some narrative options based on the current stance
+  const getNarrativeOptions = (): string[] => {
+    switch(currentStance) {
+      case 'aggressive':
+        return [
+          "I'll face this head on, with everything I have.",
+          "This demon won't know what hit it.",
+          "My strength grows with every challenge."
+        ];
+      case 'defensive':
+        return [
+          "Patience and wisdom will guide my actions.",
+          "A careful approach will reveal the path forward.",
+          "Defense builds the foundation for lasting victory."
+        ];
+      case 'risky':
+        return [
+          "Sometimes you have to gamble to get ahead.",
+          "The greatest rewards often come with the greatest risks.",
+          "Fortune favors the bold."
+        ];
+      default:
+        return [
+          "I'll find the right approach for this challenge.",
+          "Each demon requires a different strategy.",
+          "I must adapt my technique to this opponent."
+        ];
+    }
+  };
+  
+  const narrativeOptions = getNarrativeOptions();
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -42,21 +74,16 @@ const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
           isInBattle={true}
         />
       </div>
-      
+
       {showNarrative ? (
         <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-6 mb-6">
           <h3 className="text-lg font-medium text-slate-100 mb-4">Inner Reflection</h3>
           <p className="text-slate-300 mb-6 italic">
             As you prepare to face this demon, what thoughts guide your approach?
           </p>
-          
+
           <div className="space-y-3">
-            {[
-              "I'll face this head on, with everything I have.",
-              "Patience and wisdom will guide my actions.",
-              "Sometimes you have to gamble to get ahead.",
-              "Each demon requires a different strategy."
-            ].map((option, index) => (
+            {narrativeOptions.map((option, index) => (
               <motion.button
                 key={index}
                 whileHover={{ scale: 1.01 }}
@@ -72,14 +99,8 @@ const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
       ) : (
         <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-6 mb-6">
           <div className="flex items-start gap-4">
-            <div className={`p-2 rounded-full ${
-              currentStance === 'aggressive' ? 'bg-red-900/30 border border-red-800' : 
-              currentStance === 'defensive' ? 'bg-blue-900/30 border border-blue-800' : 
-              'bg-amber-900/30 border border-amber-800'
-            }`}>
-              {currentStance === 'aggressive' && <Flame className="w-5 h-5 text-red-400" />}
-              {currentStance === 'defensive' && <Shield className="w-5 h-5 text-blue-400" />}
-              {currentStance === 'risky' && <Zap className="w-5 h-5 text-amber-400" />}
+            <div className="p-2 rounded-full bg-blue-900/30 border border-blue-800">
+              <Shield className="w-5 h-5 text-blue-400" />
             </div>
             <div>
               <h3 className="text-lg font-medium text-slate-100 mb-1">Battle Preparation</h3>
@@ -91,23 +112,20 @@ const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
               <div className="flex flex-wrap gap-3 mt-4">
                 <Button 
                   onClick={onStartBattle}
-                  className={`${
-                    currentStance === 'aggressive' ? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600' : 
-                    currentStance === 'defensive' ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600' : 
-                    'bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600'
-                  }`}
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
                 >
-                  Begin Battle
+                  <Sword className="w-4 h-4 mr-2" />
+                  Begin Single Battle
                 </Button>
                 
                 {onSwitchToRaid && (
-                  <Button
-                    variant="outline"
+                  <Button 
                     onClick={onSwitchToRaid}
-                    className="border-slate-600 hover:bg-slate-700/50 text-slate-300"
+                    variant="outline"
+                    className="border-amber-600 text-amber-500 hover:bg-amber-900/20"
                   >
-                    <Users className="w-4 h-4 mr-2" />
-                    Tactical Raid
+                    <Sword className="w-4 h-4 mr-2" />
+                    Switch to Tactical Raid
                   </Button>
                 )}
               </div>
@@ -115,7 +133,7 @@ const BattlePrepStage: React.FC<BattlePrepStageProps> = ({
           </div>
         </div>
       )}
-      
+
       {showTips && <BattleTips stance={currentStance} onClose={onCloseTips} />}
     </motion.div>
   );

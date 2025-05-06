@@ -305,6 +305,14 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
     setBattleStage('loot');
   };
   
+  const handleBattleComplete = () => {
+    if (selectedLoot.length > 0) {
+      onComplete(selectedLoot);
+    } else {
+      onComplete([]);
+    }
+  };
+  
   // Fix the handleCollectLoot function to work with LootDropCard component
   const handleCollectLoot = (selectedItems: LootItem[]) => {
     addNarratorMessage(`You collected: ${selectedItems[0]?.name || 'rewards'}!`);
