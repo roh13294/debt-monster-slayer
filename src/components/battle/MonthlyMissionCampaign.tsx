@@ -84,7 +84,7 @@ const MonthlyMissionCampaign: React.FC<MonthlyMissionCampaignProps> = ({ onCompl
     const targetIndex = selectedDemons.findIndex(demon => demon.id === demonId);
     if (targetIndex !== -1 && targetIndex !== activeTargetIndex) {
       // Deduct spirit cost for switching
-      setCash(prevCash => prevCash - targetSwitchCost);
+      setCash(cash - targetSwitchCost);
       
       // Update target index
       setActiveTargetIndex(targetIndex);

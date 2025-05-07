@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { LootItem } from '@/types/battleTypes';
@@ -193,7 +192,7 @@ const MissionResults: React.FC<MissionResultsProps> = ({
           </div>
           
           <Button 
-            onClick={onComplete}
+            onClick={onContinue}
             className="bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white"
           >
             Continue Journey <ChevronsRight className="ml-2 h-4 w-4" />
