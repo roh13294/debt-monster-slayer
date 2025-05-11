@@ -84,7 +84,8 @@ const MonthlyMissionCampaign: React.FC<MonthlyMissionCampaignProps> = ({ onCompl
     const targetIndex = selectedDemons.findIndex(demon => demon.id === demonId);
     if (targetIndex !== -1 && targetIndex !== activeTargetIndex) {
       // Deduct spirit cost for switching
-      setCash(prev => prev - targetSwitchCost); // Fixed TypeScript error with arrow function
+      // Fix: Use function signature that matches the expected type
+      setCash(Math.max(0, cash - targetSwitchCost));
       
       // Update target index
       setActiveTargetIndex(targetIndex);

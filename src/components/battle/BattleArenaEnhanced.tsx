@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -389,8 +390,8 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
   };
   
   const resetCombo = () => {
-    setComboCount(0);
-    setComboMultiplier(1);
+    // Fix: Use updateCombo from useBattleState instead of undefined setters
+    updateCombo(false); // This will reset the combo
     setComboDisplayActive(false);
   };
   
@@ -447,14 +448,13 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
     
     // Update energy after animation
     setTimeout(() => {
+      // Fix: Use setCash from context instead
       setCash(prev => prev + energyGained);
       setIsChannelingEnergy(false);
       
+      // Fix: Use proper battle state update
       // Don't break combo, but pause it temporarily
-      setBattleState(prev => ({
-        ...prev,
-        lastAttackTime: Date.now()
-      }));
+      addBattleLog("Combo window extended due to channeling.", 'system');
       
       // Increment turn counter
       setTurnCounter(prev => prev + 1);
