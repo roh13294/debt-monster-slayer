@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from "@/hooks/use-toast";
@@ -182,8 +181,8 @@ export function useBattleState() {
     gainOverdrive(5);
   };
 
-  // Calculate damage based on combo, stance, and overdrive
-  const calculateAttackDamage = (baseDamage: number, debt: Debt) => {
+  // Calculate damage based on combo, stance, and overdrive - Modified to support light attacks
+  const calculateAttackDamage = (baseDamage: number, debt: Debt, effectivenessMultiplier: number = 1.0) => {
     // Get stance modifiers
     const stance = BATTLE_STANCES.find(s => s.id === currentStance) || BATTLE_STANCES[0];
     
@@ -209,8 +208,8 @@ export function useBattleState() {
       addBattleLog(`Critical hit! 2x damage`, 'attack');
     }
     
-    // Base damage calculation
-    let totalDamage = baseDamage * (stance.damageBoost || 1) * newMultiplier;
+    // Base damage calculation with effectiveness multiplier (for light attacks)
+    let totalDamage = baseDamage * (stance.damageBoost || 1) * newMultiplier * effectivenessMultiplier;
     
     // Apply critical hit multiplier
     if (isCritical) {
@@ -227,6 +226,9 @@ export function useBattleState() {
       // In frenzy phase, player gets a bonus
       totalDamage *= 1.2;
     }
+    
+    // Handle extremely small damage values (minimum 1 damage)
+    totalDamage = Math.max(1, totalDamage);
     
     return {
       damage: Math.floor(totalDamage),

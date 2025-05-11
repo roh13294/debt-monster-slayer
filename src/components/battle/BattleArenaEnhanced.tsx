@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -53,6 +52,9 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
   const [lastDamageInfo, setLastDamageInfo] = useState<any>(null);
   const [battleEvents, setBattleEvents] = useState<any[]>([]);
   const [turnCounter, setTurnCounter] = useState<number>(0);
+  const [isChannelingEnergy, setIsChannelingEnergy] = useState<boolean>(false);
+  const [channelEnergyAmount, setChannelEnergyAmount] = useState<number>(0);
+  const [retreatInProgress, setRetreatInProgress] = useState<boolean>(false);
   
   const {
     battleState,
@@ -192,13 +194,22 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
       return;
     }
     
+    // Light attack logic for amounts below minimum payment
+    const isLightAttack = attackAmount < debt.minimumPayment;
+    
     setTurnCounter(prev => prev + 1);
     
-    const attackResult = calculateAttackDamage(attackAmount, debt);
-    setLastDamageInfo(attackResult);
+    // Calculate attack with possibly reduced effectiveness for light attacks
+    const attackResult = calculateAttackDamage(
+      attackAmount, 
+      debt,
+      isLightAttack ? 0.8 : 1.0 // Light attacks are 80% as effective
+    );
     
+    setLastDamageInfo(attackResult);
     updateCombo(!attackResult.isMiss);
     
+    // Visual effects
     setShowSlash(true);
     setTimeout(() => {
       if (!attackResult.isMiss) {
@@ -207,9 +218,15 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
       }
     }, 300);
     
-    if (!attackResult.isMiss) {
+    // Messaging
+    if (isLightAttack) {
+      addNarratorMessage(`Light attack hits for ${attackResult.damage} damage!${attackResult.isCritical ? ' CRITICAL!' : ''}`);
+    } else {
       addNarratorMessage(`Attack hits for ${attackResult.damage} damage!${attackResult.isCritical ? ' CRITICAL HIT!' : ''}`);
-      
+    }
+    
+    if (!attackResult.isMiss) {
+      // Handle overdrive, mission progress, etc.
       const overdriveGain = Math.max(5, Math.floor((attackResult.damage / debt.amount) * 100));
       gainOverdrive(overdriveGain);
       
@@ -220,10 +237,10 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
       }
       
       setTimeout(() => {
-        // Fix the damageMonster return type issue
+        // Process the damage
         const damageResult = damageMonster(debtId, attackResult.damage);
         
-        // We need to check the damage against the debt balance directly
+        // Check for victory
         if (attackResult.damage >= debt.balance) {
           handleVictory();
         }
@@ -371,6 +388,79 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
     }
   };
   
+  const resetCombo = () => {
+    setComboCount(0);
+    setComboMultiplier(1);
+    setComboDisplayActive(false);
+  };
+  
+  const handleRetreat = () => {
+    // Add retreat to battle log
+    addBattleLog("You retreat from battle to recover your strength.", 'system');
+    
+    // Show retreat notification
+    toast({
+      title: "Tactical Retreat",
+      description: "You've escaped from battle. Your progress is saved.",
+      variant: "default",
+    });
+    
+    // Reset combo on retreat
+    resetCombo();
+    
+    // Transition out with animation
+    setRetreatInProgress(true);
+    setTimeout(() => {
+      // End the battle without completing it
+      endBattle(false);
+      
+      // Generate minimal loot for retreating
+      const retreatLoot: LootItem[] = [{
+        type: 'Spirit Fragment',
+        rarity: 'Common',
+        name: 'Minor Spirit Fragment',
+        description: 'A small fragment of spirit energy recovered during retreat',
+        value: 1
+      }];
+      
+      // Complete with retreat loot
+      onComplete(retreatLoot);
+    }, 1000);
+  };
+  
+  const handleChannelEnergy = () => {
+    setIsChannelingEnergy(true);
+    
+    // Calculate energy gained (10% of max energy or minimum 15)
+    const energyGained = Math.max(15, Math.floor(cash * 0.1));
+    setChannelEnergyAmount(energyGained);
+    
+    // Add to battle log
+    addBattleLog(`You channel your inner spirit to recover ${energyGained} energy.`, 'special');
+    
+    // Show energy channeling notification
+    toast({
+      title: "Energy Channeled",
+      description: `You recovered ${energyGained} spirit energy.`,
+      variant: "default",
+    });
+    
+    // Update energy after animation
+    setTimeout(() => {
+      setCash(prev => prev + energyGained);
+      setIsChannelingEnergy(false);
+      
+      // Don't break combo, but pause it temporarily
+      setBattleState(prev => ({
+        ...prev,
+        lastAttackTime: Date.now()
+      }));
+      
+      // Increment turn counter
+      setTurnCounter(prev => prev + 1);
+    }, 1000);
+  };
+  
   return (
     <div className="min-h-[80vh] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950">
@@ -386,6 +476,47 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
           <EnergyWave color="red" duration={3} />
         )}
       </div>
+      
+      {/* Add channeling energy effect */}
+      {isChannelingEnergy && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center">
+          <motion.div 
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: [0, 1.2, 1], opacity: [0, 0.8, 1] }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="w-40 h-40 rounded-full bg-blue-500/20 flex items-center justify-center"
+          >
+            <motion.div
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="text-blue-300 text-xl font-bold"
+            >
+              +{channelEnergyAmount}
+            </motion.div>
+          </motion.div>
+        </div>
+      )}
+      
+      {/* Retreat animation */}
+      {retreatInProgress && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 bg-black/70 z-20 flex items-center justify-center"
+        >
+          <motion.div 
+            initial={{ y: 0, opacity: 1 }}
+            animate={{ y: -50, opacity: 0 }}
+            transition={{ duration: 1 }}
+            className="text-white text-xl font-bold"
+          >
+            Retreating...
+          </motion.div>
+        </motion.div>
+      )}
       
       <AnimatedSlash 
         isActive={showSlash} 
@@ -473,8 +604,12 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
                 cash={cash}
                 specialMoves={specialMoves}
                 currentStance={currentStance}
+                isInCombo={comboCount > 0}
+                comboCount={comboCount}
                 onAttack={handleAttack}
                 onSpecialMove={handleSpecialMove}
+                onRetreat={handleRetreat}
+                onChannelEnergy={handleChannelEnergy}
               />
               
               <BattleLog 
