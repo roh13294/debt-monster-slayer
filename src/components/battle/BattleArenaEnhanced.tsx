@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -18,6 +17,8 @@ import BattleLootStage from './BattleLootStage';
 import BattlePrepStage from './BattlePrepStage';
 import { toast } from '@/hooks/use-toast';
 import { LootItem } from '@/types/battleTypes';
+import BattleEscapeOptions from './BattleEscapeOptions';
+import UnwinnableScenarioModal from './UnwinnableScenarioModal';
 
 interface BattleArenaProps {
   debtId: string;
@@ -29,6 +30,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
   const { 
     debts, 
     cash, 
+    setCash,
     damageMonster, 
     specialMoves, 
     useSpecialMove, 
@@ -448,8 +450,8 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
     
     // Update energy after animation
     setTimeout(() => {
-      // Fix: Use setCash from context instead
-      setCash(prev => prev + energyGained);
+      // Fix: Use setCash from context that we destructured at the top
+      setCash(cash + energyGained);
       setIsChannelingEnergy(false);
       
       // Fix: Use proper battle state update
