@@ -22,7 +22,7 @@ export interface BreathingSkill {
 }
 
 export const useBreathingState = () => {
-  const [breathingXP, setBreathingXP] = useState<number>(3);
+  const [breathingXP, setBreathingXP] = useState<number>(15); // Increased starting XP for better testing
   const [unlockedSkills, setUnlockedSkills] = useState<string[]>([]);
   const [activeStyle, setActiveStyle] = useState<BreathingType | null>(null);
   const [skillComboEffects, setSkillComboEffects] = useState<{[key: string]: boolean}>({});

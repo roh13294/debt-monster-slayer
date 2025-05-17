@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useGameContext } from '../../context/GameContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -39,41 +40,6 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
       case 'wind': return <Wind className="h-4 w-4" />;
       case 'shadow': return <Skull className="h-4 w-4" />;
       default: return <Flame className="h-4 w-4" />;
-    }
-  };
-  
-  const getTabColor = (type: string) => {
-    switch(type) {
-      case 'flame': return {
-        bg: 'from-red-600 to-orange-500',
-        text: 'text-red-400',
-        border: 'border-red-500/30'
-      };
-      case 'water': return {
-        bg: 'from-blue-600 to-cyan-500',
-        text: 'text-blue-400',
-        border: 'border-blue-500/30'
-      };
-      case 'thunder': return {
-        bg: 'from-purple-600 to-violet-500',
-        text: 'text-purple-400',
-        border: 'border-purple-500/30'
-      };
-      case 'wind': return {
-        bg: 'from-green-600 to-emerald-500',
-        text: 'text-green-400',
-        border: 'border-green-500/30'
-      };
-      case 'shadow': return {
-        bg: 'from-gray-600 to-slate-500',
-        text: 'text-gray-400',
-        border: 'border-gray-500/30'
-      };
-      default: return {
-        bg: 'from-red-600 to-orange-500',
-        text: 'text-red-400',
-        border: 'border-red-500/30'
-      };
     }
   };
   
@@ -179,7 +145,7 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
               </TabsList>
               
               <div className="h-[500px] overflow-auto p-4 bg-slate-800/20 rounded-lg border border-slate-700/30">
-                <TabsContent value="flame" className="h-full">
+                <TabsContent value="flame" className="h-full m-0">
                   <BreathingTreeContent 
                     type="flame" 
                     breathingXP={breathingXP}
@@ -190,7 +156,7 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
                   />
                 </TabsContent>
                 
-                <TabsContent value="water" className="h-full">
+                <TabsContent value="water" className="h-full m-0">
                   <BreathingTreeContent 
                     type="water" 
                     breathingXP={breathingXP} 
@@ -201,7 +167,7 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
                   />
                 </TabsContent>
                 
-                <TabsContent value="thunder" className="h-full">
+                <TabsContent value="thunder" className="h-full m-0">
                   <BreathingTreeContent 
                     type="thunder" 
                     breathingXP={breathingXP} 
@@ -212,7 +178,7 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
                   />
                 </TabsContent>
                 
-                <TabsContent value="wind" className="h-full">
+                <TabsContent value="wind" className="h-full m-0">
                   <BreathingTreeContent 
                     type="wind" 
                     breathingXP={breathingXP} 
@@ -223,7 +189,7 @@ const SkillTree: React.FC<SkillTreeProps> = ({ isOpen, onClose }) => {
                   />
                 </TabsContent>
                 
-                <TabsContent value="shadow" className="h-full">
+                <TabsContent value="shadow" className="h-full m-0">
                   <BreathingTreeContent 
                     type="shadow" 
                     breathingXP={breathingXP} 
@@ -403,13 +369,9 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
   
   const skills = getSkillTree();
   
-  const nodeWrapperVariants = {
-    default: { scale: 1 },
-    hover: { scale: 1.05 }
-  };
-  
   return (
     <div className="relative h-full w-full">
+      {/* SVG connection lines */}
       <svg className="absolute top-0 left-0 h-full w-full" style={{ zIndex: 1 }}>
         <defs>
           <marker id={`arrowhead-${type}`} markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
@@ -424,6 +386,7 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
           )}
         </defs>
         
+        {/* Draw connection lines between skill nodes */}
         {skills.map(skill => {
           if (!skill.requires) return null;
           
@@ -434,9 +397,11 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
             const fromTier = parentSkill.tier;
             const toTier = skill.tier;
             
-            const fromY = fromTier * 180 - 80;
-            const toY = toTier * 180 - 80;
+            // Calculate vertical positions based on tier
+            const fromY = fromTier * 150 - 75; // Adjusted spacing
+            const toY = toTier * 150 - 75;     // Adjusted spacing
             
+            // Calculate horizontal positions based on node index within tier
             const tierSkills = skills.filter(s => s.tier === fromTier);
             const fromX = (tierSkills.indexOf(parentSkill) + 0.5) * (100 / (tierSkills.length + 1)) + '%';
             
@@ -461,13 +426,20 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
         }).flat().filter(Boolean)}
       </svg>
       
+      {/* Skill node tiers */}
       {[1, 2, 3].map(tier => {
         const tierSkills = skills.filter(skill => skill.tier === tier);
         return (
-          <div key={`tier-${tier}`} className="absolute w-full" style={{ top: `${tier * 180 - 100}px` }}>
+          <div key={`tier-${tier}`} className="absolute w-full" style={{ top: `${tier * 150 - 100}px` }}>
             <div className="flex justify-evenly">
-              {tierSkills.map(skill => (
-                <div key={skill.id} className="relative z-10 transform -translate-x-1/2" style={{ left: `${(tierSkills.indexOf(skill) + 0.5) * (100 / (tierSkills.length + 1))}%` }}>
+              {tierSkills.map((skill, index) => (
+                <div 
+                  key={skill.id} 
+                  className="relative z-10 transform -translate-x-1/2" 
+                  style={{ 
+                    left: `${(index + 0.5) * (100 / (tierSkills.length + 1))}%`
+                  }}
+                >
                   <SkillNode 
                     type={type} 
                     tier={tier}
@@ -490,7 +462,7 @@ const BreathingTreeContent: React.FC<BreathingTreeContentProps> = ({
             <Star className="w-3 h-3 mr-1" />
             <span>Special Combo Available</span>
           </div>
-          <div className="text-xxs text-gray-400">
+          <div className="text-xs text-gray-400">
             Unlock Thunder + Wind trees for<br />
             <span className="text-green-400">Shock Cyclone Style</span>
           </div>
@@ -523,11 +495,6 @@ const SkillNode: React.FC<SkillNodeProps> = ({
   const baseColors = isCorrupted ? 
     { bg: 'bg-gradient-to-br from-red-900/70 to-black/70', text: 'text-red-400', border: 'border-red-500/30' } : 
     colors;
-  
-  const nodeWrapperVariants = {
-    default: { scale: 1 },
-    hover: { scale: 1.05 }
-  };
   
   return (
     <motion.div
