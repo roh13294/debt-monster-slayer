@@ -163,7 +163,9 @@ const QuestSystem: React.FC<QuestSystemProps> = ({ onClose }) => {
     
     // Apply rewards to the player
     if (quest.rewards.coins > 0) {
-      setCash(prevCash => prevCash + quest.rewards.coins);
+      // Fix: Use the current cash value and add the rewards directly
+      const newCashAmount = cash + quest.rewards.coins;
+      setCash(newCashAmount);
     }
     
     if (quest.rewards.xp > 0 && gainXP) {
@@ -171,7 +173,9 @@ const QuestSystem: React.FC<QuestSystemProps> = ({ onClose }) => {
     }
     
     if (quest.rewards.specialMoves > 0) {
-      setSpecialMoves(prevSpecialMoves => prevSpecialMoves + quest.rewards.specialMoves);
+      // Fix: Use the current specialMoves value and add the rewards directly
+      const newSpecialMovesAmount = specialMoves + quest.rewards.specialMoves;
+      setSpecialMoves(newSpecialMovesAmount);
     }
     
     // Mark quest as claimed
