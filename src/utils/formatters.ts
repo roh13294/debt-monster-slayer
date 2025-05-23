@@ -31,3 +31,12 @@ export const formatPercent = (value: number): string => {
     maximumFractionDigits: 0
   }).format(value / 100);
 };
+
+/**
+ * Safely extracts a numeric value from a string or returns the number
+ */
+export const extractNumericValue = (value: string | number): number => {
+  if (typeof value === 'number') return value;
+  const match = value.match(/[\d,.]+/);
+  return match ? parseFloat(match[0].replace(/,/g, '')) : 0;
+};

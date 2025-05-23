@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Scroll, Check, Clock } from 'lucide-react';
 import { useGameContext } from '@/context/GameContext';
+import { toast } from '@/hooks/use-toast';
+import DemonCoin from '@/components/ui/DemonCoin';
 
 interface QuestSystemProps {
   onClose: () => void;
@@ -37,9 +39,16 @@ interface Quest {
 
 const QuestSystem: React.FC<QuestSystemProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const { 
+    cash, 
+    setCash, 
+    gainXP, 
+    specialMoves, 
+    setSpecialMoves 
+  } = useGameContext();
   
-  // Mock quests for demonstration
-  const [quests] = useState<Quest[]>([
+  // Mock quests with useState to allow updating them
+  const [quests, setQuests] = useState<Quest[]>([
     {
       id: 'daily-1',
       title: 'Flame Form Master',
@@ -146,9 +155,40 @@ const QuestSystem: React.FC<QuestSystemProps> = ({ onClose }) => {
   
   // Handle claiming quest rewards
   const handleClaimReward = (questId: string) => {
-    // In a real implementation, we would update the quest state
-    // and award the rewards to the player
-    console.log(`Claiming rewards for quest: ${questId}`);
+    // Find the quest to claim
+    const questIndex = quests.findIndex(q => q.id === questId);
+    if (questIndex === -1) return;
+    
+    const quest = quests[questIndex];
+    
+    // Apply rewards to the player
+    if (quest.rewards.coins > 0) {
+      setCash(prevCash => prevCash + quest.rewards.coins);
+    }
+    
+    if (quest.rewards.xp > 0 && gainXP) {
+      gainXP(quest.rewards.xp);
+    }
+    
+    if (quest.rewards.specialMoves > 0) {
+      setSpecialMoves(prevSpecialMoves => prevSpecialMoves + quest.rewards.specialMoves);
+    }
+    
+    // Mark quest as claimed
+    const updatedQuests = [...quests];
+    updatedQuests[questIndex] = {
+      ...quest,
+      claimed: true
+    };
+    
+    setQuests(updatedQuests);
+    
+    // Show success message
+    toast({
+      title: "Rewards Claimed!",
+      description: `You received ${quest.rewards.coins} DemonCoins, ${quest.rewards.xp} XP, and ${quest.rewards.specialMoves} special moves.`,
+      variant: "default",
+    });
     
     // Play claim sound
     const audio = new Audio('/sounds/quest-complete.mp3');
@@ -163,6 +203,10 @@ const QuestSystem: React.FC<QuestSystemProps> = ({ onClose }) => {
           <Scroll className="w-6 h-6 text-amber-400 mr-2" />
           Quest Scrolls
         </h2>
+        <div className="flex items-center space-x-2">
+          <span className="text-slate-400">Your Balance:</span>
+          <DemonCoin amount={cash} size="md" />
+        </div>
       </div>
       
       <div className="flex space-x-2 mb-6">
@@ -263,7 +307,7 @@ const QuestSystem: React.FC<QuestSystemProps> = ({ onClose }) => {
                 onClick={() => handleClaimReward(quest.id)}
                 className={`w-full ${
                   quest.completed && !quest.claimed 
-                    ? 'bg-gradient-to-r from-amber-600 to-amber-800' 
+                    ? 'bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-500 hover:to-amber-700' 
                     : 'bg-slate-700'
                 }`}
               >

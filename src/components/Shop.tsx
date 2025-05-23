@@ -123,7 +123,7 @@ const Shop: React.FC = () => {
             Financial Power-Ups Shop
           </span>
         </h2>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-full">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100/10 backdrop-blur-sm text-green-800 rounded-full">
           <DemonCoin amount={cash} size="md" />
         </div>
       </div>
@@ -158,7 +158,7 @@ const Shop: React.FC = () => {
                 <h3 className="font-bold">{item.name}</h3>
                 <p className="text-sm text-gray-600 mb-2">{item.description}</p>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                  <div className="flex items-center gap-1 px-2 py-1 bg-green-100/30 backdrop-blur-sm text-green-800 rounded-full text-xs font-medium">
                     <DemonCoin amount={item.cost} size="sm" />
                   </div>
                   <Button 

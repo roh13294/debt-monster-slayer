@@ -2,6 +2,7 @@
 import React from 'react';
 import { CalendarDays, Sparkles, PiggyBank, Zap } from 'lucide-react';
 import DemonCoin from '@/components/ui/DemonCoin';
+import { formatCurrency } from '@/utils/formatters';
 
 interface FinancialSummaryCardProps {
   type: 'cash' | 'debt' | 'progress';
@@ -51,6 +52,12 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
   
   const { bg, text } = getGradientClasses();
   
+  // Helper function to extract numeric value from string
+  const extractNumericValue = (val: string): number => {
+    const match = val.match(/[\d,.]+/);
+    return match ? parseFloat(match[0].replace(/,/g, '')) : 0;
+  };
+  
   return (
     <div className="oni-card flex flex-col justify-between relative overflow-hidden group">
       <div className={`absolute -right-10 top-0 h-40 w-40 bg-gradient-to-br ${bg} rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity`}></div>
@@ -61,19 +68,23 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
             {getCardIcon()}
           </div>
           <span className={`text-2xl font-bold ${text} oni-text-glow`}>
-            {type === 'cash' ? <DemonCoin amount={Number(value)} size="lg" /> : value}
+            {type === 'cash' ? (
+              <DemonCoin amount={Number(value)} size="lg" />
+            ) : (
+              value
+            )}
           </span>
         </div>
         
-        {type === 'progress' && (
+        {type === 'progress' && details && (
           <div className="flex mt-2 items-center space-x-3">
             <div className="flex items-center">
               <PiggyBank className="h-4 w-4 text-blue-400 mr-1" />
-              <span className="text-xs text-blue-300">Savings: {details?.leftValue}</span>
+              <span className="text-xs text-blue-300">Savings: {details.leftValue}</span>
             </div>
             <div className="flex items-center">
               <Zap className="h-4 w-4 text-purple-400 mr-1" />
-              <span className="text-xs text-purple-300">Level: {details?.rightValue}</span>
+              <span className="text-xs text-purple-300">Level: {details.rightValue}</span>
             </div>
           </div>
         )}
@@ -84,13 +95,21 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
           <div>
             <p className="text-xs text-gray-400">{details.leftLabel}</p>
             <p className={`text-sm font-medium ${type === 'cash' ? 'text-amber-400' : 'text-purple-400'}`}>
-              {type === 'cash' ? <DemonCoin amount={Number(details.leftValue.replace(/[^0-9.-]+/g, ''))} size="sm" /> : details.leftValue}
+              {type === 'cash' ? (
+                <DemonCoin amount={extractNumericValue(details.leftValue)} size="sm" />
+              ) : (
+                details.leftValue
+              )}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray-400">{details.rightLabel}</p>
             <p className={`text-sm font-medium ${type === 'cash' ? 'text-red-400' : 'text-amber-400'}`}>
-              {type === 'cash' ? <DemonCoin amount={Number(details.rightValue.replace(/[^0-9.-]+/g, ''))} size="sm" /> : details.rightValue}
+              {type === 'cash' ? (
+                <DemonCoin amount={extractNumericValue(details.rightValue)} size="sm" />
+              ) : (
+                details.rightValue
+              )}
             </p>
           </div>
         </div>
