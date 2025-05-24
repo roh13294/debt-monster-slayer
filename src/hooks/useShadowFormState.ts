@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { ShadowFormType } from '../types/gameTypes';
 import { toast } from "@/hooks/use-toast";
@@ -65,25 +66,10 @@ export const useShadowFormState = () => {
     
     // Special form setup effects
     if (form) {
-      try {
-        // Create a dark impact sound effect
-        const audio = new Audio('/sounds/shadow-embrace.mp3');
-        audio.volume = 0.5;
-        
-        // Only attempt to play if the audio loaded successfully
-        audio.addEventListener('canplaythrough', () => {
-          audio.play().catch(e => {
-            console.warn("Audio playback failed:", e);
-          });
-        });
-        
-        // Handle loading errors
-        audio.addEventListener('error', () => {
-          console.warn("Audio failed to load");
-        });
-      } catch (e) {
-        console.warn("Audio creation failed:", e);
-      }
+      // Create a dark impact sound effect
+      const audio = new Audio('/sounds/shadow-embrace.mp3');
+      audio.volume = 0.5;
+      audio.play().catch(e => console.error("Audio playback error:", e));
       
       // Add a form-specific glitch effect to the UI (in a real game)
       const body = document.querySelector('body');
@@ -115,23 +101,10 @@ export const useShadowFormState = () => {
         variant: "destructive",
       });
       
-      try {
-        // Create a corruption overload sound effect
-        const audio = new Audio('/sounds/corruption-max.mp3');
-        audio.volume = 0.7;
-        
-        audio.addEventListener('canplaythrough', () => {
-          audio.play().catch(e => {
-            console.warn("Audio playback failed:", e);
-          });
-        });
-        
-        audio.addEventListener('error', () => {
-          console.warn("Audio failed to load");
-        });
-      } catch (e) {
-        console.warn("Audio creation failed:", e);
-      }
+      // Create a corruption overload sound effect
+      const audio = new Audio('/sounds/corruption-max.mp3');
+      audio.volume = 0.7;
+      audio.play().catch(e => console.error("Audio playback error:", e));
       
       // Trigger a UI effect for max corruption
       const body = document.querySelector('body');
@@ -182,23 +155,10 @@ export const useShadowFormState = () => {
         variant: "default",
       });
       
-      try {
-        // Create a redemption sound effect
-        const audio = new Audio('/sounds/redemption.mp3');
-        audio.volume = 0.5;
-        
-        audio.addEventListener('canplaythrough', () => {
-          audio.play().catch(e => {
-            console.warn("Audio playback failed:", e);
-          });
-        });
-        
-        audio.addEventListener('error', () => {
-          console.warn("Audio failed to load");
-        });
-      } catch (e) {
-        console.warn("Audio creation failed:", e);
-      }
+      // Create a redemption sound effect
+      const audio = new Audio('/sounds/redemption.mp3');
+      audio.volume = 0.5;
+      audio.play().catch(e => console.error("Audio playback error:", e));
     }
   };
   

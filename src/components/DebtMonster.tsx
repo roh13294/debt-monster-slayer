@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Debt } from '@/types/gameTypes';
@@ -5,9 +6,6 @@ import { getMonsterImage, getDemonElementType, getDemonRank } from '@/utils/mons
 import { getMonsterProfile } from '@/utils/monsterProfiles';
 import { Progress } from '@/components/ui/progress';
 import { Flame, ShieldOff, Star } from 'lucide-react';
-import AnimeCard from '@/components/ui/AnimeCard';
-import AnimeButton from '@/components/ui/AnimeButton';
-import ParticleField from '@/components/ui/ParticleField';
 
 interface DebtMonsterProps {
   debt: Debt;
@@ -71,17 +69,6 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
     return 'bg-green-500';
   };
   
-  const getElementParticleColors = () => {
-    switch (elementType) {
-      case 'fire': return ['#ff2d55', '#ff5733', '#ff9500'];
-      case 'spirit': return ['#0ea5e9', '#06b6d4', '#3b82f6'];
-      case 'lightning': return ['#eab308', '#f59e0b', '#8b5cf6'];
-      case 'earth': return ['#84cc16', '#22c55e', '#16a34a'];
-      case 'shadow': return ['#8b5cf6', '#a855f7', '#c084fc'];
-      default: return ['#64748b', '#475569', '#334155'];
-    }
-  };
-
   const getInterestDescription = () => {
     if (debt.interest > 15) return 'Extremely High';
     if (debt.interest > 10) return 'High';
@@ -135,177 +122,117 @@ const DebtMonster: React.FC<DebtMonsterProps> = ({
   const rageStyles = getRageStyles();
   
   return (
-    <AnimeCard
-      rarity={debt.amount > 50000 ? 'legendary' : debt.amount > 25000 ? 'epic' : debt.amount > 10000 ? 'rare' : 'common'}
-      glowing={isInBattle || ragePhase || frenzyPhase}
+    <motion.div 
+      className={`bg-slate-800 border border-slate-700 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow relative ${isInBattle ? 'scale-105' : ''} ${rageStyles.containerClass}`}
+      whileHover={{ scale: isInBattle ? 1.05 : 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`overflow-hidden transition-all duration-300 ${isInBattle ? 'scale-105' : ''}`}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
       <div className="relative">
-        {/* Parallax Background */}
-        <div className={`h-48 overflow-hidden relative bg-gradient-to-br from-slate-900 to-slate-800`}>
-          <div className="absolute inset-0 parallax-bg opacity-60" />
-          <div className="absolute inset-0 parallax-layer-1" />
+        <div className={`h-40 overflow-hidden bg-gradient-to-br ${rageStyles.backgroundClass} relative ${isInBattle ? rageStyles.pulseClass : ''} ${rageStyles.glowClass}`}>
+          <div className="absolute inset-0 bg-[url('/images/kanji-bg.png')] bg-repeat opacity-10 z-0"></div>
           
-          {/* Particle Effects */}
-          {(ragePhase || frenzyPhase || isInBattle) && (
-            <ParticleField 
-              count={12} 
-              colors={getElementParticleColors()} 
-              className="opacity-70"
-            />
-          )}
-          
-          {/* Rage/Frenzy Aura */}
           {(ragePhase || frenzyPhase) && (
             <motion.div 
-              className={`absolute inset-0 ${frenzyPhase ? 'bg-red-500/20' : 'bg-amber-500/20'}`}
+              className={`absolute inset-0 z-0 ${frenzyPhase ? 'bg-red-500/10' : 'bg-amber-500/10'}`}
               animate={{ 
-                opacity: [0.2, 0.4, 0.2],
+                opacity: [0.1, 0.2, 0.1],
                 scale: [1, 1.05, 1]
               }}
               transition={{ duration: 2, repeat: Infinity }}
             />
           )}
           
-          {/* Monster Image */}
           <motion.div 
             className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10"
             animate={{ 
-              y: [0, -8, 0],
-              filter: ['drop-shadow(0 0 15px rgba(255,165,0,0.4))', 'drop-shadow(0 0 25px rgba(255,165,0,0.6))', 'drop-shadow(0 0 15px rgba(255,165,0,0.4))']
+              y: [0, -5, 0],
+              filter: ['drop-shadow(0 0 10px rgba(255,165,0,0.3))', 'drop-shadow(0 0 15px rgba(255,165,0,0.5))', 'drop-shadow(0 0 10px rgba(255,165,0,0.3))']
             }}
-            transition={{ duration: 4, repeat: Infinity }}
+            transition={{ duration: 3, repeat: Infinity }}
           >
             <motion.img 
               src={monsterImage} 
               alt={debt.name} 
-              className={`h-44 object-contain -mb-4 transition-all ${isInBattle ? 'scale-110' : ''}`}
+              className={`h-40 object-contain -mb-4 group-hover:-mb-6 transition-all transform group-hover:scale-110 ${isInBattle ? 'scale-110' : ''}`}
               animate={isHit ? { 
-                x: [-8, 8, -6, 6, 0],
-                filter: ['brightness(2.5)', 'brightness(1)'] 
+                x: [-5, 5, -3, 3, 0],
+                filter: ['brightness(2)', 'brightness(1)'] 
               } : {}}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.3 }}
             />
           </motion.div>
           
-          {/* Element Type Badge */}
-          <div className={`absolute top-3 right-3 px-3 py-1.5 rounded-full bg-gradient-to-r ${getElementColor()} text-white text-xs font-bold z-10 shadow-lg`}>
-            {elementType.toUpperCase()}
+          <div className={`absolute top-2 right-2 px-2 py-1 rounded-full bg-gradient-to-r ${getElementColor()} text-white text-xs font-medium z-10`}>
+            {elementType} Type
           </div>
           
-          {/* Rank Badge */}
-          <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-bold border border-slate-600 z-10 shadow-lg">
+          <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-medium border border-slate-600 z-10">
             {monsterRank}
           </div>
           
-          {/* Status Badges */}
           {ragePhase && !frenzyPhase && (
-            <motion.div 
-              className="absolute left-1/2 transform -translate-x-1/2 top-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xs px-3 py-1.5 rounded-full flex items-center gap-1 z-10 shadow-lg"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-            >
+            <div className="absolute left-1/2 transform -translate-x-1/2 top-3 bg-amber-600 text-black font-bold text-xs px-2 py-1 rounded-full flex items-center gap-1 z-10">
               <Flame className="w-3 h-3" />
-              RAGE MODE
-            </motion.div>
+              RAGE
+            </div>
           )}
           
           {frenzyPhase && (
-            <motion.div 
-              className="absolute left-1/2 transform -translate-x-1/2 top-4 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold text-xs px-3 py-1.5 rounded-full flex items-center gap-1 z-10 shadow-lg"
-              animate={{ 
-                scale: [1, 1.15, 1],
-                boxShadow: ['0 0 10px rgba(255, 0, 0, 0.5)', '0 0 20px rgba(255, 0, 0, 0.8)', '0 0 10px rgba(255, 0, 0, 0.5)']
-              }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-            >
+            <div className="absolute left-1/2 transform -translate-x-1/2 top-3 bg-red-600 text-white font-bold text-xs px-2 py-1 rounded-full flex items-center gap-1 z-10 animate-pulse">
               <ShieldOff className="w-3 h-3" />
               FRENZY
-            </motion.div>
+            </div>
           )}
         </div>
         
-        {/* Health Bar */}
-        <div className="px-4 -mt-4 relative z-10">
-          <div className="bg-slate-800/90 p-2 rounded-xl border border-slate-700 backdrop-blur-sm">
-            <Progress value={debt.health} className={`${getHealthColor()} h-2`} />
+        <div className="px-3 -mt-3 relative z-10">
+          <div className="bg-slate-700 p-1 rounded-full">
+            <Progress value={debt.health} className={getHealthColor()} />
           </div>
         </div>
       </div>
       
-      {/* Card Content */}
-      <div className="p-5">
-        <div className="mb-4">
-          <h3 className="anime-subtitle text-xl font-bold text-white mb-1">
-            {monsterProfile.name}
-          </h3>
-          <p className="text-sm text-slate-400 italic">
-            "{monsterProfile.catchphrase}"
-          </p>
-        </div>
+      <div className="p-4">
+        <h3 className="font-bold text-white mb-1">{monsterProfile.name}</h3>
+        <p className="text-xs text-slate-400 mb-3">{monsterProfile.catchphrase}</p>
         
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3 text-sm mb-4">
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-            <span className="text-slate-400 block text-xs">Curse Power</span>
-            <span className="text-red-400 font-bold">
-              ${debt.amount.toLocaleString()}
-            </span>
+        <div className="grid grid-cols-2 gap-2 text-xs text-slate-300 mb-3">
+          <div>
+            <span className="text-slate-400">Curse Power:</span> {formatValue(debt.amount)}
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-            <span className="text-slate-400 block text-xs">Min Attack</span>
-            <span className="text-amber-400 font-bold">
-              ${debt.minimumPayment.toLocaleString()}
-            </span>
+          <div>
+            <span className="text-slate-400">Min Attack:</span> {formatValue(debt.minimumPayment)}
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-            <span className="text-slate-400 block text-xs">Corruption</span>
-            <span className="text-purple-400 font-bold">
-              {debt.interest}%
-            </span>
+          <div>
+            <span className="text-slate-400">Corruption:</span> {getInterestDescription()}
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-            <span className="text-slate-400 block text-xs">Stress</span>
-            <span className="text-orange-400 font-bold">
-              {debt.psychologicalImpact}/10
-            </span>
+          <div>
+            <span className="text-slate-400">Willpower Strain:</span> {debt.psychologicalImpact}/10
           </div>
         </div>
         
-        {/* Battle Info */}
         {isInBattle && (
-          <div className="bg-slate-900/80 rounded-xl p-4 mb-4 border border-slate-700">
-            <p className="text-amber-400 text-sm font-bold mb-2 flex items-center gap-2">
-              <Star className="w-4 h-4" />
-              WEAKNESS: {monsterProfile.weakness}
-            </p>
-            <p className="text-slate-300 text-xs leading-relaxed mb-3">
-              {monsterProfile.backstory.substring(0, 150)}...
-            </p>
-            <div className="flex items-center text-xs">
+          <div className="bg-slate-900/60 rounded p-2 mb-3 border border-slate-800">
+            <p className="text-amber-400 text-xs font-medium">WEAKNESS: {monsterProfile.weakness}</p>
+            <p className="text-slate-400 text-xs italic mt-1">{monsterProfile.backstory.substring(0, 120)}...</p>
+            <div className="mt-2 flex items-center text-xs">
               <Star className="w-3 h-3 text-demon-gold mr-1" /> 
-              <span className="text-demon-gold font-medium">
-                XP Reward: ~{Math.ceil(debt.minimumPayment / debt.amount * 20)} per attack
-              </span>
+              <span className="text-demon-gold">XP Reward: {calculatePotentialXP()}</span>
             </div>
           </div>
         )}
         
-        {/* Action Button */}
         {!isInBattle && (
-          <AnimeButton
-            variant="demon"
-            dramatic
-            glowing
-            className="w-full"
-            onClick={onClick}
-          >
-            Enter Battle
-          </AnimeButton>
+          <button className="w-full px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm rounded-md font-medium transition-colors">
+            Attack This Demon
+          </button>
         )}
       </div>
-    </AnimeCard>
+    </motion.div>
   );
 };
 
