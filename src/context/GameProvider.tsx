@@ -14,6 +14,8 @@ import { useShadowFormState } from '../hooks/useShadowFormState';
 import { useBreathingState } from '../hooks/useBreathingState';
 import { useWealthTempleState } from '../hooks/useWealthTempleState';
 import { usePlayerLevelState } from '../hooks/usePlayerLevelState';
+import { useDemonCoins } from '../hooks/useDemonCoins';
+import { usePowerUps } from '../hooks/usePowerUps';
 import { GameContext } from './GameContextTypes';
 import { initializeGameState, resetGameState } from './GameInitialization';
 import { toast } from "@/hooks/use-toast";
@@ -181,6 +183,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     unequipRelic
   } = useWealthTempleState();
 
+  const {
+    balance: demonCoinBalance,
+    earnDemonCoins,
+    spendDemonCoins,
+    addBonusCoins,
+    transactions: coinTransactions
+  } = useDemonCoins(cash);
+
+  const {
+    inventory: powerUpInventory,
+    purchasePowerUp,
+    activatePowerUp,
+    getActivePowerUps,
+    getPowerUpMultiplier
+  } = usePowerUps();
+
+  const enhancedSetCash = (value: number | ((prev: number) => number)) => {
+    setCash(value);
+  };
+
   const processMonthlyFinancials = (stance?: string | null) => {
     let stanceMultipliers = {
       debtPaymentMultiplier: 1,
@@ -245,6 +267,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       }
     }
+
+    const coinBoostMultiplier = getPowerUpMultiplier('coin_boost');
+    const xpBoostMultiplier = getPowerUpMultiplier('xp_boost');
+    const damageBoostMultiplier = getPowerUpMultiplier('damage_boost');
+
+    if (effectiveDebtPayment > 0) {
+      earnDemonCoins(
+        { type: 'debt_payment', baseAmount: Math.floor(effectiveDebtPayment / 10), multiplier: coinBoostMultiplier },
+        'Monthly debt payment'
+      );
+    }
     
     originalProcessMonthlyFinancials(stanceMultipliers);
     
@@ -253,6 +286,24 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     addBreathingXP(1);
+  };
+
+  const enhancedDamageMonster = (debtId: string, damage: number) => {
+    const damageMultiplier = getPowerUpMultiplier('damage_boost');
+    const enhancedDamage = Math.floor(damage * damageMultiplier);
+    
+    damageMonster(debtId, enhancedDamage);
+    
+    earnDemonCoins(
+      { type: 'monster_defeat', baseAmount: Math.floor(enhancedDamage / 5) },
+      'Monster damage dealt'
+    );
+  };
+
+  const enhancedGainXP = (amount: number) => {
+    const xpMultiplier = getPowerUpMultiplier('xp_boost');
+    const enhancedXP = Math.floor(amount * xpMultiplier);
+    gainXP(enhancedXP);
   };
 
   const upgradeTemple = (upgradeCost: number) => {
@@ -364,7 +415,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     avatar,
     setAvatar,
     cash,
-    setCash,
+    setCash: enhancedSetCash,
     playerTraits,
     updatePlayerTrait,
     eventHistory,
@@ -386,7 +437,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     monthsPassed,
     advanceMonth,
     processMonthlyFinancials,
-    damageMonster,
+    damageMonster: enhancedDamageMonster,
     specialMoves,
     setSpecialMoves,
     useSpecialMove,
@@ -415,12 +466,22 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     calculateTempleReturn,
     
     playerXP,
-    gainXP,
+    gainXP: enhancedGainXP,
     playerLevel,
     playerTitle,
     playerPerk,
     getXPThreshold,
-    getNextTitle
+    getNextTitle,
+    demonCoinBalance,
+    earnDemonCoins,
+    spendDemonCoins,
+    addBonusCoins,
+    coinTransactions,
+    powerUpInventory,
+    purchasePowerUp,
+    activatePowerUp,
+    getActivePowerUps,
+    getPowerUpMultiplier,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
