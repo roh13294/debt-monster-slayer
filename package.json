@@ -2,6 +2,9 @@
   "dependencies": {
     "@radix-ui/react-visually-hidden": "^1.0.3"
   },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
   "scripts": {
     "dev": "vite"
   }
