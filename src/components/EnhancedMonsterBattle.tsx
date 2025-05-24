@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import BattleArenaEnhanced from './battle/BattleArenaEnhanced';
 import TacticalRaidScreen, { RaidResult } from './battle/TacticalRaidScreen';
 import RaidResultsScreen from './battle/RaidResultsScreen';
@@ -111,7 +111,13 @@ const EnhancedMonsterBattle: React.FC<EnhancedMonsterBattleProps> = ({ debtId, o
   return (
     <Dialog open={true} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-[700px] bg-night-sky p-0 border-slate-700 max-w-5xl">
-        <DialogTitle className="sr-only">Demon Battle</DialogTitle>
+        <DialogTitle className="sr-only">
+          <VisuallyHidden>
+            {battleMode === 'single' ? 'Single Battle Mode' : 
+             battleMode === 'raid' ? 'Tactical Raid Mode' : 
+             'Raid Results'}
+          </VisuallyHidden>
+        </DialogTitle>
         <div className="relative overflow-hidden p-0">
           {battleMode === 'single' && currentDebt && (
             <BattleArenaEnhanced 
