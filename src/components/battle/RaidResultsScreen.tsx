@@ -32,18 +32,20 @@ const RaidResultsScreen: React.FC<RaidResultsScreenProps> = ({
         
         if (debt) {
           // Add XP reward
-          if (result.rewards.xp > 0) {
-            gainXP(result.rewards.xp);
+          const xpReward = Math.floor(result.damageDealt / 10);
+          if (xpReward > 0) {
+            gainXP(xpReward);
           }
           
           // Check for spirit fragment (guaranteed for any damage)
+          const coinReward = Math.floor(result.damageDealt / 5);
           loot.push({
             type: 'Spirit Fragment',
             rarity: 'Common',
             name: `${debt.monsterType} Spirit Fragment`,
             description: `A fragment of spirit energy harvested from the ${debt.name} demon.`,
-            value: result.rewards.coins,
-            effect: `Grants ${result.rewards.coins} DemonCoins when collected.`
+            value: coinReward,
+            effect: `Grants ${coinReward} DemonCoins when collected.`
           });
           
           // Check for demon seal (based on damage percentage)
@@ -54,20 +56,21 @@ const RaidResultsScreen: React.FC<RaidResultsScreenProps> = ({
               rarity: damagePercent >= 75 ? 'Epic' : damagePercent >= 50 ? 'Rare' : 'Common',
               name: `${debt.monsterType} Demon Seal`,
               description: `A magical seal containing some of the ${debt.name} demon's power.`,
-              value: Math.floor(result.rewards.xp / 2),
+              value: Math.floor(xpReward / 2),
               effect: `Reduces the interest rate of ${debt.name} by ${Math.floor(damagePercent/10)}% for 3 months.`
             });
           }
           
-          // Check for skill scroll (based on relic chance)
-          if (Math.random() * 100 < result.rewards.relicChance) {
+          // Check for skill scroll (random chance)
+          const relicChance = Math.random() * 100;
+          if (relicChance < 10) {
             loot.push({
               type: 'Skill Scroll',
-              rarity: result.rewards.relicChance >= 10 ? 'Epic' : result.rewards.relicChance >= 5 ? 'Rare' : 'Common',
+              rarity: relicChance >= 8 ? 'Epic' : relicChance >= 5 ? 'Rare' : 'Common',
               name: `${debt.monsterType} Technique Scroll`,
               description: `Ancient knowledge that enhances your breathing techniques.`,
-              value: Math.floor(result.rewards.relicChance * 10),
-              effect: `Grants ${Math.floor(result.rewards.relicChance * 10)} Breathing XP when used.`
+              value: Math.floor(relicChance * 10),
+              effect: `Grants ${Math.floor(relicChance * 10)} Breathing XP when used.`
             });
           }
         }
@@ -79,8 +82,8 @@ const RaidResultsScreen: React.FC<RaidResultsScreenProps> = ({
   
   const loot = generateLoot();
   const totalDamageDealt = results.reduce((sum, r) => sum + r.damageDealt, 0);
-  const totalCoins = results.reduce((sum, r) => sum + r.rewards.coins, 0);
-  const totalXP = results.reduce((sum, r) => sum + r.rewards.xp, 0);
+  const totalCoins = results.reduce((sum, r) => sum + Math.floor(r.damageDealt / 5), 0);
+  const totalXP = results.reduce((sum, r) => sum + Math.floor(r.damageDealt / 10), 0);
   
   const handleCollect = () => {
     onCollectRewards(loot);
@@ -157,12 +160,15 @@ const RaidResultsScreen: React.FC<RaidResultsScreenProps> = ({
                   const debt = debts.find(d => d.id === result.debtId);
                   if (!debt) return null;
                   
+                  const coinReward = Math.floor(result.damageDealt / 5);
+                  const xpReward = Math.floor(result.damageDealt / 10);
+                  
                   return (
                     <tr key={index} className="border-t border-slate-800">
                       <td className="px-3 py-2 text-slate-300">{debt.name}</td>
                       <td className="px-3 py-2 text-red-400">{result.damageDealt}</td>
-                      <td className="px-3 py-2 text-amber-400">{result.rewards.coins}</td>
-                      <td className="px-3 py-2 text-indigo-400">{result.rewards.xp}</td>
+                      <td className="px-3 py-2 text-amber-400">{coinReward}</td>
+                      <td className="px-3 py-2 text-indigo-400">{xpReward}</td>
                     </tr>
                   );
                 })}

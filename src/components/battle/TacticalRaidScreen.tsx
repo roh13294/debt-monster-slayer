@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sword, Shield, Zap, Target, Timer, Users } from 'lucide-react';
@@ -11,8 +10,11 @@ import { toast } from "@/hooks/use-toast";
 export interface RaidResult {
   debtId: string;
   damageDealt: number;
-  success: boolean;
-  criticalHit: boolean;
+  rewards: {
+    coins: number;
+    xp: number;
+    relicChance: number;
+  };
 }
 
 interface TacticalRaidScreenProps {
@@ -86,8 +88,11 @@ const TacticalRaidScreen: React.FC<TacticalRaidScreenProps> = ({
         raidResults.push({
           debtId: debt.id,
           damageDealt: finalDamage,
-          success: true,
-          criticalHit
+          rewards: {
+            coins: Math.floor(Math.random() * 100) + 50,
+            xp: Math.floor(Math.random() * 50) + 25,
+            relicChance: Math.random() < 0.1 ? 1 : 0
+          }
         });
       }
     }

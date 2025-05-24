@@ -1,124 +1,32 @@
-import { Dispatch, SetStateAction } from 'react';
-import { ReactNode } from 'react';
+import { Debt } from './gameTypes';
+import { Budget } from './budgetTypes';
+import { Challenge } from './challengeTypes';
+import { LifeEvent } from './lifeEventTypes';
+import { ShopItem } from './shopTypes';
+import { SpecialMove } from './battleTypes';
 
-export interface Debt {
-  id: string;
-  name: string;
-  balance: number;
-  interestRate: number;
-  minimumPayment: number;
-  psychologicalImpact: number;
-  
-  // Additional properties used in implementation
-  amount: number;
-  interest: number;
-  health: number;
-  monsterType: string;
-}
-
-export interface Budget {
-  income: number;
-  essentials: number;
-  debt: number;
-  savings: number;
-  discretionary: number;
-}
-
-export interface Challenge {
-  id: string;
-  title: string;
-  description: string;
-  reward: number;
-  completed: boolean;
-  
-  // Additional properties used in implementation
-  progress: number;
-  target: number;
-}
-
-export interface LifeEvent {
-  id: string;
-  title: string;
-  description: string;
-  options: LifeEventOption[];
-}
-
-export interface LifeEventOption {
-  text: string;
-  effect: {
-    cash?: number;
-    debt?: number;
-    income?: number;
-    description: string;
-    // Additional properties can be added as needed
-  };
-}
-
-export interface PlayerTraits {
-  financialKnowledge: number;
-  riskTolerance: number;
-  determination: number;
-  
-  // Additional properties used in implementation
-  discipline: number;
-  courage: number;
-  wisdom: number;
-  spendingHabits: number;
-  careerFocus: number;
-  savingAbility: number;
-  luckyStreak?: number;
-}
+export type Strategy = 'snowball' | 'avalanche' | 'high-interest';
+export type BudgetPreset = 'strict' | 'balanced' | 'relaxed';
+export type ShadowFormType = 'cursedBlade' | 'leecher' | 'whisperer' | null;
 
 export interface Job {
   title: string;
   baseSalary: number;
-  description?: string;  // Added optional description to match JobType
+  description?: string;
 }
 
 export interface LifeStage {
   name: string;
   baseExpenses: number;
-  description?: string;  // Added optional fields to match useRandomCharacter's LifeStage
-  ageBracket?: string;
-  modifier?: {
-    income?: number;
-    expenses?: number;
-    debtChance?: number;
-    startingCash?: number;
-  };
-}
-
-export interface TitleTier {
-  level: number;
-  title: string;
-  perk: string | null;
   description?: string;
-  aura?: string;
+  ageBracket?: string;
 }
 
-export interface ShopItem {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  effect: {
-    type: string;
-    value: number;
-    trait?: keyof PlayerTraits;
-  };
-  icon?: ReactNode;
-  category?: string;
-}
-
-export type Strategy = 'avalanche' | 'snowball' | 'highImpact' | 'proportional';
-
-export type BudgetPreset = 'balanced' | 'aggressive' | 'conservative' | 'custom' | 'frugal';
-
-export interface StanceMultipliers {
-  debtPaymentMultiplier: number;
-  savingsMultiplier: number;
-  incomeMultiplier: number;
-  expensesMultiplier: number;
+export interface PlayerTraits {
+  financialKnowledge: number;
+  discipline: number;
+  luck: number;
+  stressTolerance: number;
 }
 
 export interface GameContextType {
@@ -127,10 +35,10 @@ export interface GameContextType {
   avatar: string;
   setAvatar: (avatar: string) => void;
   cash: number;
-  setCash: (cash: number) => void;
+  setCash: (cash: number | ((prev: number) => number)) => void;
   playerTraits: PlayerTraits;
-  updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
-  eventHistory: string[];
+  updatePlayerTrait: (trait: keyof PlayerTraits, value: any) => void;
+  eventHistory: LifeEvent[];
   debts: Debt[];
   addDebt: (debt: Debt) => void;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
@@ -139,7 +47,7 @@ export interface GameContextType {
   strategy: Strategy;
   setStrategy: (strategy: Strategy) => void;
   budget: Budget;
-  updateBudget: (updates: Partial<Budget>) => void;
+  updateBudget: (category: keyof Budget, amount: number) => void;
   applyBudgetPreset: (preset: BudgetPreset) => void;
   currentLifeEvent: LifeEvent | null;
   generateLifeEvent: () => void;
@@ -150,9 +58,9 @@ export interface GameContextType {
   advanceMonth: () => void;
   processMonthlyFinancials: (stance?: string | null) => void;
   damageMonster: (debtId: string, damage: number) => void;
-  specialMoves: number;
-  setSpecialMoves: (moves: number) => void;
-  useSpecialMove: (debtId: string) => void;
+  specialMoves: SpecialMove[];
+  setSpecialMoves: (moves: SpecialMove[]) => void;
+  useSpecialMove: (moveId: string, debtId: string) => boolean;
   paymentStreak: number;
   initializeGame: () => void;
   resetGame: () => void;
@@ -160,68 +68,34 @@ export interface GameContextType {
   job: Job;
   lifeStage: LifeStage;
   circumstances: string[];
-  characterBackground: string;
-  purchaseItem: (item: ShopItem) => void;
-  
-  // Shadow Form data
-  shadowForm: ShadowFormType;
+  characterBackground?: string;
+  purchaseItem: (item: ShopItem) => boolean;
+  shadowForm: ShadowFormType | null;
   corruptionLevel: number;
-  updateShadowForm: (form: ShadowFormType, corruption?: number) => void;
+  updateShadowForm: (form: ShadowFormType | null, corruption?: number) => void;
   increaseCorruption: (amount: number) => void;
   decreaseCorruption: (amount: number) => void;
   isCorruptionUnstable: boolean;
-  
-  // Breathing Skills data
   breathingXP: number;
   addBreathingXP: (amount: number) => void;
-  
-  // Wealth Temple data
   templeLevel: number;
-  upgradeTemple: (upgradeCost: number) => boolean;
+  upgradeTemple: (cost: number) => boolean;
   calculateTempleReturn: (hasShadowPenalty?: boolean) => number;
-  
-  // XP and Title System
   playerXP: number;
   gainXP: (amount: number) => void;
   playerLevel: number;
   playerTitle: string;
-  playerPerk: string | null;
+  playerPerk: string;
   getXPThreshold: (level: number) => number;
-  getNextTitle: (level: number) => TitleTier | null;
+  getNextTitle: (level: number) => string;
+  demonCoinBalance: number;
+  earnDemonCoins: (source: any, description: string) => number;
+  spendDemonCoins: (amount: number, description: string) => boolean;
+  addBonusCoins: (amount: number, description: string) => void;
+  coinTransactions: any[];
+  powerUpInventory: any;
+  purchasePowerUp: (powerUpId: string, spendCoins: (amount: number, desc: string) => boolean) => boolean;
+  activatePowerUp: (powerUpId: string) => boolean;
+  getActivePowerUps: () => any[];
+  getPowerUpMultiplier: (type: string) => number;
 }
-
-export interface PlayerStateType {
-  playerName: string;
-  setPlayerName: Dispatch<SetStateAction<string>>;
-  avatar: string;
-  setAvatar: Dispatch<SetStateAction<string>>;
-  cash: number;
-  setCash: Dispatch<SetStateAction<number>>;
-  playerTraits: PlayerTraits;
-  updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
-  specialMoves: number;
-  setSpecialMoves: Dispatch<SetStateAction<number>>;
-  paymentStreak: number;
-  setPaymentStreak: Dispatch<SetStateAction<number>>;
-  eventHistory: string[];
-  setEventHistory: Dispatch<SetStateAction<string[]>>;
-  job: Job;
-  lifeStage: LifeStage;
-  circumstances: string[];
-  characterBackground: string;
-  setCharacterBackground: React.Dispatch<React.SetStateAction<string>>;
-  setCharacterDetails: (job: Job, lifeStage: LifeStage, circumstances: string[]) => void;
-  initializePlayerState: (job: Job, lifeStage: LifeStage, circumstances: string[]) => any;
-  resetPlayerState: () => void;
-}
-
-export type JobType = {
-  title: string;
-  baseIncome: number;
-  description: string;
-  salary?: number; // Added to support both interfaces
-};
-
-export type CircumstanceType = string;
-
-export type ShadowFormType = null | 'cursedBlade' | 'leecher' | 'whisperer';

@@ -272,6 +272,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const xpBoostMultiplier = getPowerUpMultiplier('xp_boost');
     const damageBoostMultiplier = getPowerUpMultiplier('damage_boost');
 
+    // Calculate effective debt payment before using it
+    const totalDebtPayment = Math.floor(budget.debtPayment * stanceMultipliers.debtPaymentMultiplier);
+    const effectiveDebtPayment = Math.min(totalDebtPayment, totalDebt);
+
     if (effectiveDebtPayment > 0) {
       earnDemonCoins(
         { type: 'debt_payment', baseAmount: Math.floor(effectiveDebtPayment / 10), multiplier: coinBoostMultiplier },

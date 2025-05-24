@@ -25,7 +25,7 @@ const ShadowFormSelectionModal: React.FC<ShadowFormSelectionModalProps> = ({
     perks: string[];
     drawbacks: string[];
     aura: string;
-    icon: JSX.Element;
+    icon: React.ReactElement;
   }[] = [
     {
       type: 'cursedBlade',
