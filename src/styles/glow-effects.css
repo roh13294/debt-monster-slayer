@@ -1,117 +1,77 @@
 
-/* Glow effects for narrative elements */
-.shadow-glow-blue {
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-}
+/* Glow Effects for Enhanced UI */
 
-.shadow-glow-amber {
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
-}
-
-.shadow-glow-red {
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-}
-
+/* Shadow and Glow Utilities */
 .shadow-oni {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.shadow-flame-breathing {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
 }
 
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
+.shadow-water-breathing {
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
 }
 
-.animate-flame-pulse {
-  animation: flamePulse 1.5s ease-in-out infinite;
+.shadow-thunder-breathing {
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
 }
 
-@keyframes flamePulse {
-  0% {
-    filter: drop-shadow(0 0 0 rgba(249, 115, 22, 0));
-    transform: scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.5));
-    transform: scale(1.1);
-  }
-  100% {
-    filter: drop-shadow(0 0 0 rgba(249, 115, 22, 0));
-    transform: scale(1);
-  }
+/* Border Effects */
+.border-flame-breathing {
+  border-color: rgba(220, 38, 38, 0.5);
 }
 
-.animate-sword-draw {
-  animation: swordDraw 0.5s ease-in-out;
+.border-water-breathing {
+  border-color: rgba(14, 165, 233, 0.5);
 }
 
-@keyframes swordDraw {
-  0% {
-    transform: translateX(-5px) rotate(0deg);
+.border-thunder-breathing {
+  border-color: rgba(234, 179, 8, 0.5);
+}
+
+/* Glow Animations */
+.glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow-pulse {
+  from {
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
   }
-  50% {
-    transform: translateX(0) rotate(45deg);
-  }
-  100% {
-    transform: translateX(0) rotate(0deg);
+  to {
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.8);
   }
 }
 
-.animate-pulse-subtle {
-  animation: pulseSubtle 2s ease-in-out infinite;
+/* Breathing Technique Glows */
+.flame-breathing-glow {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
 }
 
-@keyframes pulseSubtle {
-  0% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.8;
-  }
+.water-breathing-glow {
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
 }
 
-.oni-text-fire {
-  background: linear-gradient(to right, #f97316, #fbbf24);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.thunder-breathing-glow {
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
 }
 
-.kanji-bg {
-  font-family: sans-serif;
-  font-weight: bold;
-  letter-spacing: -2px;
+/* Shrine and Temple Effects */
+.shrine-glow {
+  background: radial-gradient(circle at center, rgba(251, 191, 36, 0.2) 0%, transparent 70%);
 }
 
-.oni-card {
-  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95));
-  border: 1px solid rgba(100, 116, 139, 0.2);
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+/* Status Effect Glows */
+.corruption-glow {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
 }
 
-/* Button styles */
-.oni-button {
-  background: linear-gradient(to right, rgb(239, 68, 68), rgb(245, 158, 11));
-  color: white;
-  transition: all 0.3s ease;
+.wealth-glow {
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
 }
 
-.oni-button:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
+.danger-glow {
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
 }
