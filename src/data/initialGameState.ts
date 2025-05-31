@@ -1,5 +1,20 @@
+import { PlayerTraits, Debt, Budget, Challenge } from '../types/gameTypes';
 
-import { Debt, Budget, Challenge, PlayerTraits } from '../types/gameTypes';
+// Initial game state configurations
+export const initialPlayerTraits: PlayerTraits = {
+  financialKnowledge: 5,
+  discipline: 5,
+  luck: 5,
+  stressTolerance: 5,
+  courage: 5,
+  wisdom: 5,
+  determination: 5,
+  riskTolerance: 5,
+  savingAbility: 5,
+  spendingHabits: 5,
+  careerFocus: 5,
+  luckyStreak: 5
+};
 
 export const initialDebts: Debt[] = [
   {
@@ -122,17 +137,3 @@ export const initialChallenges: Challenge[] = [
     completed: false,
   }
 ];
-
-export const initialPlayerTraits: PlayerTraits = {
-  riskTolerance: 5,
-  financialKnowledge: 5,
-  spendingHabits: 5,
-  careerFocus: 5,
-  savingAbility: 5,
-  luckyStreak: 5,
-  // Anime-themed traits
-  discipline: 5,
-  courage: 5,
-  wisdom: 5,
-  determination: 5
-};

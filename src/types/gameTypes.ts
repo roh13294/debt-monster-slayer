@@ -1,9 +1,3 @@
-import { Debt } from './gameTypes';
-import { Budget } from './budgetTypes';
-import { Challenge } from './challengeTypes';
-import { LifeEvent } from './lifeEventTypes';
-import { ShopItem } from './shopTypes';
-import { SpecialMove } from './battleTypes';
 
 export type Strategy = 'snowball' | 'avalanche' | 'high-interest';
 export type BudgetPreset = 'strict' | 'balanced' | 'relaxed';
@@ -27,6 +21,81 @@ export interface PlayerTraits {
   discipline: number;
   luck: number;
   stressTolerance: number;
+  courage: number;
+  wisdom: number;
+  determination: number;
+  riskTolerance: number;
+  savingAbility: number;
+  spendingHabits: number;
+  careerFocus: number;
+  luckyStreak: number;
+}
+
+export interface Debt {
+  id: string;
+  name: string;
+  amount: number;
+  interestRate: number;
+  minimumPayment: number;
+  type: string;
+  monsterType?: string;
+  health?: number;
+  maxHealth?: number;
+}
+
+export interface Budget {
+  income: number;
+  essentials: number;
+  debtPayment: number;
+  savings: number;
+  entertainment: number;
+}
+
+export interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  progress: number;
+  target: number;
+  reward: number;
+  completed: boolean;
+}
+
+export interface LifeEvent {
+  id: string;
+  title: string;
+  description: string;
+  options: {
+    text: string;
+    effect: {
+      cash?: number;
+      debt?: number;
+      trait?: string;
+      traitChange?: number;
+    };
+  }[];
+}
+
+export interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  effect: {
+    type: string;
+    value: number;
+    trait?: keyof PlayerTraits;
+  };
+  icon?: React.ReactNode;
+}
+
+export interface SpecialMove {
+  id: string;
+  name: string;
+  description: string;
+  damage: number;
+  cooldown: number;
+  currentCooldown: number;
 }
 
 export interface GameContextType {
@@ -58,8 +127,8 @@ export interface GameContextType {
   advanceMonth: () => void;
   processMonthlyFinancials: (stance?: string | null) => void;
   damageMonster: (debtId: string, damage: number) => void;
-  specialMoves: SpecialMove[];
-  setSpecialMoves: (moves: SpecialMove[]) => void;
+  specialMoves: number;
+  setSpecialMoves: (moves: number) => void;
   useSpecialMove: (moveId: string, debtId: string) => boolean;
   paymentStreak: number;
   initializeGame: () => void;

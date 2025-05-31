@@ -11,7 +11,7 @@ const BudgetAllocator: React.FC = () => {
     const value = e.target.value;
     setIncomeInput(value);
     const numValue = parseFloat(value) || 0;
-    updateBudget({ income: numValue });
+    updateBudget('income', numValue);
   };
 
   const calculatePercentage = (value: number) => {
@@ -56,7 +56,7 @@ const BudgetAllocator: React.FC = () => {
               min="0"
               max={budget.income}
               value={budget.essentials}
-              onChange={(e) => updateBudget({ essentials: Number(e.target.value) })}
+              onChange={(e) => updateBudget('essentials', Number(e.target.value))}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between mt-1">
@@ -73,19 +73,19 @@ const BudgetAllocator: React.FC = () => {
           <div className="flex-1">
             <div className="flex justify-between mb-1">
               <label className="block text-sm font-medium">Debt Payments</label>
-              <span className="text-sm text-gray-500">{calculatePercentage(budget.debt)}%</span>
+              <span className="text-sm text-gray-500">{calculatePercentage(budget.debtPayment)}%</span>
             </div>
             <input
               type="range"
               min="0"
               max={budget.income}
-              value={budget.debt}
-              onChange={(e) => updateBudget({ debt: Number(e.target.value) })}
+              value={budget.debtPayment}
+              onChange={(e) => updateBudget('debtPayment', Number(e.target.value))}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between mt-1">
               <span className="text-xs text-gray-500">$0</span>
-              <span className="text-xs font-medium">${budget.debt}</span>
+              <span className="text-xs font-medium">${budget.debtPayment}</span>
             </div>
           </div>
         </div>
@@ -104,7 +104,7 @@ const BudgetAllocator: React.FC = () => {
               min="0"
               max={budget.income}
               value={budget.savings}
-              onChange={(e) => updateBudget({ savings: Number(e.target.value) })}
+              onChange={(e) => updateBudget('savings', Number(e.target.value))}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between mt-1">
@@ -119,10 +119,10 @@ const BudgetAllocator: React.FC = () => {
         <h3 className="text-sm font-medium mb-2">Quick Presets</h3>
         <div className="flex space-x-2">
           <button
-            onClick={() => applyBudgetPreset('frugal')}
+            onClick={() => applyBudgetPreset('strict')}
             className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
           >
-            Frugal
+            Strict
           </button>
           <button
             onClick={() => applyBudgetPreset('balanced')}
@@ -131,10 +131,10 @@ const BudgetAllocator: React.FC = () => {
             Balanced
           </button>
           <button
-            onClick={() => applyBudgetPreset('aggressive')}
+            onClick={() => applyBudgetPreset('relaxed')}
             className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
           >
-            Aggressive
+            Relaxed
           </button>
         </div>
       </div>

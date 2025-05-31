@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sword, Shield, Zap, Target, Timer, Users } from 'lucide-react';
@@ -10,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 export interface RaidResult {
   debtId: string;
   damageDealt: number;
+  criticalHit?: boolean;
   rewards: {
     coins: number;
     xp: number;
@@ -48,7 +50,7 @@ const TacticalRaidScreen: React.FC<TacticalRaidScreenProps> = ({
   const calculateDamage = (debt: Debt): number => {
     const baseDamage = Math.floor(Math.random() * 500) + 300;
     const levelBonus = playerLevel * 50;
-    const traitBonus = (playerTraits.financialKnowledge + playerTraits.determination) * 20;
+    const traitBonus = (playerTraits.financialKnowledge + playerTraits.discipline) * 20;
     return baseDamage + levelBonus + traitBonus;
   };
 
@@ -88,6 +90,7 @@ const TacticalRaidScreen: React.FC<TacticalRaidScreenProps> = ({
         raidResults.push({
           debtId: debt.id,
           damageDealt: finalDamage,
+          criticalHit,
           rewards: {
             coins: Math.floor(Math.random() * 100) + 50,
             xp: Math.floor(Math.random() * 50) + 25,
