@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useGameContext } from '@/context/GameContext';
 import { Wind, Flame, Droplets } from 'lucide-react';
 
-interface BreathingSkillsProps {
+interface BreathingSkillsPanelProps {
   onClose: () => void;
 }
 
@@ -22,7 +21,7 @@ interface SkillNode {
   icon: React.ReactNode;
 }
 
-const BreathingSkillsPanel: React.FC<BreathingSkillsProps> = ({ onClose }) => {
+const BreathingSkillsPanel: React.FC<BreathingSkillsPanelProps> = ({ onClose }) => {
   const { breathingXP, addBreathingXP } = useGameContext();
   const [selectedSkill, setSelectedSkill] = useState<SkillNode | null>(null);
   const [activeBranch, setActiveBranch] = useState<string>('flame');
@@ -215,7 +214,7 @@ const BreathingSkillsPanel: React.FC<BreathingSkillsProps> = ({ onClose }) => {
   };
   
   return (
-    <div className="bg-slate-900/95 backdrop-blur-xl p-5 rounded-xl border border-slate-700 shadow-lg">
+    <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-xl p-6 max-w-4xl mx-auto relative overflow-hidden border border-blue-500/20">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">Breathing Techniques</h2>
         <div>

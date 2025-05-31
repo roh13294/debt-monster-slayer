@@ -1,6 +1,6 @@
 
 export type Strategy = 'snowball' | 'avalanche' | 'high-interest';
-export type BudgetPreset = 'strict' | 'balanced' | 'relaxed';
+export type BudgetPreset = 'strict' | 'balanced' | 'relaxed' | 'aggressive' | 'conservative' | 'frugal';
 export type ShadowFormType = 'cursedBlade' | 'leecher' | 'whisperer' | null;
 
 export interface Job {
@@ -35,20 +35,25 @@ export interface Debt {
   id: string;
   name: string;
   amount: number;
+  balance: number;
   interestRate: number;
+  interest: number;
   minimumPayment: number;
   type: string;
   monsterType?: string;
   health?: number;
   maxHealth?: number;
+  psychologicalImpact: number;
 }
 
 export interface Budget {
   income: number;
   essentials: number;
   debtPayment: number;
+  debt: number;
   savings: number;
   entertainment: number;
+  discretionary: number;
 }
 
 export interface Challenge {
@@ -72,6 +77,8 @@ export interface LifeEvent {
       debt?: number;
       trait?: string;
       traitChange?: number;
+      income?: number;
+      description?: string;
     };
   }[];
 }

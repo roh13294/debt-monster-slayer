@@ -1,97 +1,73 @@
-
 import React from 'react';
-import { Progress } from '@/components/ui/progress';
-import { Trophy, ChevronRight, Star } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Progress } from "@/components/ui/progress"
 import { useGameContext } from '@/context/GameContext';
 
 interface XPBarProps {
-  size?: 'sm' | 'md' | 'lg';
-  showDetails?: boolean;
+  currentXP: number;
+  xpToNext: number;
+  level: number;
+  maxLevel?: number;
+  showLevel?: boolean;
+  showProgress?: boolean;
   className?: string;
-  animateOnLevelUp?: boolean;
+  size?: "sm" | "md" | "lg";
 }
 
-const XPBar: React.FC<XPBarProps> = ({ 
-  size = 'md', 
-  showDetails = true,
-  className = '',
-  animateOnLevelUp = true
+const XPBar: React.FC<XPBarProps> = ({
+  currentXP,
+  xpToNext,
+  level,
+  maxLevel = 50,
+  showLevel = true,
+  showProgress = true,
+  className = "",
+  size = "md"
 }) => {
-  const { 
-    playerXP, 
-    playerLevel, 
-    playerTitle, 
-    getXPThreshold,
-    getNextTitle
-  } = useGameContext();
-
-  const maxXP = getXPThreshold(playerLevel);
-  const progressPercentage = Math.min(100, (playerXP / maxXP) * 100);
-  const nextTitleData = getNextTitle(playerLevel);
+  const { playerTitle } = useGameContext();
   
-  // Height based on size
-  const getHeight = () => {
-    switch (size) {
-      case 'sm': return 'h-1.5';
-      case 'lg': return 'h-3';
-      default: return 'h-2';
-    }
-  };
+  const progress = (currentXP / xpToNext) * 100;
   
-  // Scale animations based on size
-  const getAnimationScale = () => {
-    switch (size) {
-      case 'sm': return [1, 1.1, 1];
-      case 'lg': return [1, 1.2, 1];
-      default: return [1, 1.15, 1];
-    }
-  };
+  const sizeClasses = {
+    sm: "text-xs h-1.5",
+    md: "text-sm h-2.5",
+    lg: "text-base h-3.5"
+  }[size];
+  
+  if (level > maxLevel) {
+    return (
+      <div className={`${sizeClasses} ${className}`}>
+        <div className="flex justify-between items-center text-xs mb-1">
+          <span className="font-medium text-amber-300">
+            {playerTitle} - Max Level Reached
+          </span>
+        </div>
+        <div className="h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full overflow-hidden">
+          <div className="h-full w-full"></div>
+        </div>
+      </div>
+    );
+  }
+  
+  const titleData = typeof playerTitle === 'string' ? 
+    { title: playerTitle, level: level } : 
+    playerTitle;
 
   return (
-    <div className={`w-full ${className}`}>
-      {showDetails && (
+    <div className={`${sizeClasses} ${className}`}>
+      
+      {showLevel && (
         <div className="flex justify-between items-center text-xs mb-1">
-          <div className="flex items-center gap-1.5">
-            <div className="flex items-center border border-demon-red/30 rounded-full px-1.5 py-0.5 bg-demon-black/30">
-              <Star className="w-3 h-3 text-demon-gold" />
-              <span className="ml-0.5 text-demon-gold font-bold">{playerLevel}</span>
-            </div>
-            <span className="text-white/80">{playerTitle}</span>
-          </div>
-          <div className="flex items-center text-white/60">
-            <span>{playerXP}/{maxXP} XP</span>
-          </div>
+          <span className="font-medium text-amber-300">
+            {titleData.title} - Level {titleData.level}
+          </span>
+          <span className="text-gray-400">
+            {currentXP} / {xpToNext} XP
+          </span>
         </div>
       )}
       
-      <div className="relative">
-        <Progress 
-          value={progressPercentage} 
-          className={`${getHeight()} bg-demon-black/60`}
-        />
-        
-        <motion.div 
-          className="absolute inset-0 bg-demon-gradient animate-energy-flow rounded-full overflow-hidden"
-          style={{ width: `${progressPercentage}%` }}
-          animate={animateOnLevelUp ? { 
-            scale: getAnimationScale(),
-            opacity: [1, 0.8, 1]
-          } : {}}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-      </div>
-      
-      {showDetails && nextTitleData && (
-        <div className="flex justify-end mt-1 text-xs text-white/60 items-center gap-1 animate-pulse-subtle">
-          <Trophy className="w-3 h-3 text-demon-gold" />
-          <span>Next: "{nextTitleData.title}" at Level {nextTitleData.level}</span>
-          <ChevronRight className="w-3 h-3" />
-        </div>
+      {showProgress && (
+        <Progress value={progress} className="bg-gray-800" />
       )}
     </div>
   );

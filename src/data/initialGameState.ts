@@ -25,6 +25,7 @@ export const initialDebts: Debt[] = [
     interestRate: 18.99,
     interest: 18.99,
     minimumPayment: 125,
+    type: 'credit card',
     monsterType: 'red',
     health: 100,
     psychologicalImpact: 8
@@ -37,6 +38,7 @@ export const initialDebts: Debt[] = [
     interestRate: 5.8,
     interest: 5.8,
     minimumPayment: 180,
+    type: 'student loan',
     monsterType: 'blue',
     health: 100,
     psychologicalImpact: 6
@@ -49,6 +51,7 @@ export const initialDebts: Debt[] = [
     interestRate: 4.5,
     interest: 4.5,
     minimumPayment: 220,
+    type: 'auto loan',
     monsterType: 'green',
     health: 100,
     psychologicalImpact: 5
@@ -58,9 +61,11 @@ export const initialDebts: Debt[] = [
 export const initialBudget: Budget = {
   income: 3500,
   essentials: 1800,
+  debtPayment: 600,
   debt: 600,
   savings: 200,
-  discretionary: 900
+  entertainment: 400,
+  discretionary: 500
 };
 
 export const initialChallenges: Challenge[] = [
