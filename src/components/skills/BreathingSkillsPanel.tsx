@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -172,9 +173,9 @@ const BreathingSkillsPanel: React.FC<BreathingSkillsPanelProps> = ({ onClose }) 
   };
   
   // Render connections between skill nodes
-  const renderConnections = () => {
+  const renderConnections = (): React.ReactElement[] => {
     const activeTree = getActiveSkillTree();
-    const connections: JSX.Element[] = [];
+    const connections: React.ReactElement[] = [];
     
     activeTree.forEach(node => {
       node.connections.forEach(targetId => {

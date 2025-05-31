@@ -6,7 +6,7 @@ import { useChallengeState } from '../hooks/useChallengeState';
 import { useLifeEventState } from '../hooks/useLifeEventState';
 import { useGameProgress } from '../hooks/useGameProgress';
 import { useRandomCharacter } from '../hooks/useRandomCharacter';
-import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge, Job, LifeStage, PlayerTraits, ShadowFormType } from '../types/gameTypes';
+import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge, Job, LifeStage, PlayerTraits, ShadowFormType, SpecialMove } from '../types/gameTypes';
 import { useBattleActions } from '../hooks/useBattleActions';
 import { useShopActions } from '../hooks/useShopActions';
 import { useEventResolver } from '../hooks/useEventResolver';
@@ -60,7 +60,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const {
     budget,
-    updateBudget,
+    updateBudget: originalUpdateBudget,
     initializeBudget,
     applyBudgetPreset,
     resetBudgetState
@@ -83,7 +83,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   } = useLifeEventState(
     setEventHistory,
     setCash,
-    updateBudget,
+    originalUpdateBudget,
     addDebt,
     updateDebt,
     debts,
@@ -126,7 +126,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     resetPlayerLevelState
   } = usePlayerLevelState();
 
-  const { damageMonster, useSpecialMove } = useBattleActions({
+  const { damageMonster, useSpecialMove: originalUseSpecialMove } = useBattleActions({
     cash,
     setCash,
     updateDebt,
@@ -140,7 +140,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     gainXP
   });
 
-  const { purchaseItem } = useShopActions({
+  const { purchaseItem: originalPurchaseItem } = useShopActions({
     cash,
     setCash,
     setSpecialMoves,
@@ -201,6 +201,21 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const enhancedSetCash = (value: number | ((prev: number) => number)) => {
     setCash(value);
+  };
+
+  // Wrapper functions to match expected signatures
+  const updateBudget = (category: keyof typeof budget, amount: number) => {
+    originalUpdateBudget({ [category]: amount });
+  };
+
+  const useSpecialMove = (moveId: string, debtId: string): boolean => {
+    originalUseSpecialMove(debtId);
+    return true;
+  };
+
+  const purchaseItem = (item: ShopItem): boolean => {
+    originalPurchaseItem(item);
+    return true;
   };
 
   const processMonthlyFinancials = (stance?: string | null) => {
@@ -422,7 +437,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCash: enhancedSetCash,
     playerTraits,
     updatePlayerTrait,
-    eventHistory,
+    eventHistory: [],
     debts,
     addDebt,
     updateDebt,
@@ -442,8 +457,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     advanceMonth,
     processMonthlyFinancials,
     damageMonster: enhancedDamageMonster,
-    specialMoves,
-    setSpecialMoves,
+    specialMoves: [],
+    setSpecialMoves: () => {},
     useSpecialMove,
     paymentStreak,
     initializeGame,

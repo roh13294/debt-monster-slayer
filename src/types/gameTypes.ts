@@ -1,7 +1,20 @@
-
 export type Strategy = 'snowball' | 'avalanche' | 'high-interest';
 export type BudgetPreset = 'strict' | 'balanced' | 'relaxed' | 'aggressive' | 'conservative' | 'frugal';
 export type ShadowFormType = 'cursedBlade' | 'leecher' | 'whisperer' | null;
+
+export interface TitleTier {
+  level: number;
+  title: string;
+  perk: string | null;
+  description: string;
+  aura: string;
+}
+
+export interface JobType {
+  title: string;
+  baseIncome: number;
+  description?: string;
+}
 
 export interface Job {
   title: string;
@@ -14,6 +27,7 @@ export interface LifeStage {
   baseExpenses: number;
   description?: string;
   ageBracket?: string;
+  modifier?: number;
 }
 
 export interface PlayerTraits {
@@ -134,8 +148,8 @@ export interface GameContextType {
   advanceMonth: () => void;
   processMonthlyFinancials: (stance?: string | null) => void;
   damageMonster: (debtId: string, damage: number) => void;
-  specialMoves: number;
-  setSpecialMoves: (moves: number) => void;
+  specialMoves: SpecialMove[];
+  setSpecialMoves: (moves: SpecialMove[]) => void;
   useSpecialMove: (moveId: string, debtId: string) => boolean;
   paymentStreak: number;
   initializeGame: () => void;

@@ -1,349 +1,111 @@
+
 import { useState } from 'react';
-import { JobType as GameJobType, LifeStage as GameLifeStage } from '../types/gameTypes';
-
-// Define types for our character attributes
-export type JobType = {
-  title: string;
-  baseIncome: number;
-  description: string;
-  salary?: number; // Added to support conversion to Job type
-};
-
-export type LifeStage = {
-  name: string;
-  description: string;
-  ageBracket: string;
-  expenseRatio?: number; // Added to support conversion to GameLifeStage
-  modifier: {
-    income?: number;
-    expenses?: number;
-    debtChance?: number;
-    startingCash?: number;
-  };
-};
-
-export type Circumstance = {
-  name: string;
-  description: string;
-  effect: {
-    income?: number;
-    expenses?: number;
-    cash?: number;
-    debt?: number | null;
-    traits?: Partial<Record<string, number>>;
-  };
-};
-
-// Available jobs with base income
-const availableJobs: JobType[] = [
-  { 
-    title: "Software Developer", 
-    baseIncome: 5500, 
-    description: "You write code for applications and websites."
-  },
-  { 
-    title: "Teacher", 
-    baseIncome: 3800, 
-    description: "You educate the next generation."
-  },
-  { 
-    title: "Nurse", 
-    baseIncome: 4200, 
-    description: "You provide healthcare and support to patients."
-  },
-  { 
-    title: "Marketing Specialist", 
-    baseIncome: 4500, 
-    description: "You develop strategies to promote products and services."
-  },
-  { 
-    title: "Retail Manager", 
-    baseIncome: 3600, 
-    description: "You oversee store operations and staff."
-  },
-  { 
-    title: "Graphic Designer", 
-    baseIncome: 3900, 
-    description: "You create visual content for various media."
-  },
-  { 
-    title: "Accountant", 
-    baseIncome: 4800, 
-    description: "You maintain and analyze financial records."
-  },
-  { 
-    title: "Chef", 
-    baseIncome: 3700, 
-    description: "You prepare and cook food in a restaurant."
-  },
-  { 
-    title: "Sales Representative", 
-    baseIncome: 4000, 
-    description: "You sell products or services to customers."
-  },
-  { 
-    title: "Administrative Assistant", 
-    baseIncome: 3200, 
-    description: "You provide organizational support in an office."
-  }
-];
-
-// Life stages with modifiers
-const lifeStages: LifeStage[] = [
-  {
-    name: "Fresh Graduate",
-    description: "You've recently completed your education and are starting your career.",
-    ageBracket: "22-25",
-    modifier: {
-      income: -500,
-      startingCash: 1000,
-      debtChance: 0.8
-    }
-  },
-  {
-    name: "Young Professional",
-    description: "You've been working for a few years and are establishing yourself.",
-    ageBracket: "26-35",
-    modifier: {
-      income: 0,
-      startingCash: 3000,
-      debtChance: 0.6
-    }
-  },
-  {
-    name: "Mid-Career",
-    description: "You're established in your career with more responsibilities.",
-    ageBracket: "36-45",
-    modifier: {
-      income: 800,
-      expenses: 500,
-      startingCash: 5000,
-      debtChance: 0.7
-    }
-  },
-  {
-    name: "Established Professional",
-    description: "You have significant experience and are at a senior level in your career.",
-    ageBracket: "46-55",
-    modifier: {
-      income: 1500,
-      expenses: 700,
-      startingCash: 8000,
-      debtChance: 0.5
-    }
-  },
-  {
-    name: "Pre-Retirement",
-    description: "You're in the final phase of your career before retirement.",
-    ageBracket: "56-65",
-    modifier: {
-      income: 1000,
-      expenses: 400,
-      startingCash: 10000,
-      debtChance: 0.4
-    }
-  }
-];
-
-// Life circumstances
-const circumstances: Circumstance[] = [
-  {
-    name: "Recent Homeowner",
-    description: "You recently purchased a home with a mortgage.",
-    effect: {
-      expenses: 800,
-      debt: 250000,
-      traits: { savingAbility: -1 }
-    }
-  },
-  {
-    name: "Renter",
-    description: "You're currently renting your home.",
-    effect: {
-      expenses: 500,
-      traits: { savingAbility: 1 }
-    }
-  },
-  {
-    name: "Living with Family",
-    description: "You're living with family to save on housing costs.",
-    effect: {
-      expenses: -300,
-      traits: { savingAbility: 2 }
-    }
-  },
-  {
-    name: "Supporting Dependents",
-    description: "You have financial responsibility for others.",
-    effect: {
-      expenses: 600,
-      traits: { careerFocus: 1, spendingHabits: -1 }
-    }
-  },
-  {
-    name: "Recent Education",
-    description: "You recently completed additional education.",
-    effect: {
-      debt: 30000,
-      income: 300,
-      traits: { financialKnowledge: 1 }
-    }
-  },
-  {
-    name: "Side Business",
-    description: "You run a small side business for additional income.",
-    effect: {
-      income: 500,
-      traits: { riskTolerance: 1, careerFocus: 1 }
-    }
-  },
-  {
-    name: "Health Challenge",
-    description: "You're managing ongoing health expenses.",
-    effect: {
-      expenses: 300,
-      traits: { savingAbility: -1 }
-    }
-  },
-  {
-    name: "Inheritance",
-    description: "You recently received a modest inheritance.",
-    effect: {
-      cash: 5000,
-      traits: { luckyStreak: 1 }
-    }
-  },
-  {
-    name: "Market Investment",
-    description: "You have some investments in the market.",
-    effect: {
-      income: 200,
-      traits: { riskTolerance: 1, financialKnowledge: 1 }
-    }
-  },
-  {
-    name: "Debt Free Start",
-    description: "You've managed to avoid taking on debt so far.",
-    effect: {
-      debt: null,
-      traits: { financialKnowledge: 1, savingAbility: 1 }
-    }
-  }
-];
+import { JobType, PlayerTraits } from '../types/gameTypes';
 
 export const useRandomCharacter = () => {
-  const [job, setJob] = useState<JobType | null>(null);
-  const [lifeStage, setLifeStage] = useState<LifeStage | null>(null);
-  const [characterCircumstances, setCharacterCircumstances] = useState<Circumstance[]>([]);
+  // Job types with income ranges
+  const jobTypes = [
+    { title: 'Software Developer', baseIncome: 4500, description: 'Tech professional with good income potential' },
+    { title: 'Teacher', baseIncome: 3200, description: 'Educator with stable but modest income' },
+    { title: 'Nurse', baseIncome: 3800, description: 'Healthcare worker with steady income' },
+    { title: 'Sales Associate', baseIncome: 2800, description: 'Retail worker with variable income' },
+    { title: 'Marketing Manager', baseIncome: 4200, description: 'Business professional with good prospects' },
+    { title: 'Freelancer', baseIncome: 3000, description: 'Independent contractor with irregular income' }
+  ];
 
-  // Generate a random character based on RNG
+  // Life stage definitions
+  const lifeStages = [
+    { name: 'Young Adult', expenseRatio: 0.4, description: 'Just starting out in life', ageBracket: '18-25' },
+    { name: 'Early Career', expenseRatio: 0.5, description: 'Building career foundation', ageBracket: '26-35' },
+    { name: 'Mid Career', expenseRatio: 0.6, description: 'Established professional', ageBracket: '36-45' },
+    { name: 'Late Career', expenseRatio: 0.55, description: 'Experienced professional', ageBracket: '46-60' }
+  ];
+
+  // Personal circumstances
+  const circumstances = [
+    'Single',
+    'Married',
+    'Has Children',
+    'Urban Living',
+    'Suburban Living',
+    'High Cost of Living',
+    'Recent Graduate',
+    'Career Changer',
+    'Homeowner',
+    'Renter'
+  ];
+
   const generateRandomCharacter = () => {
-    // Select a random job
-    const randomJob = availableJobs[Math.floor(Math.random() * availableJobs.length)];
+    const job = jobTypes[Math.floor(Math.random() * jobTypes.length)];
+    const lifeStage = lifeStages[Math.floor(Math.random() * lifeStages.length)];
     
-    // Add salary property that matches baseIncome for compatibility
-    randomJob.salary = randomJob.baseIncome;
-    
-    // Select a random life stage
-    const randomLifeStage = lifeStages[Math.floor(Math.random() * lifeStages.length)];
-    
-    // Add expenseRatio property for compatibility
-    randomLifeStage.expenseRatio = 0.5; // Default value, can be adjusted
-    
-    // Select 1-3 random circumstances without repeats
-    const shuffledCircumstances = [...circumstances].sort(() => Math.random() - 0.5);
-    // Take between 1 and 3 circumstances
-    const numCircumstances = Math.floor(Math.random() * 3) + 1;
-    const selectedCircumstances = shuffledCircumstances.slice(0, numCircumstances);
-    
-    // Set the state
-    setJob(randomJob);
-    setLifeStage(randomLifeStage);
-    setCharacterCircumstances(selectedCircumstances);
+    // Select 2-4 random circumstances
+    const shuffledCircumstances = [...circumstances].sort(() => 0.5 - Math.random());
+    const selectedCircumstances = shuffledCircumstances.slice(0, 2 + Math.floor(Math.random() * 3));
     
     return {
-      job: randomJob,
-      lifeStage: randomLifeStage,
+      job,
+      lifeStage,
       circumstances: selectedCircumstances
     };
   };
 
-  // Calculate the adjusted income based on job, life stage, and circumstances
-  const calculateAdjustedIncome = (
-    selectedJob: JobType, 
-    selectedLifeStage: LifeStage, 
-    selectedCircumstances: Circumstance[]
-  ) => {
-    let income = selectedJob.baseIncome;
+  const calculateAdjustedIncome = (baseIncome: number, job: JobType, lifeStage: any, circumstances: string[]) => {
+    let multiplier = 1.0;
     
-    // Apply life stage modifier
-    if (selectedLifeStage.modifier.income) {
-      income += selectedLifeStage.modifier.income;
-    }
+    // Life stage adjustments
+    if (lifeStage.name === 'Young Adult') multiplier *= 0.8;
+    if (lifeStage.name === 'Mid Career') multiplier *= 1.2;
+    if (lifeStage.name === 'Late Career') multiplier *= 1.3;
     
-    // Apply circumstances modifiers
-    selectedCircumstances.forEach(circumstance => {
-      if (circumstance.effect.income) {
-        income += circumstance.effect.income;
-      }
-    });
+    // Circumstance adjustments
+    if (circumstances.includes('Recent Graduate')) multiplier *= 0.85;
+    if (circumstances.includes('Urban Living')) multiplier *= 1.15;
+    if (circumstances.includes('High Cost of Living')) multiplier *= 1.1;
     
-    return income;
+    return Math.round(baseIncome * multiplier);
   };
-  
-  // Calculate monthly expenses based on life stage and circumstances
-  const calculateBaseExpenses = (
-    selectedLifeStage: LifeStage, 
-    selectedCircumstances: Circumstance[]
-  ) => {
-    // Base expenses are approximately 50% of income for essentials
-    let baseExpenses = 1500; // Minimum base expenses
+
+  const calculateBaseExpenses = (income: number, lifeStage: any, circumstances: string[]) => {
+    let expenseRatio = lifeStage.expenseRatio;
     
-    // Apply life stage modifier
-    if (selectedLifeStage.modifier.expenses) {
-      baseExpenses += selectedLifeStage.modifier.expenses;
-    }
+    // Circumstance adjustments
+    if (circumstances.includes('Has Children')) expenseRatio += 0.15;
+    if (circumstances.includes('Homeowner')) expenseRatio += 0.1;
+    if (circumstances.includes('High Cost of Living')) expenseRatio += 0.2;
+    if (circumstances.includes('Urban Living')) expenseRatio += 0.1;
     
-    // Apply circumstances modifiers
-    selectedCircumstances.forEach(circumstance => {
-      if (circumstance.effect.expenses) {
-        baseExpenses += circumstance.effect.expenses;
-      }
-    });
-    
-    return baseExpenses;
+    return Math.round(income * Math.min(expenseRatio, 0.8)); // Cap at 80%
   };
-  
-  // Calculate starting cash based on life stage and circumstances
-  const calculateStartingCash = (
-    selectedLifeStage: LifeStage, 
-    selectedCircumstances: Circumstance[]
-  ) => {
-    let cash = selectedLifeStage.modifier.startingCash || 2000;
+
+  const calculateStartingCash = (income: number, lifeStage: any, circumstances: string[]) => {
+    let cashMultiplier = 0.2; // Base 20% of monthly income
     
-    // Apply circumstances modifiers
-    selectedCircumstances.forEach(circumstance => {
-      if (circumstance.effect.cash) {
-        cash += circumstance.effect.cash;
-      }
-    });
+    // Life stage adjustments
+    if (lifeStage.name === 'Young Adult') cashMultiplier = 0.1;
+    if (lifeStage.name === 'Mid Career') cashMultiplier = 0.3;
+    if (lifeStage.name === 'Late Career') cashMultiplier = 0.4;
     
-    return cash;
+    // Circumstance adjustments
+    if (circumstances.includes('Recent Graduate')) cashMultiplier *= 0.5;
+    if (circumstances.includes('Has Children')) cashMultiplier *= 0.7;
+    
+    return Math.round(income * cashMultiplier);
   };
-  
-  // Generate a description of the character's background
-  const generateCharacterBackground = (
-    selectedJob: JobType, 
-    selectedLifeStage: LifeStage, 
-    selectedCircumstances: Circumstance[]
-  ) => {
-    return `You are a ${selectedLifeStage.name} (${selectedLifeStage.ageBracket}) working as a ${selectedJob.title}. ${selectedJob.description}. ${selectedLifeStage.description}. ${selectedCircumstances.map(c => c.description).join(' ')}`;
+
+  const generateCharacterBackground = (job: JobType, lifeStage: any, circumstances: string[]) => {
+    const backgrounds = [
+      `As a ${lifeStage.name.toLowerCase()} ${job.title.toLowerCase()}, you've found yourself in a challenging financial situation. The demons of debt have begun to manifest, and you must fight to reclaim your financial freedom.`,
+      
+      `Your journey as a ${job.title.toLowerCase()} in the ${lifeStage.name.toLowerCase()} phase of life has led you here. The shadows of financial stress have grown long, and mystical debts now take physical form as monsters you must battle.`,
+      
+      `Once, you thought being a ${job.title.toLowerCase()} would provide stability. But the financial demons have other plans, manifesting as literal monsters that feed on your peace of mind and drain your resources.`
+    ];
+    
+    return backgrounds[Math.floor(Math.random() * backgrounds.length)];
   };
 
   return {
-    job,
-    lifeStage,
-    characterCircumstances,
     generateRandomCharacter,
     calculateAdjustedIncome,
     calculateBaseExpenses,
