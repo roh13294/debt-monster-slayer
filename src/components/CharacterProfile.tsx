@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useGameContext } from '../context/GameContext';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,8 @@ const CharacterProfile: React.FC = () => {
     characterBackground,
     playerXP,
     playerLevel,
-    getXPThreshold
+    getXPThreshold,
+    specialMoves
   } = useGameContext();
 
   const currentXP = playerXP;
@@ -157,9 +159,9 @@ const CharacterProfile: React.FC = () => {
             <div className="flex items-center space-x-2">
               <User className="w-5 h-5 text-green-500" />
               <div>
-                <p className="text-sm text-slate-400">Overall Rating</p>
+                <p className="text-sm text-slate-400">Special Moves</p>
                 <p className="text-lg font-semibold text-white">
-                  {Math.round(Object.values(playerTraits).reduce((a, b) => a + b, 0) / Object.keys(playerTraits).length)}/10
+                  {Array.isArray(specialMoves) ? specialMoves.length : 0} Available
                 </p>
               </div>
             </div>

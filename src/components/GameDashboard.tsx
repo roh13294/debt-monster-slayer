@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useGameContext } from '../context/GameContext';
 import DebtMonster from './DebtMonster';
@@ -62,6 +63,8 @@ const GameDashboard = () => {
     advanceMonth();
   };
 
+  const specialMovesCount = Array.isArray(specialMoves) ? specialMoves.length : 0;
+
   return (
     <div className="relative space-y-6">
       {/* Decorative background elements */}
@@ -118,7 +121,7 @@ const GameDashboard = () => {
           <div className="bg-white/5 mt-4 p-3 rounded-b-xl flex justify-between items-center backdrop-blur-sm">
             <div>
               <p className="text-xs text-gray-400">Debt Payment Budget</p>
-              <p className="text-sm font-medium text-purple-400">{formatCurrency(budget.debt)}/month</p>
+              <p className="text-sm font-medium text-purple-400">{formatCurrency(budget.debtPayment)}/month</p>
             </div>
             <div>
               <p className="text-xs text-gray-400">Months Passed</p>
@@ -137,7 +140,7 @@ const GameDashboard = () => {
                 <Sparkles className="h-6 w-6 text-amber-400" />
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-amber-400 oni-text-glow">{specialMoves}</span>
+                <span className="text-2xl font-bold text-amber-400 oni-text-glow">{specialMovesCount}</span>
                 <span className="text-sm text-amber-300">Special Moves</span>
               </div>
             </div>
@@ -330,8 +333,8 @@ const GameDashboard = () => {
                     name="Rate Negotiation" 
                     description="Use a special move to lower a debt's interest rate" 
                     type="Water" 
-                    level={specialMoves > 0 ? 2 : 1} 
-                    locked={specialMoves === 0}
+                    level={specialMovesCount > 0 ? 2 : 1} 
+                    locked={specialMovesCount === 0}
                   />
                   <TechniqueCard 
                     name="Financial Wisdom" 
