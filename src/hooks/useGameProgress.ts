@@ -68,15 +68,15 @@ export function useGameProgress(
     setCash(prevCash => prevCash - monthlySavings);
 
     // Handle debt payments
-    const debtPayment = budget.debt;
+    const debtPayment = budget.debtPayment;
     const effectiveDebtPayment = debtPayment * multipliers.debtPaymentMultiplier;
     
     // Apply debt payment strategy
     if (debts.length > 0) {
       const updatedDebts = [...debts];
       
-      // Deduct cash for the debt payment
-      setCash(prevCash => prevCash - debtPayment);
+      // Deduct cash for the debt payment using the effective amount
+      setCash(prevCash => prevCash - effectiveDebtPayment);
       
       // Set payment streak
       setPaymentStreak(prevStreak => prevStreak + 1);
