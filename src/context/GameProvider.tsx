@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { usePlayerState } from '../hooks/usePlayerState';
 import { useDebtState } from '../hooks/useDebtState';
@@ -136,7 +135,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updatePlayerTrait,
     playerTraits,
     debts,
-    specialMoves: Array.isArray(specialMoves) ? specialMoves : [],
+    specialMoves,
     setSpecialMoves,
     gainXP
   });
@@ -210,11 +209,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const useSpecialMove = (moveId: string, debtId: string): boolean => {
-    if (Array.isArray(specialMoves) && specialMoves.length > 0) {
-      originalUseSpecialMove(debtId);
-      return true;
-    }
-    return false;
+    originalUseSpecialMove(debtId);
+    return true;
   };
 
   const purchaseItem = (item: ShopItem): boolean => {
@@ -461,8 +457,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     advanceMonth,
     processMonthlyFinancials,
     damageMonster: enhancedDamageMonster,
-    specialMoves: Array.isArray(specialMoves) ? specialMoves : [],
-    setSpecialMoves: (moves: SpecialMove[]) => setSpecialMoves(moves),
+    specialMoves: [],
+    setSpecialMoves: () => {},
     useSpecialMove,
     paymentStreak,
     initializeGame,

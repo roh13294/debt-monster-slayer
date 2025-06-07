@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { PlayerTraits, Job, LifeStage, LifeEvent, SpecialMove } from '../types/gameTypes';
+import { PlayerTraits, Job, LifeStage, LifeEvent } from '../types/gameTypes';
 import { initialPlayerTraits } from '../data/initialGameState';
 
 export const usePlayerState = () => {
@@ -12,7 +11,7 @@ export const usePlayerState = () => {
     luck: 5,
     stressTolerance: 5
   });
-  const [specialMoves, setSpecialMoves] = useState<SpecialMove[]>([]);
+  const [specialMoves, setSpecialMoves] = useState<number>(2);
   const [paymentStreak, setPaymentStreak] = useState<number>(0);
   const [eventHistory, setEventHistory] = useState<LifeEvent[]>([]);
   const [job, setJob] = useState<Job | null>(null);
@@ -106,7 +105,7 @@ export const usePlayerState = () => {
       luck: 5,
       stressTolerance: 5
     });
-    setSpecialMoves([]);
+    setSpecialMoves(2);
     setPaymentStreak(0);
     setEventHistory([]);
     setJob(null);
