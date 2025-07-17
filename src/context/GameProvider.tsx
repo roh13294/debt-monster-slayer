@@ -7,7 +7,7 @@ import { useChallengeState } from '../hooks/useChallengeState';
 import { useLifeEventState } from '../hooks/useLifeEventState';
 import { useGameProgress } from '../hooks/useGameProgress';
 import { useRandomCharacter } from '../hooks/useRandomCharacter';
-import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge, Job, LifeStage, PlayerTraits, ShadowFormType, SpecialMove } from '../types/gameTypes';
+import { GameContextType, Strategy, BudgetPreset, ShopItem, Challenge, Job, LifeStage, PlayerTraits, ShadowFormType, SpecialMove, Budget, LifeEvent } from '../types/gameTypes';
 import { useBattleActions } from '../hooks/useBattleActions';
 import { useShopActions } from '../hooks/useShopActions';
 import { useEventResolver } from '../hooks/useEventResolver';
@@ -205,7 +205,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Wrapper functions to match expected signatures
-  const updateBudget = (category: keyof typeof budget, amount: number) => {
+  const updateBudget = (category: keyof Budget, amount: number) => {
     originalUpdateBudget({ [category]: amount });
   };
 
@@ -370,7 +370,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     
     const gameCircumstances: string[] = randomCircumstances.map(c => 
-      typeof c === 'string' ? c : (c && typeof c === 'object' && 'name' in c ? c.name : '')
+      typeof c === 'string' ? c : (c && typeof c === 'object' && 'name' in c ? String(c.name || '') : '')
     ).filter(Boolean);
     
     const playerDetails = initializePlayerState(gameJob, gameLifeStage, gameCircumstances);
@@ -494,7 +494,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     playerTitle,
     playerPerk,
     getXPThreshold,
-    getNextTitle,
+    getNextTitle: (level: number) => getNextTitle(level)?.title || '',
     demonCoinBalance,
     earnDemonCoins,
     spendDemonCoins,

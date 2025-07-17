@@ -66,7 +66,7 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
   };
   
   const handleSpecialMove = () => {
-    useSpecialMove(debtId);
+    useSpecialMove('', debtId);
   };
   
   const getPaymentOptions = () => {
@@ -129,11 +129,11 @@ const MonsterBattle = ({ debtId, onClose }: MonsterBattleProps) => {
                   <div className="bg-slate-800/60 rounded-lg p-4 border border-slate-700">
                     <Button
                       onClick={handleSpecialMove}
-                      disabled={specialMoves <= 0}
+                      disabled={specialMoves.length <= 0}
                       className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 flex items-center gap-2"
                     >
                       <Flame className="w-4 h-4" />
-                      Negotiate Lower Interest ({specialMoves} remaining)
+                      Negotiate Lower Interest ({specialMoves.length} remaining)
                     </Button>
                     <p className="text-xs text-slate-400 mt-2 text-center">
                       Using this technique will reduce the demon's corruption aura (interest rate) by 20%

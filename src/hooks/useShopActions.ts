@@ -1,12 +1,12 @@
 
 import { toast } from "@/hooks/use-toast";
-import { Debt, ShopItem, PlayerTraits } from "@/types/gameTypes";
+import { Debt, ShopItem, PlayerTraits, SpecialMove } from "@/types/gameTypes";
 import { Dispatch, SetStateAction } from "react";
 
 type ShopActionsProps = {
   cash: number;
   setCash: Dispatch<SetStateAction<number>>;
-  setSpecialMoves: Dispatch<SetStateAction<number>>;
+  setSpecialMoves: Dispatch<SetStateAction<SpecialMove[]>>;
   setDebts: Dispatch<SetStateAction<Debt[]>>;
   updateDebt: (id: string, updates: Partial<Debt>) => void;
   updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
@@ -38,7 +38,9 @@ export const useShopActions = ({
     // Apply item effect
     switch (item.effect.type) {
       case "specialMove":
-        setSpecialMoves(prev => prev + item.effect.value);
+        for (let i = 0; i < item.effect.value; i++) {
+          setSpecialMoves(prev => [...prev, { id: `shop-${Date.now()}-${i}`, name: 'Shop Move', description: 'Purchased from shop', damage: 110, cooldown: 0, currentCooldown: 0 }]);
+        }
         break;
       case "reduceInterest":
         // Find debt with highest interest

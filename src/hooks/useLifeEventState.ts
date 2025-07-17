@@ -4,7 +4,7 @@ import { LifeEvent, PlayerTraits } from '../types/gameTypes';
 import { getLifeEvent } from '../utils/lifeEventGenerator';
 
 export const useLifeEventState = (
-  setEventHistory: (fn: (prev: string[]) => string[]) => void,
+  setEventHistory: (fn: (prev: LifeEvent[]) => LifeEvent[]) => void,
   setCash: (fn: (prev: number) => number) => void, 
   updateBudget: (updates: { income: number }) => void,
   addDebt: (debt: any) => void,
@@ -20,7 +20,7 @@ export const useLifeEventState = (
     const event = getLifeEvent();
     
     // Track in history
-    setEventHistory(prev => [...prev, event.id]);
+    setEventHistory(prev => [...prev, event]);
     
     setCurrentLifeEvent(event);
   };

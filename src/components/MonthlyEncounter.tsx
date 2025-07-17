@@ -143,9 +143,7 @@ const MonthlyEncounter = () => {
       const currentDebtBudget = budget.debt;
       const debtBudgetChange = Math.round((currentDebtBudget * stanceOutcome.debtChange) / 100);
       
-      updateBudget({
-        debt: currentDebtBudget + debtBudgetChange
-      });
+      updateBudget('debt', currentDebtBudget + debtBudgetChange);
       
       if (debtBudgetChange > 0) {
         toast({

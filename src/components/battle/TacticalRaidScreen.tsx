@@ -162,7 +162,7 @@ const TacticalRaidScreen: React.FC<TacticalRaidScreenProps> = ({
                 </div>
                 <div className="bg-slate-700/50 rounded-lg p-4">
                   <h3 className="text-white font-bold mb-2">Special Moves</h3>
-                  <p className="text-2xl text-amber-400">{specialMoves}</p>
+                  <p className="text-2xl text-amber-400">{specialMoves.length}</p>
                 </div>
               </div>
 

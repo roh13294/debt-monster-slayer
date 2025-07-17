@@ -267,7 +267,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
   };
   
   const handleSpecialMove = () => {
-    if (specialMoves <= 0) return;
+    if (specialMoves.length <= 0) return;
     
     setTurnCounter(prev => prev + 1);
     
@@ -275,7 +275,7 @@ const BattleArenaEnhanced: React.FC<BattleArenaProps> = ({ debtId, onComplete, o
     addNarratorMessage(`You unleash a special technique!`);
     
     setTimeout(() => {
-      useSpecialMove(debtId);
+      useSpecialMove('', debtId);
       
       gainOverdrive(15);
     }, 800);

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Sword, Flame } from 'lucide-react';
-import { Debt } from '@/types/gameTypes';
+import { Debt, SpecialMove } from '@/types/gameTypes';
 import { formatValue } from '@/utils/formatters';
 import LightAttackOption from './LightAttackOption';
 import BattleEscapeOptions from './BattleEscapeOptions';
@@ -14,7 +14,7 @@ import { toast } from '@/hooks/use-toast';
 interface BattleAttackControlsProps {
   debt: Debt;
   cash: number;
-  specialMoves: number;
+  specialMoves: SpecialMove[];
   currentStance: string;
   isInCombo?: boolean;
   comboCount?: number;
@@ -51,12 +51,12 @@ const BattleAttackControls: React.FC<BattleAttackControlsProps> = ({
     setPaymentAmount(prev => Math.min(prev, cash));
     
     // Check for unwinnable scenario
-    if (!checkingUnwinnable && cash < debt.minimumPayment && specialMoves <= 0) {
+    if (!checkingUnwinnable && cash < debt.minimumPayment && specialMoves.length <= 0) {
       setCheckingUnwinnable(true);
       
       // Give the player a moment before showing the modal
       const timer = setTimeout(() => {
-        if (cash < debt.minimumPayment && specialMoves <= 0) {
+        if (cash < debt.minimumPayment && specialMoves.length <= 0) {
           setIsUnwinnableModalOpen(true);
         }
         setCheckingUnwinnable(false);
@@ -195,17 +195,17 @@ const BattleAttackControls: React.FC<BattleAttackControlsProps> = ({
             </motion.div>
             
             <motion.div
-              whileHover={{ scale: specialMoves > 0 ? 1.02 : 1 }}
-              whileTap={{ scale: specialMoves > 0 ? 0.98 : 1 }}
+              whileHover={{ scale: specialMoves.length > 0 ? 1.02 : 1 }}
+              whileTap={{ scale: specialMoves.length > 0 ? 0.98 : 1 }}
             >
               <Button
                 onClick={onSpecialMove}
-                disabled={specialMoves <= 0}
+                disabled={specialMoves.length <= 0}
                 variant="outline"
                 className="w-full border-amber-600 text-amber-500 hover:bg-amber-900/30 py-6"
               >
                 <Flame className="w-5 h-5 mr-2" />
-                Special Technique ({specialMoves})
+                Special Technique ({specialMoves.length})
               </Button>
             </motion.div>
           </div>

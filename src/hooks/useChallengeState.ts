@@ -1,12 +1,12 @@
 
 import { useState } from 'react';
-import { Challenge, PlayerTraits } from '../types/gameTypes';
+import { Challenge, PlayerTraits, SpecialMove } from '../types/gameTypes';
 import { initialChallenges } from '../data/initialGameState';
 import { toast } from "@/hooks/use-toast";
 
 export const useChallengeState = (
   setCash: (fn: (prev: number) => number) => void,
-  setSpecialMoves: (fn: (prev: number) => number) => void
+  setSpecialMoves: (fn: (prev: SpecialMove[]) => SpecialMove[]) => void
 ) => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [lastChallengeUpdate, setLastChallengeUpdate] = useState<number>(Date.now());
@@ -45,7 +45,7 @@ export const useChallengeState = (
         // Award rewards for completed challenges
         if (updatedChallenge.completed && !challenge.completed) {
           setCash(prev => prev + challenge.reward);
-          setSpecialMoves(prev => prev + 1);
+          setSpecialMoves(prev => [...prev, { id: `move-${Date.now()}`, name: 'Basic Move', description: 'A basic special move', damage: 100, cooldown: 0, currentCooldown: 0 }]);
           
           toast({
             title: "Challenge Completed!",

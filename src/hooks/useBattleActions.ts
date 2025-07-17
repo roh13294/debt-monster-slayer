@@ -2,7 +2,7 @@
 // that includes XP gains
 import { useState } from 'react';
 import { toast } from "@/hooks/use-toast";
-import { Debt, PlayerTraits, Challenge } from '../types/gameTypes';
+import { Debt, PlayerTraits, Challenge, SpecialMove } from '../types/gameTypes';
 
 interface BattleActionsProps {
   cash: number;
@@ -13,8 +13,8 @@ interface BattleActionsProps {
   updatePlayerTrait: (trait: keyof PlayerTraits, value: number) => void;
   playerTraits: PlayerTraits;
   debts: Debt[];
-  specialMoves: number;
-  setSpecialMoves: (moves: number | ((prev: number) => number)) => void;
+  specialMoves: SpecialMove[];
+  setSpecialMoves: (moves: SpecialMove[] | ((prev: SpecialMove[]) => SpecialMove[])) => void;
   gainXP?: (amount: number) => void; // Make XP optional to avoid breaking existing code
 }
 
@@ -131,14 +131,14 @@ export function useBattleActions({
       }, 500);
       
       // Award special move for defeating a demon
-      setSpecialMoves((prev: number) => prev + 1);
+      setSpecialMoves(prev => [...prev, { id: `move-${Date.now()}`, name: 'Victory Move', description: 'Earned by defeating a demon', damage: 150, cooldown: 0, currentCooldown: 0 }]);
     }
     
     return true;
   };
 
   const useSpecialMove = (debtId: string) => {
-    if (specialMoves <= 0) {
+    if (specialMoves.length <= 0) {
       toast({
         title: "No Special Moves",
         description: "You don't have any special moves remaining.",
@@ -172,7 +172,7 @@ export function useBattleActions({
     const totalDamage = baseDamage + bonusDamage;
 
     // Deduct a special move
-    setSpecialMoves(prev => prev - 1);
+    setSpecialMoves(prev => prev.slice(1));
 
     // Apply damage
     const newBalance = Math.max(0, debt.balance - totalDamage);

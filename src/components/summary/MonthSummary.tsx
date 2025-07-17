@@ -91,7 +91,7 @@ const MonthSummary: React.FC<MonthSummaryProps> = ({ stance, onFinish }) => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-slate-300">Special Moves</span>
-                <span className="text-white font-bold">{specialMoves}</span>
+                <span className="text-white font-bold">{specialMoves.length}</span>
               </div>
             </div>
           </motion.div>

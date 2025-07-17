@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { toast } from "../hooks/use-toast";
-import { Debt } from '../types/gameTypes';
+import { Debt, SpecialMove } from '../types/gameTypes';
 
 interface StanceMultipliers {
   debtPaymentMultiplier: number;
@@ -31,8 +31,8 @@ export function useGameProgress(
   setCash: React.Dispatch<React.SetStateAction<number>>,
   setPaymentStreak: React.Dispatch<React.SetStateAction<number>>,
   paymentStreak: number,
-  setSpecialMoves: React.Dispatch<React.SetStateAction<number>>,
-  specialMoves: number,
+  setSpecialMoves: React.Dispatch<React.SetStateAction<SpecialMove[]>>,
+  specialMoves: SpecialMove[],
   strategy: string,
   generateLifeEvent: () => void,
   playerTraits: PlayerTraits,
@@ -103,7 +103,7 @@ export function useGameProgress(
       
       // Check if we should reward a special move for payment streak
       if (paymentStreak > 0 && paymentStreak % 3 === 0) {
-        setSpecialMoves(prev => prev + 1);
+        setSpecialMoves(prev => [...prev, { id: `streak-${Date.now()}`, name: 'Streak Move', description: 'Earned by maintaining payment streak', damage: 120, cooldown: 0, currentCooldown: 0 }]);
         toast({
           title: "Streak Reward!",
           description: `You've maintained your payment streak for ${paymentStreak} months! You earned a special move!`,

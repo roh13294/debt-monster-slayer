@@ -148,7 +148,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
     addNarratorMessage(`You unleash a special technique on ${currentDebt.name}!`);
 
     setTimeout(() => {
-      useSpecialMove(currentDebt.id);
+      useSpecialMove('', currentDebt.id);
       addNarratorMessage(`${currentDebt.name}'s corruption aura weakens significantly!`);
     }, 800);
   };
@@ -449,7 +449,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ stance, onComplete }) => {
                 debt={currentDebt}
                 stance={stance}
                 cash={cash}
-                specialMoves={specialMoves}
+                specialMoves={specialMoves.length}
                 onAttack={handleDebtAttack}
                 onSpecialMove={handleSpecialMove}
               />
