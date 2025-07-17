@@ -61,7 +61,8 @@ const ShadowCallingModal: React.FC<ShadowCallingModalProps> = ({
     
     // Small reward for resisting
     setCash(cash + 100); // Fix: use direct value instead of callback
-    setSpecialMoves(prev => [...prev, { id: `resist-${Date.now()}`, name: 'Resistance Move', description: 'Earned by resisting shadow', damage: 140, cooldown: 0, currentCooldown: 0 }]); // Fix: use direct value instead of callback
+    const newMove = { id: `resist-${Date.now()}`, name: 'Resistance Move', description: 'Earned by resisting shadow', damage: 140, cooldown: 0, currentCooldown: 0 };
+    setSpecialMoves([...specialMoves, newMove]);
     
     onClose();
   };

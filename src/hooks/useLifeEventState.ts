@@ -6,7 +6,7 @@ import { getLifeEvent } from '../utils/lifeEventGenerator';
 export const useLifeEventState = (
   setEventHistory: (fn: (prev: LifeEvent[]) => LifeEvent[]) => void,
   setCash: (fn: (prev: number) => number) => void, 
-  updateBudget: (updates: { income: number }) => void,
+  updateBudget: (updates: any) => void,
   addDebt: (debt: any) => void,
   updateDebt: (id: string, updates: any) => void,
   debts: any[],

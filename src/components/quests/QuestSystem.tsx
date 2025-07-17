@@ -175,7 +175,8 @@ const QuestSystem: React.FC<QuestSystemProps> = ({ onClose }) => {
     if (quest.rewards.specialMoves > 0) {
       // Fix: Use the current specialMoves value and add the rewards directly
       for (let i = 0; i < quest.rewards.specialMoves; i++) {
-        setSpecialMoves(prev => [...prev, { id: `quest-${Date.now()}-${i}`, name: 'Quest Move', description: 'Earned from quest', damage: 130, cooldown: 0, currentCooldown: 0 }]);
+        const newMove = { id: `quest-${Date.now()}-${i}`, name: 'Quest Move', description: 'Earned from quest', damage: 130, cooldown: 0, currentCooldown: 0 };
+        setSpecialMoves([...specialMoves, newMove]);
       }
     }
     

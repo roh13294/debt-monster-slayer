@@ -84,7 +84,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   } = useLifeEventState(
     setEventHistory,
     setCash,
-    originalUpdateBudget,
+    (updates: any) => {
+      if (updates.income !== undefined) {
+        originalUpdateBudget('income', updates.income);
+      }
+    },
     addDebt,
     updateDebt,
     debts,
@@ -206,7 +210,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Wrapper functions to match expected signatures
   const updateBudget = (category: keyof Budget, amount: number) => {
-    originalUpdateBudget({ [category]: amount });
+    originalUpdateBudget(category, amount);
   };
 
   const useSpecialMove = (moveId: string, debtId: string): boolean => {
@@ -369,8 +373,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ageBracket: randomLifeStage.ageBracket
     };
     
-    const gameCircumstances: string[] = randomCircumstances.map(c => 
-      typeof c === 'string' ? c : (c && typeof c === 'object' && 'name' in c ? String(c.name || '') : '')
+    const gameCircumstances: string[] = randomCircumstances.map((c: any) => 
+      typeof c === 'string' ? c : (c && typeof c === 'object' && c.name ? String(c.name) : '')
     ).filter(Boolean);
     
     const playerDetails = initializePlayerState(gameJob, gameLifeStage, gameCircumstances);
