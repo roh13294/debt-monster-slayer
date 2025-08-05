@@ -2,12 +2,13 @@
 import React from 'react';
 import { useGameContext } from '../context/GameContext';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Avatar from '@/components/Avatar';
 import { Badge } from '@/components/ui/badge';
 import XPBar from '@/components/ui/XPBar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { User, Briefcase, Home, Star, Target, Trophy } from 'lucide-react';
+import AvatarCustomizer from '@/components/customization/AvatarCustomizer';
 
 const CharacterProfile: React.FC = () => {
   const { 
@@ -34,12 +35,7 @@ const CharacterProfile: React.FC = () => {
       <Card className="bg-gradient-to-r from-slate-900 to-slate-800 border-slate-700">
         <CardHeader className="pb-2">
           <div className="flex items-center space-x-4">
-            <Avatar className="w-20 h-20 border-2 border-blue-500">
-              <AvatarImage src={avatar} alt={playerName} />
-              <AvatarFallback className="bg-blue-900 text-blue-100 text-2xl">
-                {playerName.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+            <Avatar avatarType={avatar || 'default'} className="border-2 border-blue-500" />
             
             <div className="flex-1">
               <CardTitle className="text-2xl text-white">{playerName}</CardTitle>
@@ -72,8 +68,8 @@ const CharacterProfile: React.FC = () => {
             </div>
           )}
           
-          {/* Circumstances */}
-          {circumstances.length > 0 && (
+          {/* Circumstances & Customization */}
+          <div className="flex flex-wrap gap-2 items-center justify-between">
             <div className="flex flex-wrap gap-2">
               {circumstances.map((circumstance, index) => (
                 <Badge key={index} variant="secondary" className="bg-slate-700 text-slate-300">
@@ -81,7 +77,8 @@ const CharacterProfile: React.FC = () => {
                 </Badge>
               ))}
             </div>
-          )}
+            <AvatarCustomizer />
+          </div>
         </CardContent>
       </Card>
 

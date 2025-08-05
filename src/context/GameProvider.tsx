@@ -439,7 +439,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value: GameContextType = {
     playerName,
     setPlayerName,
-    avatar,
+    avatar: avatar || 'default',
     setAvatar,
     cash,
     setCash: enhancedSetCash,
