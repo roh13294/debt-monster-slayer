@@ -19,11 +19,26 @@ export const useBudgetState = (
   const updateBudget = (category: keyof Budget, amount: number) => {
     setBudget((prevBudget) => {
       const updatedBudget = { ...prevBudget, [category]: amount };
-      
+
+      // Keep debt and debtPayment in sync if either is updated
+      if (category === 'debtPayment') {
+        updatedBudget.debt = amount;
+      }
+      if (category === 'debt') {
+        updatedBudget.debtPayment = amount;
+      }
+
       // Auto-calculate discretionary spending based on other allocations
-      const allocatedFunds = updatedBudget.essentials + updatedBudget.debtPayment + updatedBudget.savings + updatedBudget.entertainment;
-      updatedBudget.discretionary = Math.max(0, updatedBudget.income - allocatedFunds);
-      
+      const allocatedFunds =
+        updatedBudget.essentials +
+        updatedBudget.debtPayment +
+        updatedBudget.savings +
+        updatedBudget.entertainment;
+      updatedBudget.discretionary = Math.max(
+        0,
+        updatedBudget.income - allocatedFunds
+      );
+
       return updatedBudget;
     });
   };
