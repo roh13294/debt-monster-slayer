@@ -1,0 +1,36 @@
+[
+  {
+    "id":"imp",
+    "name":"CredImp",
+    "level":1,
+    "hp":60,"resolve":20,"atk":12,"def":6,"speed":11,
+    "critChance":0.08,"critMult":1.6,"element":"fire",
+    "affinity":{"ice":1.25,"storm":0.9},
+    "aiProfile":"aggressive",
+    "moveset":["quick_slash","ember_cut"]
+  },
+  {
+    "id":"collector",
+    "name":"Collector",
+    "level":3,
+    "hp":140,"resolve":30,"atk":20,"def":12,"speed":9,
+    "critChance":0.1,"critMult":1.6,"element":"shadow",
+    "affinity":{"radiant":1.2},
+    "aiProfile":"tricky",
+    "moveset":["frostbite","taint_dot","guard_break"]
+  },
+  {
+    "id":"warden",
+    "name":"Warden",
+    "level":5,
+    "hp":300,"resolve":40,"atk":28,"def":18,"speed":8,
+    "critChance":0.12,"critMult":1.7,"element":"storm",
+    "affinity":{"shadow":1.15,"radiant":0.9},
+    "aiProfile":"defensive",
+    "moveset":["heavy_cleave","storm_arc","guard"],
+    "phases":[
+      {"threshold":0.7,"addMoves":["shout_weaken"],"intentHint":"Warden steadies itself."},
+      {"threshold":0.4,"addMoves":["storm_slam"],"statMods":{"atk":4,"speed":2},"intentHint":"The air crackles…"}
+    ]
+  }
+]

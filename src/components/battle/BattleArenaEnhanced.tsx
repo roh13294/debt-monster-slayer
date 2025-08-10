@@ -19,6 +19,9 @@ import { toast } from '@/hooks/use-toast';
 import { LootItem } from '@/types/battleTypes';
 import BattleEscapeOptions from './BattleEscapeOptions';
 import UnwinnableScenarioModal from './UnwinnableScenarioModal';
+import { useBattleStore } from '@/modules/combat/state/battleStore';
+import ResultsScreen from '@/modules/combat/components/ResultsScreen';
+import ActionPanel from '@/modules/combat/components/ActionPanel';
 
 interface BattleArenaProps {
   debtId: string;

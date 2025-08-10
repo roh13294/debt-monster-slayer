@@ -1,0 +1,8 @@
+[
+  {"id":"quick_slash","name":"Quick Slash","desc":"+ basic hit","cost":0,"cooldown":0,"tags":["single"],"effectKey":"direct_hit"},
+  {"id":"ember_cut","name":"Ember Cut","desc":"+ fire mod","cost":6,"cooldown":1,"tags":["single"],"effectKey":"element_fire"},
+  {"id":"frostbite","name":"Frostbite","desc":"+ ice mod","cost":6,"cooldown":1,"tags":["single","dot"],"effectKey":"element_ice_dot"},
+  {"id":"guard","name":"Guard","desc":"+ reduce dmg","cost":0,"cooldown":1,"tags":["buff"],"effectKey":"guard"},
+  {"id":"guard_break","name":"Guard Break","desc":"+ ignore guard","cost":6,"cooldown":2,"tags":["single"],"effectKey":"armor_pierce"},
+  {"id":"storm_arc","name":"Storm Arc","desc":"+ chain","cost":8,"cooldown":2,"tags":["multi"],"effectKey":"element_storm"}
+]
